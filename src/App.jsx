@@ -557,12 +557,30 @@ export default function App() {
         </div>
       </section>
 
-      {/* Gallery Teaser (Section 1.2.3) */}
-      <section id="gallery" className="grid grid-cols-2 md:grid-cols-4 h-64 md:h-96">
-        <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 1" />
-        <img src="https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 2" />
-        <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 3" />
-        <img src="https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 4" />
+{/* Gallery Teaser (Section 1.2.3) */}
+      <section id="gallery" className="grid grid-cols-2 md:grid-cols-4 overflow-hidden">
+        <div className="w-full h-64 md:h-96 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 1" />
+        </div>
+        <div className="w-full h-64 md:h-96 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 2" />
+        </div>
+        <div className="w-full h-64 md:h-96 overflow-hidden">
+          <img 
+            // REPLACED IMAGE 3
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596664/image_1_1765595697004_tbf9q7.png" 
+            className="w-full h-full object-cover" 
+            alt="Gallery 3" 
+          />
+        </div>
+        <div className="w-full h-64 md:h-96 overflow-hidden">
+          <img 
+            // REPLACED IMAGE 4
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765658990/freepik__the-style-is-candid-image-photography-with-natural__49112_ykuvwi.png" 
+            className="w-full h-full object-cover" 
+            alt="Gallery 4" 
+          />
+        </div>
       </section>
 
       {/* Contact Section (Section 3.2.4) */}
