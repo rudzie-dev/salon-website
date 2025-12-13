@@ -673,8 +673,8 @@ export default function App() {
         <img src={IMAGE_URLS.gallery4} className="w-full h-full object-cover" alt="Product Display" />
       </section>
 
-      {/* Contact Section - INCREASED PADDING FOR MOBILE SEPARATION */}
-      <section id="contact" className="py-32 px-6 bg-zinc-50">
+      {/* Contact Section - EXTREMELY INCREASED TOP PADDING FOR MAX SEPARATION */}
+      <section id="contact" className="pt-40 pb-32 px-6 bg-zinc-50">
         <div className="container mx-auto max-w-6xl">
            <div className="grid md:grid-cols-2 gap-16 items-center">
               <div>
