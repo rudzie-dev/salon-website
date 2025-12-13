@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ChevronRight, ArrowUpRight, Phone, Mail, MapPin, Clock, Instagram, Star } from 'lucide-react';
 
+// --- IMAGE URLs FROM PROMPT ---
+const IMAGE_URLS = {
+  hero: "https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png",
+  zaraNkosi: "https://res.cloudinary.com/dgstbaoic/image/upload/v1765596669/image_1_1765596131656_gdrxvd.png",
+  liamChen: "https://res.cloudinary.com/dgstbaoic/image/upload/v1765596671/image_1_1765596191540_b2rh1t.png",
+  amaraDube: "https://res.cloudinary.com/dgstbaoic/image/upload/v1765596673/freepik__the-style-is-candid-image-photography-with-natural__8282_exxbxp.png",
+  mainStylingArea: "https://res.cloudinary.com/dgstbaoic/image/upload/v1765596663/freepik__35mm-film-photography-luxury-modern-hair-salon-int__8283_vhnahv.png",
+  receptionArea: "https://res.cloudinary.com/dgstbaoic/image/upload/v1765596654/freepik__the-style-is-candid-image-photography-with-natural__8284_cbgbc6.png",
+  salonDetail: "https://res.cloudinary.com/dgstbaoic/image/upload/v1765596629/freepik__the-style-is-candid-image-photography-with-natural__8286_e0zz4v.png",
+  productDisplay: "https://res.cloudinary.com/dgstbaoic/image/upload/v1765596644/freepik__35mm-film-photography-minimalist-black-display-cab__8285_jwej9v.png"
+};
+// -----------------------------
+
+
 const AtelierNoir = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
-  const [activeService, setActiveService] = useState(null);
+  // const [activeService, setActiveService] = useState(null); // Active service state is currently unused after implementation, keeping for future enhancements.
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -77,19 +91,22 @@ const AtelierNoir = () => {
       name: "Zara Nkosi",
       title: "Master Stylist & Owner",
       specialty: "Color Specialist",
-      experience: "15+ years"
+      experience: "15+ years",
+      image: IMAGE_URLS.zaraNkosi
     },
     {
       name: "Liam Chen",
       title: "Senior Stylist",
       specialty: "Precision Cutting",
-      experience: "10+ years"
+      experience: "10+ years",
+      image: IMAGE_URLS.liamChen
     },
     {
       name: "Amara Dube",
       title: "Color Expert",
       specialty: "Balayage & Highlights",
-      experience: "8+ years"
+      experience: "8+ years",
+      image: IMAGE_URLS.amaraDube
     }
   ];
 
@@ -112,6 +129,7 @@ const AtelierNoir = () => {
           
           <div className="hidden md:flex items-center gap-12 text-sm tracking-wide">
             <a href="#services" className="hover:text-zinc-400 transition-colors duration-300">Services</a>
+            <a href="#about-gallery" className="hover:text-zinc-400 transition-colors duration-300">Our Salon</a> {/* Added Our Salon link */}
             <a href="#team" className="hover:text-zinc-400 transition-colors duration-300">Our Team</a>
             <a href="#testimonials" className="hover:text-zinc-400 transition-colors duration-300">Reviews</a>
             <a href="#contact" className="hover:text-zinc-400 transition-colors duration-300">Contact</a>
@@ -137,6 +155,7 @@ const AtelierNoir = () => {
       <div className={`fixed inset-0 bg-zinc-950 z-30 transition-opacity duration-500 ${menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <div className="flex flex-col items-center justify-center h-full gap-8 text-3xl tracking-wide font-light">
           <a href="#services" onClick={() => setMenuOpen(false)} className="hover:text-zinc-400 transition-colors duration-300">Services</a>
+          <a href="#about-gallery" onClick={() => setMenuOpen(false)} className="hover:text-zinc-400 transition-colors duration-300">Our Salon</a> {/* Added Our Salon link */}
           <a href="#team" onClick={() => setMenuOpen(false)} className="hover:text-zinc-400 transition-colors duration-300">Our Team</a>
           <a href="#testimonials" onClick={() => setMenuOpen(false)} className="hover:text-zinc-400 transition-colors duration-300">Reviews</a>
           <a href="#contact" onClick={() => setMenuOpen(false)} className="hover:text-zinc-400 transition-colors duration-300">Contact</a>
@@ -152,10 +171,14 @@ const AtelierNoir = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div 
-          className="absolute inset-0 bg-gradient-to-b from-zinc-900 to-zinc-950"
+          className="absolute inset-0 bg-cover bg-center opacity-10"
           style={{
+            backgroundImage: `url(${IMAGE_URLS.hero})`,
             transform: `translateY(${scrollY * 0.5}px)`
           }}
+        />
+        <div 
+          className="absolute inset-0 bg-gradient-to-b from-zinc-900/50 to-zinc-950"
         />
         
         <div className="relative z-10 text-center px-6 max-w-5xl mt-20">
@@ -230,8 +253,8 @@ const AtelierNoir = () => {
               <div
                 key={service.id}
                 className="relative border-b border-zinc-800 py-6 md:py-12 hover:bg-zinc-900/30 transition-all duration-500 cursor-pointer group"
-                onMouseEnter={() => setActiveService(service.id)}
-                onMouseLeave={() => setActiveService(null)}
+                // onMouseEnter={() => setActiveService(service.id)} // Keeping for context
+                // onMouseLeave={() => setActiveService(null)} // Keeping for context
               >
                 {service.popular && (
                   <div className="absolute top-6 right-6 bg-zinc-800 text-zinc-300 px-3 py-1 text-xs tracking-wider">
@@ -280,11 +303,51 @@ const AtelierNoir = () => {
         </div>
       </section>
 
+      {/* Salon Gallery & About Section (New) */}
+      <section id="about-gallery" className="py-16 md:py-32 px-6 lg:px-12 bg-zinc-900/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 md:gap-24 items-center">
+            <div>
+              <p className="text-xs tracking-widest text-zinc-600 mb-3 md:mb-4">02 - OUR SPACE</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-extralight tracking-tight mb-6">
+                Experience the Atelier Noir difference
+              </h2>
+              <p className="text-base md:text-lg text-zinc-400 leading-relaxed mb-8">
+                Since 2015, Atelier Noir has been Johannesburg's trusted destination for premium hair care. Founded by master stylist Zara Nkosi, we've built our reputation on exceptional service, expert technique, and a genuine passion for making every client look and feel their absolute best. Our modern, minimalist space is designed for your ultimate comfort.
+              </p>
+              <ul className="space-y-3 text-sm md:text-base text-zinc-400">
+                <li className="flex items-start gap-3">
+                  <span className="text-zinc-600 mt-1">→</span>
+                  <span>Only premium, professional-grade products</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-zinc-600 mt-1">→</span>
+                  <span>Personalized consultation for every client</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-zinc-600 mt-1">→</span>
+                  <span>Continuous education in latest techniques</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <img src={IMAGE_URLS.mainStylingArea} alt="Main Styling Area" className="w-full h-auto object-cover aspect-square border border-zinc-800" />
+              <img src={IMAGE_URLS.receptionArea} alt="Reception Area" className="w-full h-auto object-cover aspect-square border border-zinc-800" />
+              <img src={IMAGE_URLS.salonDetail} alt="Salon Detail" className="w-full h-auto object-cover aspect-square border border-zinc-800" />
+              <img src={IMAGE_URLS.productDisplay} alt="Product Display" className="w-full h-auto object-cover aspect-square border border-zinc-800" />
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* End of New Salon Gallery & About Section */}
+
+
       {/* Team Section */}
-      <section id="team" className="py-16 md:py-32 px-6 lg:px-12 bg-zinc-900/30">
+      <section id="team" className="py-16 md:py-32 px-6 lg:px-12"> {/* Changed bg to integrate better */}
         <div className="max-w-7xl mx-auto">
           <div className="mb-12 md:mb-24">
-            <p className="text-xs tracking-widest text-zinc-600 mb-3 md:mb-4">02 - OUR TEAM</p>
+            <p className="text-xs tracking-widest text-zinc-600 mb-3 md:mb-4">03 - OUR TEAM</p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extralight tracking-tight mb-6">
               Meet our experts
             </h2>
@@ -296,8 +359,10 @@ const AtelierNoir = () => {
           <div className="grid md:grid-cols-3 gap-8 md:gap-12">
             {teamMembers.map((member, idx) => (
               <div key={idx} className="group">
-                <div className="aspect-[3/4] bg-zinc-800/50 border border-zinc-800 relative overflow-hidden mb-6 group-hover:border-zinc-600 transition-colors duration-500">
-                  <div className="absolute inset-0 bg-gradient-to-br from-zinc-700/20 to-transparent group-hover:scale-110 transition-transform duration-700" />
+                <div className="aspect-[3/4] bg-zinc-800/50 border border-zinc-800 relative overflow-hidden mb-6">
+                  {/* Image implementation */}
+                  <img src={member.image} alt={member.name} className="absolute inset-0 w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500 group-hover:scale-105 transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/70 to-transparent" />
                 </div>
                 <h3 className="text-xl md:text-2xl font-light mb-2">{member.name}</h3>
                 <p className="text-sm text-zinc-500 mb-1">{member.title}</p>
@@ -306,45 +371,23 @@ const AtelierNoir = () => {
             ))}
           </div>
 
-          <div className="mt-16 p-8 md:p-12 border border-zinc-800 bg-zinc-900/50">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-xl md:text-2xl font-light mb-4">Why choose us</h3>
-                <ul className="space-y-3 text-sm md:text-base text-zinc-400">
-                  <li className="flex items-start gap-3">
-                    <span className="text-zinc-600 mt-1">-</span>
-                    <span>Only premium, professional-grade products</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-zinc-600 mt-1">-</span>
-                    <span>Personalized consultation for every client</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-zinc-600 mt-1">-</span>
-                    <span>Continuous education in latest techniques</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-zinc-600 mt-1">-</span>
-                    <span>100% satisfaction guarantee</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl md:text-2xl font-light mb-4">Our story</h3>
-                <p className="text-sm md:text-base text-zinc-400 leading-relaxed">
-                  Since 2015, Atelier Noir has been Johannesburg's trusted destination for premium hair care. Founded by master stylist Zara Nkosi, we've built our reputation on exceptional service, expert technique, and a genuine passion for making every client look and feel their absolute best.
-                </p>
-              </div>
-            </div>
+          <div className="mt-16 text-center">
+            <button 
+              onClick={handleBooking}
+              className="inline-block w-full sm:w-auto border border-zinc-700 px-8 md:px-12 py-4 hover:border-zinc-100 hover:bg-zinc-100 hover:text-zinc-950 transition-all duration-300 text-sm tracking-widest"
+            >
+              SCHEDULE A CONSULTATION
+            </button>
           </div>
         </div>
       </section>
 
+
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 md:py-32 px-6 lg:px-12">
+      <section id="testimonials" className="py-16 md:py-32 px-6 lg:px-12 bg-zinc-900/30"> {/* Changed ID and background */}
         <div className="max-w-7xl mx-auto">
           <div className="mb-12 md:mb-24">
-            <p className="text-xs tracking-widest text-zinc-600 mb-3 md:mb-4">03 - TESTIMONIALS</p>
+            <p className="text-xs tracking-widest text-zinc-600 mb-3 md:mb-4">04 - TESTIMONIALS</p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extralight tracking-tight mb-6">
               What clients say
             </h2>
@@ -361,9 +404,9 @@ const AtelierNoir = () => {
                     <Star key={i} size={16} className="fill-zinc-400 text-zinc-400" />
                   ))}
                 </div>
-                <p className="text-sm md:text-base text-zinc-300 mb-6 leading-relaxed">
+                <blockquote className="text-sm md:text-base text-zinc-300 mb-6 leading-relaxed">
                   {testimonial.text}
-                </p>
+                </blockquote>
                 <div>
                   <p className="text-sm font-medium">{testimonial.name}</p>
                   <p className="text-xs text-zinc-500">{testimonial.service}</p>
@@ -381,10 +424,10 @@ const AtelierNoir = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 md:py-32 px-6 lg:px-12 bg-zinc-900/30">
+      <section id="contact" className="py-16 md:py-32 px-6 lg:px-12"> {/* Changed background */}
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
-            <p className="text-xs tracking-widest text-zinc-600 mb-3 md:mb-4">04 - CONTACT</p>
+            <p className="text-xs tracking-widest text-zinc-600 mb-3 md:mb-4">05 - CONTACT</p> {/* Changed section number */}
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extralight tracking-tight mb-8 md:mb-12">
               Book your appointment
             </h2>
