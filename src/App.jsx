@@ -68,8 +68,7 @@ const STYLISTS = [
     specialty: 'Precision Cutting',
     // Updated bio to reflect a South African context
     bio: 'With over 15 years in Sandton, Elena specializes in transformative cuts that frame the face perfectly.',
-    // NEW STYLIST IMAGE (Elena Chen -> Elena Vance)
-    image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765654485/Elena_Chen_cs9uzw.webp'
+    image: 'https://images.unsplash.com/photo-1595959183082-7bce708456a2?auto=format&fit=crop&q=80&w=200&h=200'
   },
   {
     id: 2,
@@ -77,8 +76,7 @@ const STYLISTS = [
     role: 'Color Director',
     specialty: 'Balayage & Blonde',
     bio: 'Julian is renowned for his "lived-in" color techniques and ability to create the perfect blonde.',
-    // NEW STYLIST IMAGE (Marco Vitale -> Julian Reed)
-    image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765654485/Marco_Vitale_gkoivl.webp'
+    image: 'https://images.unsplash.com/photo-1595152452543-e5cca283f547?auto=format&fit=crop&q=80&w=200&h=200'
   },
   {
     id: 3,
@@ -86,8 +84,7 @@ const STYLISTS = [
     role: 'Texture Specialist',
     specialty: 'Curly Hair & Treatments',
     bio: 'Certified in multiple texture systems, Sophia helps clients embrace and enhance their natural curl patterns.',
-    // NEW STYLIST IMAGE (Sophia Laurent -> Sophia Chen)
-    image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765654489/Sophia_Laurent_svqxrq.webp'
+    image: 'https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?auto=format&fit=crop&q=80&w=200&h=200'
   }
 ];
 
@@ -563,35 +560,25 @@ export default function App() {
 {/* Gallery Teaser (Section 1.2.3) */}
       <section id="gallery" className="grid grid-cols-2 md:grid-cols-4 overflow-hidden">
         <div className="w-full h-64 md:h-96 overflow-hidden">
-          <img 
-            // NEW GALLERY IMAGE 1
-            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765654097/taper_i2nwsm.webp" 
-            className="w-full h-full object-cover" 
-            alt="Close-up of a sharp hair taper" 
-          />
+          <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 1" />
         </div>
         <div className="w-full h-64 md:h-96 overflow-hidden">
-          <img 
-            // NEW GALLERY IMAGE 2
-            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765654097/extensions_ytk43n.webp" 
-            className="w-full h-full object-cover" 
-            alt="Client showcasing long hair extensions" 
-          />
+          <img src="https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 2" />
         </div>
         <div className="w-full h-64 md:h-96 overflow-hidden">
           <img 
             // NEW GALLERY IMAGE 3
-            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765654098/wolf-cut-2_lwgvlb.webp" 
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596664/image_1_1765595697004_tbf9q7.png" 
             className="w-full h-full object-cover" 
-            alt="Model with a stylish wolf cut hairstyle" 
+            alt="Gallery 3" 
           />
         </div>
         <div className="w-full h-64 md:h-96 overflow-hidden">
           <img 
-            // REUSED GALLERY IMAGE 3 for the 4th slot
-            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765654098/wolf-cut-2_lwgvlb.webp" 
+            // NEW GALLERY IMAGE 4
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765658990/freepik__the-style-is-candid-image-photography-with-natural__49112_ykuvwi.png" 
             className="w-full h-full object-cover" 
-            alt="Model with a stylish wolf cut hairstyle" 
+            alt="Gallery 4" 
           />
         </div>
       </section>
