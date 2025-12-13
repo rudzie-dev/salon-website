@@ -68,7 +68,8 @@ const STYLISTS = [
     specialty: 'Precision Cutting',
     // Updated bio to reflect a South African context
     bio: 'With over 15 years in Sandton, Elena specializes in transformative cuts that frame the face perfectly.',
-    image: 'https://images.unsplash.com/photo-1595959183082-7bce708456a2?auto=format&fit=crop&q=80&w=200&h=200'
+    // NEW IMAGE URL
+    image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765596669/image_1_1765596131656_gdrxvd.png' // Zara Nkosi (mapped to Elena Vance)
   },
   {
     id: 2,
@@ -76,7 +77,8 @@ const STYLISTS = [
     role: 'Color Director',
     specialty: 'Balayage & Blonde',
     bio: 'Julian is renowned for his "lived-in" color techniques and ability to create the perfect blonde.',
-    image: 'https://images.unsplash.com/photo-1595152452543-e5cca283f547?auto=format&fit=crop&q=80&w=200&h=200'
+    // NEW IMAGE URL
+    image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765596671/image_1_1765596191540_b2rh1t.png' // Liam Chen (mapped to Julian Reed)
   },
   {
     id: 3,
@@ -84,7 +86,8 @@ const STYLISTS = [
     role: 'Texture Specialist',
     specialty: 'Curly Hair & Treatments',
     bio: 'Certified in multiple texture systems, Sophia helps clients embrace and enhance their natural curl patterns.',
-    image: 'https://images.unsplash.com/photo-1589710751893-f9a6770ad71b?auto=format&fit=crop&q=80&w=200&h=200'
+    // NEW IMAGE URL
+    image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765596673/freepik__the-style-is-candid-image-photography-with-natural__8282_exxbxp.png' // Amara Dube (mapped to Sophia Chen)
   }
 ];
 
@@ -420,7 +423,8 @@ export default function App() {
       <section className="relative h-screen min-h-[600px] flex items-center justify-center bg-zinc-900 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://images.unsplash.com/photo-1560066984-12186d30b7eb?auto=format&fit=crop&q=80&w=1920" 
+            // NEW HERO IMAGE
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" 
             alt="Salon Interior" 
             className="w-full h-full object-cover opacity-50"
           />
@@ -560,16 +564,36 @@ export default function App() {
 {/* Gallery Teaser (Section 1.2.3) */}
       <section id="gallery" className="grid grid-cols-2 md:grid-cols-4 overflow-hidden">
         <div className="w-full h-64 md:h-96 overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 1" />
+          <img 
+            // NEW GALLERY IMAGE 1 (Main Styling Area)
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596663/freepik__35mm-film-photography-luxury-modern-hair-salon-int__8283_vhnahv.png" 
+            className="w-full h-full object-cover" 
+            alt="Main Styling Area" 
+          />
         </div>
         <div className="w-full h-64 md:h-96 overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 2" />
+          <img 
+            // NEW GALLERY IMAGE 2 (Reception/Waiting Area)
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596654/freepik__the-style-is-candid-image-photography-with-natural__8284_cbgbc6.png" 
+            className="w-full h-full object-cover" 
+            alt="Reception/Waiting Area" 
+          />
         </div>
         <div className="w-full h-64 md:h-96 overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 3" />
+          <img 
+            // NEW GALLERY IMAGE 3 (Salon Detail/Ambiance)
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596629/freepik__the-style-is-candid-image-photography-with-natural__8286_e0zz4v.png" 
+            className="w-full h-full object-cover" 
+            alt="Salon Detail/Ambiance" 
+          />
         </div>
         <div className="w-full h-64 md:h-96 overflow-hidden">
-          <img src="https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover" alt="Gallery 4" />
+          <img 
+            // NEW GALLERY IMAGE 4 (Product Display)
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596644/freepik__35mm-film-photography-minimalist-black-display-cab__8285_jwej9v.png" 
+            className="w-full h-full object-cover" 
+            alt="Product Display" 
+          />
         </div>
       </section>
 
