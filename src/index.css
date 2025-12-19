@@ -2,9 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Your existing styles below */
 @layer utilities {
-  /* Hides ugly scrollbars for the carousel */
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -13,7 +11,6 @@
     scrollbar-width: none;
   }
 
-  /* Booking modal scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 4px;
   }
@@ -22,7 +19,6 @@
     border-radius: 10px;
   }
 
-  /* Navbar Link Animation */
   .nav-link-grow {
     position: relative;
   }
