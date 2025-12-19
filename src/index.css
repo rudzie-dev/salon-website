@@ -17,28 +17,13 @@
 }
 
 @layer utilities {
-  /* Hide scrollbars for the date picker and review carousel */
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  
+  .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 10px; }
 
-  /* Smooth scrollbar for the booking modal body */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #e4e4e7;
-    border-radius: 10px;
-  }
-
-  /* Animated underline for nav links */
-  .nav-link-grow {
-    position: relative;
-  }
+  .nav-link-grow { position: relative; }
   .nav-link-grow::after {
     content: '';
     position: absolute;
@@ -50,16 +35,11 @@
     transition: all 0.3s ease-in-out;
     transform: translateX(-50%);
   }
-  .nav-link-grow:hover::after {
-    width: 100%;
-  }
+  .nav-link-grow:hover::after { width: 100%; }
 }
 
 @keyframes shimmer {
   from { left: -100%; }
   to { left: 200%; }
 }
-
-.animate-shimmer {
-  animation: shimmer 2s infinite;
-}
+.animate-shimmer { animation: shimmer 2s infinite; }
