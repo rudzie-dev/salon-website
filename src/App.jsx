@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 
 /* --- DATA MODELS --- */
-
 const SERVICES = [
   { id: 1, category: 'Haircuts', name: 'Signature Cut & Style', price: 95, duration: 60, description: 'A precision cut tailored to your face shape and lifestyle, finished with a luxury blowout.' },
   { id: 2, category: 'Color', name: 'Balayage & Gloss', price: 210, duration: 180, description: 'Hand-painted highlights for a natural, sun-kissed look, including a shine-enhancing gloss.' },
@@ -31,7 +30,7 @@ const TESTIMONIALS = [
 /* --- COMPONENTS --- */
 
 const Button = ({ children, onClick, variant = 'primary', className = '', ...props }) => {
-  const baseStyle = "px-8 py-3 transition-all duration-300 font-medium tracking-wide text-sm uppercase relative overflow-hidden group";
+  const baseStyle = "px-8 py-3 transition-all duration-500 font-medium tracking-wide text-sm uppercase relative overflow-hidden group";
   const variants = {
     primary: "bg-black text-white hover:bg-zinc-800",
     secondary: "bg-white text-black border border-black hover:bg-zinc-50",
@@ -48,107 +47,151 @@ const Button = ({ children, onClick, variant = 'primary', className = '', ...pro
 
 const SectionHeader = ({ title, subtitle, centered = true }) => (
   <div className={`mb-12 ${centered ? 'text-center' : 'text-left'}`}>
-    <h3 className="text-zinc-500 uppercase tracking-widest text-xs font-semibold mb-3">{subtitle}</h3>
-    <h2 className="text-3xl md:text-4xl font-serif text-zinc-900">{title}</h2>
-    <div className={`w-16 h-0.5 bg-zinc-900 mt-6 ${centered ? 'mx-auto' : ''}`}></div>
+    <h3 className="text-zinc-500 uppercase tracking-widest text-[10px] font-bold mb-3">{subtitle}</h3>
+    <h2 className="text-3xl md:text-5xl font-serif text-zinc-900">{title}</h2>
+    <div className={`w-12 h-[1px] bg-zinc-300 mt-6 ${centered ? 'mx-auto' : ''}`}></div>
   </div>
 );
 
 const BookingModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState('next'); // For animation tracking
   const [bookingData, setBookingData] = useState({ service: null, stylist: null, date: null, time: null });
 
   if (!isOpen) return null;
 
-  const handleNext = () => setStep(step + 1);
-  const handleBack = () => setStep(step - 1);
-  const resetBooking = () => { setStep(1); setBookingData({ service: null, stylist: null, date: null, time: null }); onClose(); };
+  const handleNext = () => { setDirection('next'); setStep(step + 1); };
+  const handleBack = () => { setDirection('prev'); setStep(step - 1); };
+  const resetBooking = () => { 
+    setStep(1); 
+    setBookingData({ service: null, stylist: null, date: null, time: null }); 
+    onClose(); 
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
-        <div className="flex justify-between items-center p-6 border-b border-zinc-100 flex-shrink-0">
-          <div><h3 className="font-serif text-2xl">Book Appointment</h3><p className="text-zinc-500 text-sm mt-1">Step {step} of 4</p></div>
-          <button onClick={resetBooking} className="p-2 hover:bg-zinc-100 rounded-full transition-colors"><X size={20} /></button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-500">
+      <div className="bg-white w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl animate-in fade-in zoom-in-95 duration-500 overflow-hidden rounded-sm">
+        
+        {/* Header */}
+        <div className="flex justify-between items-center p-8 border-b border-zinc-100 flex-shrink-0">
+          <div>
+            <h3 className="font-serif text-2xl tracking-tight">Reserve Service</h3>
+            <div className="flex items-center gap-2 mt-2">
+              {[1, 2, 3, 4].map((s) => (
+                <div key={s} className={`h-1 w-8 transition-all duration-500 ${step >= s ? 'bg-black' : 'bg-zinc-100'}`} />
+              ))}
+            </div>
+          </div>
+          <button onClick={resetBooking} className="p-2 hover:rotate-90 transition-transform duration-300"><X size={20} /></button>
         </div>
 
-        <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-          {step === 1 && (
-            <div className="space-y-4">
-              <h4 className="text-lg font-medium mb-4">Select a Service</h4>
-              <div className="grid grid-cols-1 gap-3">
-                {SERVICES.map((s) => (
-                  <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); handleNext(); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black hover:bg-zinc-50 transition-all text-left group">
-                    <div><p className="font-medium group-hover:text-black">{s.name}</p><p className="text-sm text-zinc-500">{s.duration} mins • R{s.price}</p></div>
-                    <ChevronRight size={16} className="text-zinc-300 group-hover:text-black" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4">
-              <h4 className="text-lg font-medium mb-4">Select a Stylist</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button onClick={() => { setBookingData({ ...bookingData, stylist: { name: 'Any Stylist', role: 'First Available' } }); handleNext(); }} className="p-4 border border-zinc-200 hover:border-black hover:bg-zinc-50 transition-all text-left flex items-center gap-4">
-                  <div className="w-12 h-12 bg-zinc-200 rounded-full flex items-center justify-center"><Scissors size={20} /></div>
-                  <div><p className="font-medium">Any Professional</p><p className="text-xs text-zinc-500">Earliest availability</p></div>
-                </button>
-                {STYLISTS.map((s) => (
-                  <button key={s.id} onClick={() => { setBookingData({ ...bookingData, stylist: s }); handleNext(); }} className="p-4 border border-zinc-200 hover:border-black hover:bg-zinc-50 transition-all text-left flex items-center gap-4">
-                    <img src={s.image} alt={s.name} className="w-12 h-12 rounded-full object-cover grayscale" />
-                    <div><p className="font-medium">{s.name}</p><p className="text-xs text-zinc-500">{s.role}</p></div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="space-y-6">
-              <h4 className="text-lg font-medium">Select Date & Time</h4>
-              <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
-                {[0, 1, 2, 3, 4, 5, 6].map((i) => {
-                  const d = new Date(); d.setDate(d.getDate() + i);
-                  const fullDate = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                  return (
-                    <button key={i} onClick={() => setBookingData({ ...bookingData, date: fullDate })} className={`flex-shrink-0 w-20 py-4 border transition-all flex flex-col items-center ${bookingData.date === fullDate ? 'border-black bg-black text-white' : 'border-zinc-200 hover:border-zinc-400'}`}>
-                      <span className="text-[10px] uppercase tracking-tighter opacity-60 mb-1">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                      <span className="text-xl font-bold">{d.getDate()}</span>
+        {/* Content with Animation Container */}
+        <div className="flex-1 p-8 overflow-y-auto custom-scrollbar relative">
+          <div key={step} className={`animate-in fade-in slide-in-from-${direction === 'next' ? 'right-4' : 'left-4'} duration-500`}>
+            
+            {step === 1 && (
+              <div className="space-y-4">
+                <h4 className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-400 mb-6">Step 01. Select Treatment</h4>
+                <div className="grid grid-cols-1 gap-3">
+                  {SERVICES.map((s, idx) => (
+                    <button 
+                      key={s.id} 
+                      style={{ animationDelay: `${idx * 50}ms` }}
+                      onClick={() => { setBookingData({ ...bookingData, service: s }); handleNext(); }} 
+                      className="flex justify-between items-center p-5 border border-zinc-100 hover:border-zinc-300 hover:bg-zinc-50 transition-all text-left group animate-in fade-in slide-in-from-bottom-2"
+                    >
+                      <div>
+                        <p className="font-medium text-zinc-900">{s.name}</p>
+                        <p className="text-xs text-zinc-500 mt-1">{s.duration} mins • R{s.price}</p>
+                      </div>
+                      <div className="w-8 h-8 rounded-full border border-zinc-100 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                        <ChevronRight size={14} />
+                      </div>
                     </button>
-                  );
-                })}
-              </div>
-              {bookingData.date && (
-                <div className="grid grid-cols-3 gap-2 animate-in fade-in duration-500 pt-4 border-t border-zinc-100">
-                  {['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM', '5:30 PM'].map((t) => (
-                    <button key={t} onClick={() => { setBookingData({ ...bookingData, time: t }); handleNext(); }} className="py-3 px-2 text-sm border border-zinc-200 hover:bg-black hover:text-white transition-colors">{t}</button>
                   ))}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
 
-          {step === 4 && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4"><CheckCircle size={32} /></div>
-                <h4 className="text-2xl font-serif mb-2">Confirm Details</h4>
+            {step === 2 && (
+              <div className="space-y-4">
+                <h4 className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-400 mb-6">Step 02. Select Artist</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button onClick={() => { setBookingData({ ...bookingData, stylist: { name: 'First Available', role: 'Professional' } }); handleNext(); }} className="p-6 border border-zinc-100 hover:bg-zinc-50 transition-all text-center flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center"><Scissors size={24} className="text-zinc-400" /></div>
+                    <p className="font-medium">Any Professional</p>
+                  </button>
+                  {STYLISTS.map((s) => (
+                    <button key={s.id} onClick={() => { setBookingData({ ...bookingData, stylist: s }); handleNext(); }} className="p-6 border border-zinc-100 hover:bg-zinc-50 transition-all text-center flex flex-col items-center gap-3 group">
+                      <div className="relative">
+                        <img src={s.image} alt={s.name} className="w-16 h-16 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
+                        <div className="absolute inset-0 rounded-full border border-black/0 group-hover:border-black/10 transition-all scale-110" />
+                      </div>
+                      <p className="font-medium">{s.name}</p>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="bg-zinc-50 p-6 space-y-4 border border-zinc-100">
-                <div className="flex justify-between border-b pb-2"><span className="text-zinc-500">Service</span><span className="font-medium">{bookingData.service?.name}</span></div>
-                <div className="flex justify-between border-b pb-2"><span className="text-zinc-500">Stylist</span><span className="font-medium">{bookingData.stylist?.name}</span></div>
-                <div className="flex justify-between border-b pb-2"><span className="text-zinc-500">Date & Time</span><span className="font-medium">{bookingData.date} at {bookingData.time}</span></div>
-                <div className="flex justify-between pt-2"><span className="text-zinc-500 text-lg">Total</span><span className="font-bold text-xl">R{bookingData.service?.price}</span></div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-8">
+                <h4 className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-400">Step 03. Select Schedule</h4>
+                <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar">
+                  {[0, 1, 2, 3, 4, 5, 6].map((i) => {
+                    const d = new Date(); d.setDate(d.getDate() + i);
+                    const fullDate = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                    const isSelected = bookingData.date === fullDate;
+                    return (
+                      <button 
+                        key={i} 
+                        onClick={() => setBookingData({ ...bookingData, date: fullDate })}
+                        className={`flex-shrink-0 w-20 py-5 border rounded-sm transition-all flex flex-col items-center ${
+                          isSelected ? 'border-black bg-black text-white shadow-lg' : 'border-zinc-100 hover:border-zinc-300'
+                        }`}
+                      >
+                        <span className="text-[10px] uppercase font-bold mb-1 opacity-60">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                        <span className="text-xl font-serif">{d.getDate()}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {bookingData.date && (
+                  <div className="grid grid-cols-3 gap-2 animate-in fade-in duration-700">
+                    {['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM', '5:30 PM'].map((t) => (
+                      <button key={t} onClick={() => { setBookingData({ ...bookingData, time: t }); handleNext(); }} className="py-4 text-xs tracking-widest border border-zinc-100 hover:bg-black hover:text-white transition-all uppercase">{t}</button>
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            )}
+
+            {step === 4 && (
+              <div className="space-y-8 py-4">
+                <div className="text-center animate-in zoom-in-95 duration-1000">
+                  <div className="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-6"><CheckCircle size={40} strokeWidth={1} className="text-zinc-900" /></div>
+                  <h4 className="text-3xl font-serif mb-2">Final Review</h4>
+                </div>
+                <div className="bg-zinc-50 p-8 space-y-5 rounded-sm border border-zinc-100">
+                  <div className="flex justify-between items-center"><span className="text-xs uppercase tracking-widest text-zinc-400">Service</span><span className="font-serif text-lg">{bookingData.service?.name}</span></div>
+                  <div className="flex justify-between items-center"><span className="text-xs uppercase tracking-widest text-zinc-400">Expert</span><span className="font-serif text-lg">{bookingData.stylist?.name}</span></div>
+                  <div className="flex justify-between items-center"><span className="text-xs uppercase tracking-widest text-zinc-400">Time</span><span className="font-serif text-lg">{bookingData.date} @ {bookingData.time}</span></div>
+                  <div className="h-[1px] bg-zinc-200 w-full my-2"></div>
+                  <div className="flex justify-between items-center"><span className="text-xs uppercase tracking-widest text-zinc-400">Total Investment</span><span className="font-serif text-2xl font-bold">R{bookingData.service?.price}</span></div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="p-6 border-t bg-zinc-50 flex justify-between items-center flex-shrink-0">
-          {step > 1 && step < 4 ? <button onClick={handleBack} className="text-sm underline font-medium">Back</button> : <div />}
-          {step === 4 ? <Button onClick={() => { alert("Booking Confirmed!"); resetBooking(); }} className="w-full sm:w-auto">Confirm Appointment</Button> : <div className="text-xs text-zinc-400 font-medium uppercase tracking-widest">Step {step} of 4</div>}
+        {/* Footer */}
+        <div className="p-8 border-t border-zinc-100 bg-white flex justify-between items-center flex-shrink-0">
+          {step > 1 && step < 4 ? <button onClick={handleBack} className="text-xs uppercase tracking-widest font-bold text-zinc-400 hover:text-black transition-colors">Go Back</button> : <div />}
+          {step === 4 ? (
+            <Button onClick={() => { alert("Booking Confirmed!"); resetBooking(); }} className="w-full">Secure Appointment</Button>
+          ) : (
+            <div className="text-[10px] uppercase tracking-[0.3em] text-zinc-300 font-bold">Progress {step}/4</div>
+          )}
         </div>
       </div>
     </div>
@@ -166,24 +209,25 @@ const Navbar = ({ onBookClick }) => {
   }, []);
 
   return (
-    <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6 text-white'}`}>
+    <nav className={`fixed top-0 w-full z-40 transition-all duration-700 ${isScrolled ? 'bg-white/80 backdrop-blur-xl py-4 border-b border-zinc-100' : 'bg-transparent py-8 text-white'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center">
-        <a href="#home" className={`text-2xl font-serif tracking-widest font-bold ${isScrolled ? 'text-black' : 'text-white'}`}>L U M I È R E</a>
-        <div className="hidden md:flex items-center space-x-8">
+        <a href="#home" className={`text-2xl font-serif tracking-[0.2em] font-bold ${isScrolled ? 'text-black' : 'text-white'}`}>LUMIÈRE</a>
+        <div className="hidden md:flex items-center space-x-12">
           {['Home', 'Services', 'Team', 'Gallery', 'Contact'].map((l) => (
-            <a key={l} href={`#${l.toLowerCase()}`} className={`nav-link-grow text-sm uppercase tracking-wide font-medium transition-opacity ${isScrolled ? 'text-zinc-800' : 'text-white'}`}>{l}</a>
+            <a key={l} href={`#${l.toLowerCase()}`} className={`nav-link-grow text-[10px] uppercase tracking-[0.3em] font-bold transition-opacity ${isScrolled ? 'text-zinc-800' : 'text-white/80 hover:text-white'}`}>{l}</a>
           ))}
-          <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'} className={isScrolled ? '' : 'bg-white text-black border-none'}>Book Now</Button>
+          <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'outline'} className="text-[10px] py-2 px-6">Book</Button>
         </div>
         <button className={`md:hidden ${isScrolled ? 'text-black' : 'text-white'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}</button>
       </div>
       
       {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-xl py-10 px-6 flex flex-col space-y-6 animate-in slide-in-from-top-5">
+        <div className="md:hidden absolute top-0 left-0 w-full h-screen bg-white z-50 p-12 flex flex-col justify-center space-y-12 animate-in slide-in-from-top duration-500">
+           <button onClick={() => setMobileMenuOpen(false)} className="absolute top-8 right-8"><X size={32} /></button>
            {['Home', 'Services', 'Team', 'Gallery', 'Contact'].map((l) => (
-            <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)} className="text-black text-xl font-serif">{l}</a>
+            <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)} className="text-black text-4xl font-serif tracking-tight">{l}</a>
           ))}
-          <Button onClick={() => { setMobileMenuOpen(false); onBookClick(); }} className="w-full">Book Now</Button>
+          <Button onClick={() => { setMobileMenuOpen(false); onBookClick(); }} className="w-full py-5">Book Now</Button>
         </div>
       )}
     </nav>
@@ -194,36 +238,35 @@ export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   return (
-    <div className="antialiased text-zinc-900 selection:bg-zinc-200">
+    <div className="antialiased text-zinc-900 selection:bg-zinc-200 bg-white">
       <Navbar onBookClick={() => setIsBookingOpen(true)} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
-      {/* Hero (ID set to home for navigation) */}
-      <section id="home" className="relative h-screen min-h-[600px] flex items-center justify-center bg-zinc-900 overflow-hidden">
-        <div className="absolute inset-0">
-          <img src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="w-full h-full object-cover opacity-50" alt="Salon" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent"></div>
+      {/* Hero */}
+      <section id="home" className="relative h-screen flex items-center justify-center bg-zinc-900 overflow-hidden">
+        <div className="absolute inset-0 scale-105 animate-slow-zoom">
+          <img src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="w-full h-full object-cover opacity-40" alt="Salon" />
+          <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent"></div>
         </div>
-        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto text-white">
-          <p className="text-xs uppercase tracking-[0.4em] mb-6 opacity-80">Beauty Redefined</p>
-          <h1 className="text-5xl md:text-8xl font-serif mb-10 leading-[1.1] animate-in fade-in slide-in-from-bottom-10 duration-1000">Experience the Art <br/> of Hair</h1>
-          <Button onClick={() => setIsBookingOpen(true)} variant="outline" className="min-w-[200px]">Book Appointment</Button>
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto text-white">
+          <p className="text-[10px] uppercase tracking-[0.6em] mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">The Sanctuary of Style</p>
+          <h1 className="text-6xl md:text-9xl font-serif mb-12 leading-[0.9] tracking-tighter animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">L'essence de <br/> la Beauté</h1>
+          <Button onClick={() => setIsBookingOpen(true)} variant="outline" className="min-w-[220px] py-4 animate-in fade-in zoom-in duration-1000 delay-300">Reserve Appointment</Button>
         </div>
       </section>
 
       {/* Services */}
-      <section id="services" className="py-24 px-6 bg-zinc-50">
+      <section id="services" className="py-32 px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
-          <SectionHeader title="Our Menu" subtitle="Curated Treatments" />
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <SectionHeader title="The Menu" subtitle="Services" />
+          <div className="grid md:grid-cols-2 gap-x-16 gap-y-12">
             {SERVICES.map((s) => (
-              <div key={s.id} className="bg-white p-8 hover:shadow-xl transition-all border border-zinc-100 flex justify-between cursor-pointer group" onClick={() => setIsBookingOpen(true)}>
-                <div>
-                  <h4 className="text-xl font-serif mb-2 group-hover:text-zinc-600">{s.name}</h4>
-                  <p className="text-zinc-500 text-sm mb-4 leading-relaxed">{s.description}</p>
-                  <p className="text-xs text-zinc-400 uppercase tracking-widest font-bold">{s.duration} Mins • R{s.price}</p>
+              <div key={s.id} className="group cursor-pointer pb-8 border-b border-zinc-100 transition-all duration-700 hover:border-zinc-900" onClick={() => setIsBookingOpen(true)}>
+                <div className="flex justify-between items-baseline mb-4">
+                  <h4 className="text-2xl font-serif tracking-tight group-hover:italic transition-all duration-500">{s.name}</h4>
+                  <span className="text-sm font-serif italic text-zinc-400">from R{s.price}</span>
                 </div>
-                <ArrowRight size={18} className="self-center text-zinc-300 group-hover:text-black transition-transform group-hover:translate-x-2" />
+                <p className="text-zinc-500 text-sm leading-relaxed max-w-md">{s.description}</p>
               </div>
             ))}
           </div>
@@ -231,18 +274,18 @@ export default function App() {
       </section>
 
       {/* Team */}
-      <section id="team" className="py-24 px-6 bg-white">
+      <section id="team" className="py-32 px-6 bg-zinc-50">
         <div className="container mx-auto max-w-6xl">
-          <SectionHeader title="Meet The Experts" subtitle="Our Team" />
-          <div className="grid md:grid-cols-3 gap-12">
+          <SectionHeader title="The Collective" subtitle="Our Artists" />
+          <div className="grid md:grid-cols-3 gap-16">
             {STYLISTS.map((s) => (
-              <div key={s.id} className="group text-center">
-                <div className="relative overflow-hidden mb-8 aspect-[3/4]">
-                  <img src={s.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" alt={s.name} />
+              <div key={s.id} className="group">
+                <div className="relative overflow-hidden aspect-[3/4] mb-8 bg-zinc-200">
+                  <img src={s.image} className="w-full h-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-105 transition-all duration-1000" alt={s.name} />
                 </div>
                 <h4 className="text-2xl font-serif mb-1">{s.name}</h4>
-                <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-4">{s.role}</p>
-                <p className="text-zinc-500 text-sm leading-relaxed px-4">{s.bio}</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-6">{s.role}</p>
+                <p className="text-zinc-500 text-sm leading-relaxed line-clamp-3 group-hover:line-clamp-none transition-all duration-700">{s.bio}</p>
               </div>
             ))}
           </div>
@@ -250,19 +293,20 @@ export default function App() {
       </section>
 
       {/* Reviews */}
-      <section className="py-24 px-6 bg-zinc-900 text-white overflow-hidden">
-        <div className="container mx-auto max-w-6xl">
-          <SectionHeader title="Client Experiences" subtitle="Kind Words" />
-          <div className="flex overflow-x-auto pb-10 snap-x snap-mandatory hide-scrollbar md:grid md:grid-cols-3 md:gap-8">
+      <section className="py-32 px-6 bg-zinc-900 text-white overflow-hidden">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-20">
+            <p className="text-[10px] uppercase tracking-[0.4em] text-zinc-500 font-bold mb-4">Journal</p>
+            <h2 className="text-4xl md:text-6xl font-serif tracking-tighter">Client Stories</h2>
+          </div>
+          <div className="flex overflow-x-auto pb-10 snap-x snap-mandatory hide-scrollbar md:grid md:grid-cols-3 md:gap-12">
             {TESTIMONIALS.map((r) => (
-              <div key={r.id} className="min-w-[85%] sm:min-w-[60%] md:min-w-0 mr-6 md:mr-0 snap-center bg-zinc-800/40 p-10 border border-zinc-700/50 flex flex-col justify-between transition-all hover:bg-zinc-800/60">
-                <div>
-                  <div className="flex mb-8">{[...Array(r.rating)].map((_, i) => <Star key={i} size={14} className="text-white fill-current mr-1" />)}</div>
-                  <p className="text-xl font-serif italic mb-10 leading-relaxed">"{r.text}"</p>
-                </div>
-                <div className="flex justify-between items-end border-t border-zinc-700 pt-8">
-                  <div><p className="text-sm uppercase tracking-widest font-bold">{r.name}</p><p className="text-[10px] text-zinc-500 mt-1 uppercase">Verified Client</p></div>
-                  <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{r.date}</span>
+              <div key={r.id} className="min-w-[90%] md:min-w-0 mr-8 md:mr-0 snap-center flex flex-col">
+                <div className="flex mb-8">{[...Array(r.rating)].map((_, i) => <Star key={i} size={12} className="text-white fill-current mr-1 opacity-40" />)}</div>
+                <p className="text-2xl font-serif italic mb-12 leading-relaxed opacity-80">"{r.text}"</p>
+                <div className="mt-auto pt-8 border-t border-white/10">
+                  <p className="text-xs uppercase tracking-widest font-bold">{r.name}</p>
+                  <p className="text-[10px] text-zinc-500 mt-2 uppercase tracking-tighter font-bold">{r.date}</p>
                 </div>
               </div>
             ))}
@@ -271,42 +315,66 @@ export default function App() {
       </section>
 
       {/* Gallery */}
-      <section id="gallery" className="grid grid-cols-2 md:grid-cols-4 overflow-hidden">
+      <section id="gallery" className="grid grid-cols-2 md:grid-cols-4 bg-black">
         {["v1765596663/freepik__35mm-film-photography-luxury-modern-hair-salon-int__8283_vhnahv.png", "v1765596654/freepik__the-style-is-candid-image-photography-with-natural__8284_cbgbc6.png", "v1765596629/freepik__the-style-is-candid-image-photography-with-natural__8286_e0zz4v.png", "v1765596644/freepik__35mm-film-photography-minimalist-black-display-cab__8285_jwej9v.png"].map((img, i) => (
-          <div key={i} className="h-64 md:h-96 overflow-hidden">
-            <img src={`https://res.cloudinary.com/dgstbaoic/image/upload/${img}`} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" alt="Gallery" />
+          <div key={i} className="aspect-[4/5] overflow-hidden">
+            <img src={`https://res.cloudinary.com/dgstbaoic/image/upload/${img}`} className="w-full h-full object-cover opacity-80 hover:opacity-100 hover:scale-110 transition-all duration-1000 grayscale hover:grayscale-0" alt="Gallery" />
           </div>
         ))}
       </section>
 
       {/* Contact */}
-      <section id="contact" className="py-24 px-6 bg-zinc-50">
-        <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-20">
+      <section id="contact" className="py-32 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-32">
           <div>
-            <SectionHeader title="Visit Us" subtitle="Get In Touch" centered={false} />
-            <div className="space-y-10 text-zinc-500">
-              <div className="flex gap-6"><MapPin className="text-black" /><p>Shop 10, Luxe Square, Foreshore, Cape Town</p></div>
-              <div className="flex gap-6"><Phone className="text-black" /><p>(021) 555 0123</p></div>
-              <div className="flex gap-6"><Mail className="text-black" /><p>hello@lumieresalon.com</p></div>
-              <div className="flex gap-6"><Clock className="text-black" /><p>Tue - Fri: 10am - 8pm | Sat: 9am - 6pm</p></div>
+            <SectionHeader title="The Studio" subtitle="Connect" centered={false} />
+            <div className="space-y-12 text-zinc-500 mt-16">
+              <div className="flex gap-8 group">
+                <MapPin size={20} className="text-zinc-300 group-hover:text-black transition-colors" />
+                <p className="text-sm tracking-wide">Shop 10, Luxe Square, Foreshore, <br/> Cape Town, 8001</p>
+              </div>
+              <div className="flex gap-8 group">
+                <Phone size={20} className="text-zinc-300 group-hover:text-black transition-colors" />
+                <p className="text-sm tracking-wide">(021) 555 0123</p>
+              </div>
+              <div className="flex gap-8 group">
+                <Mail size={20} className="text-zinc-300 group-hover:text-black transition-colors" />
+                <p className="text-sm tracking-wide">hello@lumieresalon.com</p>
+              </div>
+              <div className="flex gap-8">
+                <Clock size={20} className="text-zinc-300" />
+                <div className="text-sm tracking-wide space-y-2">
+                  <p>Tue - Fri: 10:00 — 20:00</p>
+                  <p>Sat: 09:00 — 18:00</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="bg-white p-10 border border-zinc-100 shadow-sm">
-            <h3 className="text-3xl font-serif mb-8">Send a Message</h3>
-            <form className="space-y-6">
-              <input placeholder="Name" className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" />
-              <input placeholder="Email" className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" />
-              <textarea placeholder="Message" rows="4" className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" />
-              <Button className="w-full py-4">Submit Inquiry</Button>
+          <div className="bg-zinc-50 p-12 rounded-sm border border-zinc-100 shadow-sm self-start">
+            <h3 className="text-2xl font-serif mb-12 tracking-tight">Digital Inquiry</h3>
+            <form className="space-y-10">
+              <div className="relative">
+                <input placeholder="Name" className="w-full pb-3 bg-transparent border-b border-zinc-200 focus:border-black transition-all outline-none text-sm" />
+              </div>
+              <div className="relative">
+                <input placeholder="Email" className="w-full pb-3 bg-transparent border-b border-zinc-200 focus:border-black transition-all outline-none text-sm" />
+              </div>
+              <div className="relative">
+                <textarea placeholder="Tell us about your hair journey" rows="3" className="w-full pb-3 bg-transparent border-b border-zinc-200 focus:border-black transition-all outline-none text-sm resize-none" />
+              </div>
+              <Button className="w-full py-5 text-[10px] tracking-[0.4em]">Send Message</Button>
             </form>
           </div>
         </div>
       </section>
 
-      <footer className="bg-zinc-900 text-white py-20 px-6 text-center">
-        <h2 className="text-4xl font-serif font-bold tracking-[0.3em] mb-10">L U M I È R E</h2>
-        <div className="flex justify-center space-x-10 mb-16 opacity-60 hover:opacity-100 transition-opacity"><Instagram size={24} /><Facebook size={24} /></div>
-        <p className="text-zinc-600 text-xs uppercase tracking-widest font-medium">© 2025 Lumière Salon Cape Town. All rights reserved.</p>
+      <footer className="bg-white border-t border-zinc-100 py-32 px-6 text-center">
+        <h2 className="text-5xl font-serif tracking-[0.4em] mb-12">LUMIÈRE</h2>
+        <div className="flex justify-center space-x-12 mb-20">
+          <Instagram size={20} className="text-zinc-400 hover:text-black transition-all cursor-pointer" />
+          <Facebook size={20} className="text-zinc-400 hover:text-black transition-all cursor-pointer" />
+        </div>
+        <p className="text-zinc-300 text-[10px] uppercase tracking-[0.5em] font-bold">© 2025 Lumière Salon Cape Town</p>
       </footer>
     </div>
   );
