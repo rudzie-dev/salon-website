@@ -66,21 +66,12 @@ const BookingModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      {/* Container restricted to 90% of screen height */}
       <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
-        
-        {/* Header - Always visible */}
         <div className="flex justify-between items-center p-6 border-b border-zinc-100 flex-shrink-0">
-          <div>
-            <h3 className="font-serif text-2xl">Book Appointment</h3>
-            <p className="text-zinc-500 text-sm mt-1">Step {step} of 4</p>
-          </div>
-          <button onClick={resetBooking} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
-            <X size={20} />
-          </button>
+          <div><h3 className="font-serif text-2xl">Book Appointment</h3><p className="text-zinc-500 text-sm mt-1">Step {step} of 4</p></div>
+          <button onClick={resetBooking} className="p-2 hover:bg-zinc-100 rounded-full transition-colors"><X size={20} /></button>
         </div>
 
-        {/* Scrollable Body */}
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
           {step === 1 && (
             <div className="space-y-4">
@@ -88,10 +79,7 @@ const BookingModal = ({ isOpen, onClose }) => {
               <div className="grid grid-cols-1 gap-3">
                 {SERVICES.map((s) => (
                   <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); handleNext(); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black hover:bg-zinc-50 transition-all text-left group">
-                    <div>
-                      <p className="font-medium group-hover:text-black">{s.name}</p>
-                      <p className="text-sm text-zinc-500">{s.duration} mins • R{s.price}</p>
-                    </div>
+                    <div><p className="font-medium group-hover:text-black">{s.name}</p><p className="text-sm text-zinc-500">{s.duration} mins • R{s.price}</p></div>
                     <ChevronRight size={16} className="text-zinc-300 group-hover:text-black" />
                   </button>
                 ))}
@@ -120,39 +108,22 @@ const BookingModal = ({ isOpen, onClose }) => {
           {step === 3 && (
             <div className="space-y-6">
               <h4 className="text-lg font-medium">Select Date & Time</h4>
-              {/* Horizontal Date Picker */}
               <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
                 {[0, 1, 2, 3, 4, 5, 6].map((i) => {
-                  const d = new Date();
-                  d.setDate(d.getDate() + i);
+                  const d = new Date(); d.setDate(d.getDate() + i);
                   const fullDate = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                  const isSelected = bookingData.date === fullDate;
-
                   return (
-                    <button 
-                      key={i} 
-                      onClick={() => setBookingData({ ...bookingData, date: fullDate })}
-                      className={`flex-shrink-0 w-20 py-4 border transition-all flex flex-col items-center ${
-                        isSelected ? 'border-black bg-black text-white' : 'border-zinc-200 hover:border-zinc-400'
-                      }`}
-                    >
+                    <button key={i} onClick={() => setBookingData({ ...bookingData, date: fullDate })} className={`flex-shrink-0 w-20 py-4 border transition-all flex flex-col items-center ${bookingData.date === fullDate ? 'border-black bg-black text-white' : 'border-zinc-200 hover:border-zinc-400'}`}>
                       <span className="text-[10px] uppercase tracking-tighter opacity-60 mb-1">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
                       <span className="text-xl font-bold">{d.getDate()}</span>
                     </button>
                   );
                 })}
               </div>
-
               {bookingData.date && (
                 <div className="grid grid-cols-3 gap-2 animate-in fade-in duration-500 pt-4 border-t border-zinc-100">
                   {['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM', '5:30 PM'].map((t) => (
-                    <button 
-                      key={t} 
-                      onClick={() => { setBookingData({ ...bookingData, time: t }); handleNext(); }} 
-                      className="py-3 px-2 text-sm border border-zinc-200 hover:bg-black hover:text-white transition-colors"
-                    >
-                      {t}
-                    </button>
+                    <button key={t} onClick={() => { setBookingData({ ...bookingData, time: t }); handleNext(); }} className="py-3 px-2 text-sm border border-zinc-200 hover:bg-black hover:text-white transition-colors">{t}</button>
                   ))}
                 </div>
               )}
@@ -175,18 +146,9 @@ const BookingModal = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        {/* Footer - Always visible */}
         <div className="p-6 border-t bg-zinc-50 flex justify-between items-center flex-shrink-0">
-          {step > 1 && step < 4 ? (
-            <button onClick={handleBack} className="text-sm underline font-medium">Back</button>
-          ) : (
-            <div />
-          )}
-          {step === 4 ? (
-            <Button onClick={() => { alert("Booking Confirmed!"); resetBooking(); }} className="w-full sm:w-auto">Confirm Appointment</Button>
-          ) : (
-            <div className="text-xs text-zinc-400 font-medium uppercase tracking-widest">Step {step} of 4</div>
-          )}
+          {step > 1 && step < 4 ? <button onClick={handleBack} className="text-sm underline font-medium">Back</button> : <div />}
+          {step === 4 ? <Button onClick={() => { alert("Booking Confirmed!"); resetBooking(); }} className="w-full sm:w-auto">Confirm Appointment</Button> : <div className="text-xs text-zinc-400 font-medium uppercase tracking-widest">Step {step} of 4</div>}
         </div>
       </div>
     </div>
@@ -206,9 +168,9 @@ const Navbar = ({ onBookClick }) => {
   return (
     <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6 text-white'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center">
-        <a href="#" className={`text-2xl font-serif tracking-widest font-bold ${isScrolled ? 'text-black' : 'text-white'}`}>L U M I È R E</a>
+        <a href="#home" className={`text-2xl font-serif tracking-widest font-bold ${isScrolled ? 'text-black' : 'text-white'}`}>L U M I È R E</a>
         <div className="hidden md:flex items-center space-x-8">
-          {['Home', 'Services', 'Stylists', 'Gallery', 'Contact'].map((l) => (
+          {['Home', 'Services', 'Team', 'Gallery', 'Contact'].map((l) => (
             <a key={l} href={`#${l.toLowerCase()}`} className={`nav-link-grow text-sm uppercase tracking-wide font-medium transition-opacity ${isScrolled ? 'text-zinc-800' : 'text-white'}`}>{l}</a>
           ))}
           <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'} className={isScrolled ? '' : 'bg-white text-black border-none'}>Book Now</Button>
@@ -216,10 +178,9 @@ const Navbar = ({ onBookClick }) => {
         <button className={`md:hidden ${isScrolled ? 'text-black' : 'text-white'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}</button>
       </div>
       
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-xl py-10 px-6 flex flex-col space-y-6 animate-in slide-in-from-top-5">
-           {['Home', 'Services', 'Stylists', 'Gallery', 'Contact'].map((l) => (
+           {['Home', 'Services', 'Team', 'Gallery', 'Contact'].map((l) => (
             <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)} className="text-black text-xl font-serif">{l}</a>
           ))}
           <Button onClick={() => { setMobileMenuOpen(false); onBookClick(); }} className="w-full">Book Now</Button>
@@ -237,8 +198,8 @@ export default function App() {
       <Navbar onBookClick={() => setIsBookingOpen(true)} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
-      {/* Hero */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center bg-zinc-900 overflow-hidden">
+      {/* Hero (ID set to home for navigation) */}
+      <section id="home" className="relative h-screen min-h-[600px] flex items-center justify-center bg-zinc-900 overflow-hidden">
         <div className="absolute inset-0">
           <img src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="w-full h-full object-cover opacity-50" alt="Salon" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent"></div>
@@ -246,7 +207,7 @@ export default function App() {
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto text-white">
           <p className="text-xs uppercase tracking-[0.4em] mb-6 opacity-80">Beauty Redefined</p>
           <h1 className="text-5xl md:text-8xl font-serif mb-10 leading-[1.1] animate-in fade-in slide-in-from-bottom-10 duration-1000">Experience the Art <br/> of Hair</h1>
-          <Button onClick={() => setIsBookingOpen(true)} className="min-w-[200px]">Book Appointment</Button>
+          <Button onClick={() => setIsBookingOpen(true)} variant="outline" className="min-w-[200px]">Book Appointment</Button>
         </div>
       </section>
 
@@ -288,7 +249,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Reviews - Swipeable on Mobile */}
+      {/* Reviews */}
       <section className="py-24 px-6 bg-zinc-900 text-white overflow-hidden">
         <div className="container mx-auto max-w-6xl">
           <SectionHeader title="Client Experiences" subtitle="Kind Words" />
@@ -345,7 +306,7 @@ export default function App() {
       <footer className="bg-zinc-900 text-white py-20 px-6 text-center">
         <h2 className="text-4xl font-serif font-bold tracking-[0.3em] mb-10">L U M I È R E</h2>
         <div className="flex justify-center space-x-10 mb-16 opacity-60 hover:opacity-100 transition-opacity"><Instagram size={24} /><Facebook size={24} /></div>
-        <p className="text-zinc-600 text-xs uppercase tracking-widest font-medium">© 2024 Lumière Salon Cape Town. All rights reserved.</p>
+        <p className="text-zinc-600 text-xs uppercase tracking-widest font-medium">© 2025 Lumière Salon Cape Town. All rights reserved.</p>
       </footer>
     </div>
   );
