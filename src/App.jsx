@@ -180,18 +180,23 @@ const BookingModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-2xl min-h-[500px] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300">
-        {/* Modal Header */}
-        <div className="flex justify-between items-center p-6 border-b border-zinc-100">
-          <div>
-            <h3 className="font-serif text-2xl">Book Appointment</h3>
-            <p className="text-zinc-500 text-sm mt-1">Step {step} of 4</p>
-          </div>
-          <button onClick={resetBooking} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
-            <X size={20} />
-          </button>
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    {/* Added max-h and overflow-hidden here */}
+    <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
+      
+      {/* Modal Header - Stays Fixed */}
+      <div className="flex justify-between items-center p-6 border-b border-zinc-100 flex-shrink-0">
+        <div>
+          <h3 className="font-serif text-2xl">Book Appointment</h3>
+          <p className="text-zinc-500 text-sm mt-1">Step {step} of 4</p>
         </div>
+        <button onClick={resetBooking} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Modal Body - This part will now scroll if content is too long */}
+      <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
 
         {/* Modal Body */}
         <div className="flex-1 p-6 overflow-y-auto">
@@ -260,30 +265,56 @@ const BookingModal = ({ isOpen, onClose }) => {
           )}
 
           {step === 3 && (
-            <div className="space-y-6">
-              <h4 className="text-lg font-medium">Select Date & Time</h4>
-              <div className="p-4 border border-zinc-200 bg-zinc-50 text-center text-zinc-500 text-sm mb-4">
-                Availability for {bookingData.stylist?.name}
-              </div>
-              
-              <div className="grid grid-cols-3 gap-2">
-                {['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM', '5:30 PM'].map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => {
-                      setBookingData({ ...bookingData, date: 'Tomorrow', time });
-                      handleNext();
-                    }}
-                    className="py-3 px-2 text-sm border border-zinc-200 hover:bg-black hover:text-white hover:border-black transition-colors"
-                  >
-                    {time}
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-zinc-400 text-center mt-4">Simulated Availability View</p>
-            </div>
-          )}
+  <div className="space-y-6">
+    <h4 className="text-lg font-medium">Select Date & Time</h4>
+    
+    {/* Simple Date Selector */}
+    <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
+      {[0, 1, 2, 3, 4, 5, 6].map((i) => {
+        const date = new Date();
+        date.setDate(date.getDate() + i);
+        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const dayNum = date.getDate();
+        const fullDate = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        
+        const isSelected = bookingData.date === fullDate;
 
+        return (
+          <button
+            key={i}
+            onClick={() => setBookingData({ ...bookingData, date: fullDate })}
+            className={`flex-shrink-0 w-16 py-3 border transition-all ${
+              isSelected ? 'border-black bg-black text-white' : 'border-zinc-200 hover:border-zinc-400'
+            }`}
+          >
+            <p className="text-[10px] uppercase tracking-widest opacity-60">{dayName}</p>
+            <p className="text-lg font-semibold">{dayNum}</p>
+          </button>
+        );
+      })}
+    </div>
+
+    {bookingData.date && (
+      <>
+        <div className="grid grid-cols-3 gap-2 animate-in fade-in duration-500">
+          {['10:00 AM', '11:30 AM', '1:00 PM', '2:30 PM', '4:00 PM', '5:30 PM'].map((time) => (
+            <button
+              key={time}
+              onClick={() => {
+                setBookingData({ ...bookingData, time });
+                handleNext();
+              }}
+              className="py-3 px-2 text-sm border border-zinc-200 hover:bg-black hover:text-white transition-colors"
+            >
+              {time}
+            </button>
+          ))}
+        </div>
+      </>
+    )}
+    {!bookingData.date && <p className="text-center text-zinc-400 text-sm py-10">Please select a date first</p>}
+  </div>
+)}
           {step === 4 && (
             <div className="space-y-6">
                <div className="text-center">
