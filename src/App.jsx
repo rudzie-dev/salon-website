@@ -92,20 +92,37 @@ const TESTIMONIALS = [
   {
     id: 1,
     name: "Sarah Jenkins",
-    text: "The best salon experience I've ever had. The attention to detail is unmatched.",
-    rating: 5
+    text: "The most transformative salon experience I've had in Cape Town. Zara's precision with the signature cut is unparalleled; she truly understands how to work with face shape and hair texture.",
+    rating: 5,
+    date: "2 weeks ago"
   },
   {
     id: 2,
     name: "Marcus Thorne",
-    text: "Julian is a wizard with color. I wouldn't trust anyone else with my hair.",
-    rating: 5
+    text: "Liam is a visionary with color. My balayage looks incredibly natural and the gloss treatment left my hair with a mirror-like shine that has lasted for weeks. Truly a luxury service.",
+    rating: 5,
+    date: "1 month ago"
   },
   {
     id: 3,
     name: "Amara Diop",
-    text: "Finally a salon that understands curly hair! Sophia changed my life.",
-    rating: 5
+    text: "Finally, a salon that masters curly hair. Amara Dube treated my curls with such care and expertise. The atmosphere is serene, professional, and genuinely high-end.",
+    rating: 5,
+    date: "3 weeks ago"
+  },
+  {
+    id: 4,
+    name: "Elena Rodriguez",
+    text: "From the moment you walk in, you're treated like royalty. The luxury blowout is my weekly ritual now—it’s long-lasting and the attention to detail is simply unmatched.",
+    rating: 5,
+    date: "5 days ago"
+  },
+  {
+    id: 5,
+    name: "David Smith",
+    text: "The Gentlemen’s Grooming service is top-tier. It’s not just a haircut; it’s a full sensory experience. The precision and the scalp massage are worth every cent.",
+    rating: 5,
+    date: "1 month ago"
   }
 ];
 
