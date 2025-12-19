@@ -28,3 +28,17 @@
 .animate-shimmer {
   animation: shimmer 2s infinite;
 }
+
+/* Keeps the modal body scrolling smooth */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}
