@@ -1,8 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+  }
+  .font-serif {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
 @layer utilities {
+  /* Hide scrollbars for the date picker and review carousel */
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -11,14 +26,16 @@
     scrollbar-width: none;
   }
 
+  /* Smooth scrollbar for the booking modal body */
   .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+    width: 5px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #d4d4d4;
+    background: #e4e4e7;
     border-radius: 10px;
   }
 
+  /* Animated underline for nav links */
   .nav-link-grow {
     position: relative;
   }
