@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Your existing styles below */
 @layer utilities {
   /* Hides ugly scrollbars for the carousel */
   .hide-scrollbar::-webkit-scrollbar {
