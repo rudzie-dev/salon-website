@@ -1,54 +1,70 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-  body {
-    font-family: 'Inter', sans-serif;
-  }
-  .font-serif {
-    font-family: 'Playfair Display', serif;
-  }
+  html { scroll-behavior: smooth; }
+  body { @apply font-sans; }
+  .font-serif { font-family: 'Playfair Display', serif; }
 }
 
 @layer utilities {
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-zinc-200 rounded-full;
-  }
-
   .nav-link-grow {
-    @apply relative after:absolute after:w-0 after:h-px after:bottom-[-4px] after:left-1/2 after:bg-current after:transition-all after:duration-300 after:-translate-x-1/2 hover:after:w-full;
+    @apply relative after:absolute after:w-0 after:h-px after:bottom-[-4px] after:left-1/2 after:bg-current after:transition-all after:duration-500 after:-translate-x-1/2 hover:after:w-full;
   }
 
+  /* Shimmer Animations */
   .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.4) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
     background-size: 200% 100%;
-    animation: shimmer-slide 1.5s infinite linear;
+    animation: shimmer-load 1.5s infinite linear;
   }
+
+  .animate-shimmer-fast {
+    animation: shimmer-fast 2s infinite linear;
+  }
+
+  /* Custom Transitions */
+  .animate-fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.4s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.4s ease-out forwards;
+  }
+
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
 }
 
-@keyframes shimmer-slide {
+@keyframes shimmer-load {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+@keyframes shimmer-fast {
+  from { left: -100%; }
+  to { left: 200%; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
