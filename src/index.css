@@ -3,26 +3,37 @@
 @tailwind utilities;
 
 @layer base {
-  html { scroll-behavior: smooth; }
-  body { @apply font-sans; }
+  html { 
+    scroll-behavior: smooth; 
+    -webkit-tap-highlight-color: transparent;
+  }
+  body { 
+    @apply font-sans antialiased; 
+    overflow-x: hidden;
+  }
   .font-serif { font-family: 'Playfair Display', serif; }
 }
 
 @layer utilities {
+  /* Prevent background image cropping issues on skinny phones */
+  .min-h-svh {
+    min-height: 100svh;
+  }
+
   .ease-expo {
     transition-timing-function: cubic-bezier(0.87, 0, 0.13, 1);
   }
 
   .animate-slab-up {
-    animation: slabUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slabUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .animate-toast-in {
-    animation: toastIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: toastIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .animate-shimmer {
-    background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
+    background: linear-gradient(90deg, #fafafa 25%, #f4f4f5 50%, #fafafa 75%);
     background-size: 200% 100%;
     animation: shimmer-load 1.5s infinite linear;
   }
@@ -37,12 +48,12 @@
 }
 
 @keyframes slabUp {
-  from { opacity: 0; transform: translateY(40px); }
+  from { opacity: 0; transform: translateY(60px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, 20px); }
+  from { opacity: 0; transform: translate(-50%, 30px); }
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
