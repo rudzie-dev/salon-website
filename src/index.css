@@ -10,3 +10,21 @@
     scrollbar-width: none;
   }
 }
+/* Removes ugly scrollbars on the mobile carousel */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Shimmer effect for the buttons */
+@keyframes shimmer {
+  from { left: -100%; }
+  to { left: 200%; }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
