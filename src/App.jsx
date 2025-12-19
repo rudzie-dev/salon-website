@@ -595,13 +595,7 @@ export default function App() {
       ))}
     </div>
     
-    {/* Visual cue for mobile users */}
-    <div className="flex justify-center gap-2 mt-4 md:hidden">
-      <div className="w-8 h-0.5 bg-white/30"></div>
-      <div className="w-8 h-0.5 bg-white/10"></div>
-      <div className="w-8 h-0.5 bg-white/10"></div>
-    </div>
-  </div>
+
 </section>
 
 {/* Gallery Teaser (Section 1.2.3) */}
