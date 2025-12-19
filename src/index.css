@@ -1,7 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 @layer utilities {
+  /* Hides ugly scrollbars for the carousel */
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -9,17 +7,36 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-}
-/* Removes ugly scrollbars on the mobile carousel */
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+  /* Booking modal scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #d4d4d4;
+    border-radius: 10px;
+  }
+
+  /* Navbar Link Animation */
+  .nav-link-grow {
+    position: relative;
+  }
+  .nav-link-grow::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -4px;
+    left: 50%;
+    background-color: currentColor;
+    transition: all 0.3s ease-in-out;
+    transform: translateX(-50%);
+  }
+  .nav-link-grow:hover::after {
+    width: 100%;
+  }
 }
 
-/* Shimmer effect for the buttons */
 @keyframes shimmer {
   from { left: -100%; }
   to { left: 200%; }
@@ -27,18 +44,4 @@
 
 .animate-shimmer {
   animation: shimmer 2s infinite;
-}
-
-/* Keeps the modal body scrolling smooth */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #d4d4d4;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #a3a3a3;
 }
