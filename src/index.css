@@ -1,50 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  html {
-    scroll-behavior: smooth; /* Standard browser smooth scroll */
-  }
-  body {
-    font-family: 'Inter', sans-serif;
-    @apply text-zinc-900 bg-white;
-  }
-  .font-serif {
-    font-family: 'Playfair Display', serif;
-  }
+  html { @apply scroll-smooth; }
+  body { @apply font-sans antialiased; }
 }
 
 @layer utilities {
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  
-  .custom-scrollbar::-webkit-scrollbar { width: 3px; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: #18181b; }
-
-  .nav-link-grow { position: relative; }
-  .nav-link-grow::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 1px;
-    bottom: -8px;
-    left: 0;
-    background-color: currentColor;
-    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
-  .nav-link-grow:hover::after { width: 100%; }
-}
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
-@keyframes slow-zoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.1); }
-}
+  .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-zinc-200 rounded-full;
+  }
 
-.animate-slow-zoom {
-  animation: slow-zoom 20s ease-in-out infinite alternate;
+  /* Simplified Animated Underline */
+  .nav-link-grow {
+    @apply relative after:absolute after:w-0 after:h-px after:bottom-[-4px] after:left-1/2 after:bg-current after:transition-all after:duration-300 after:-translate-x-1/2 hover:after:w-full;
+  }
 }
 
 @keyframes shimmer {
@@ -53,5 +35,5 @@
 }
 
 .animate-shimmer {
-  animation: shimmer 3s infinite;
+  animation: shimmer 2s infinite linear;
 }
