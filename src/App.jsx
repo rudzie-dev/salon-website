@@ -7,12 +7,54 @@ import {
 
 /* --- DATA MODELS --- */
 const SERVICES = [
-  { id: 1, category: 'Haircuts', name: 'Signature Cut & Style', price: 95, duration: 60, description: 'A precision cut tailored to your face shape and lifestyle, finished with a luxury blowout.' },
-  { id: 2, category: 'Color', name: 'Balayage & Gloss', price: 210, duration: 180, description: 'Hand-painted highlights for a natural, sun-kissed look, including a shine-enhancing gloss.' },
-  { id: 3, category: 'Treatments', name: 'Keratin Smoothing', price: 250, duration: 150, description: 'Eliminate frizz and restore shine with our premium keratin infusion therapy.' },
-  { id: 4, category: 'Styling', name: 'Luxury Blowout', price: 55, duration: 45, description: 'Wash, condition, and a long-lasting blowout style for any occasion.' },
-  { id: 5, category: 'Color', name: 'Full Spectrum Color', price: 130, duration: 120, description: 'Rich, single-process color from roots to ends for vibrant, lasting results.' },
-  { id: 6, category: 'Haircuts', name: 'Gentlemen’s Grooming', price: 65, duration: 45, description: 'Precision clipper or scissor cut, wash, and style.' }
+  { 
+    id: 1, 
+    category: 'Haircuts', 
+    name: 'Signature Cut & Style', 
+    price: 650, 
+    duration: 60, 
+    description: 'A precision cut tailored to your face shape, including a Kerastase ritual wash and signature blowout.' 
+  },
+  { 
+    id: 2, 
+    category: 'Color', 
+    name: 'Couture Balayage', 
+    price: 2450, 
+    duration: 180, 
+    description: 'Artisanal hand-painted highlights for a sun-kissed look. Includes glossing and metal-detox treatment.' 
+  },
+  { 
+    id: 3, 
+    category: 'Treatments', 
+    name: 'Liquid Gold Keratin', 
+    price: 2800, 
+    duration: 150, 
+    description: 'Premium smoothing therapy to eliminate frizz for up to 4 months. Price may vary by hair density.' 
+  },
+  { 
+    id: 4, 
+    category: 'Styling', 
+    name: 'The Red Carpet Blowout', 
+    price: 450, 
+    duration: 45, 
+    description: 'High-volume or sleek finish using premium Oribe styling products for lasting hold.' 
+  },
+  { 
+    id: 5, 
+    category: 'Color', 
+    name: 'Full Spectrum Tint', 
+    price: 1350, 
+    duration: 120, 
+    description: 'Rich, multi-dimensional permanent color from roots to ends with a high-shine finish.' 
+  },
+  { 
+    id: 6, 
+    category: 'Haircuts', 
+    name: 'Gents Bespoke Grooming', 
+    price: 450, 
+    duration: 45, 
+    description: 'Precision scissor/clipper work, scalp massage, and hot towel finish.' 
+  }
 ];
 
 const STYLISTS = [
