@@ -417,36 +417,32 @@ export default function App() {
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
       {/* Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center bg-zinc-900 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            // UPDATED HERO IMAGE
-            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" 
-            alt="Salon Interior" 
-            className="w-full h-full object-cover opacity-50"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent"></div>
-        </div>
-        
-        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto text-white animate-in fade-in slide-in-from-bottom-10 duration-1000">
-          <p className="text-sm md:text-base tracking-[0.3em] uppercase mb-6 font-medium">Beauty Redefined</p>
-          <h1 className="text-5xl md:text-7xl font-serif mb-8 leading-tight">
-            Experience the Art <br/> of Hair
-          </h1>
-          <p className="text-lg md:text-xl text-zinc-200 mb-10 font-light max-w-2xl mx-auto">
-            A sanctuary of style in the heart of the city. We blend modern techniques with timeless elegance to reveal your best self.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button onClick={() => setIsBookingOpen(true)} className="min-w-[180px]">
-              Book Appointment
-            </Button>
-            <Button variant="outline" className="min-w-[180px]">
-              View Services
-            </Button>
-          </div>
-        </div>
-      </section>
-
+<section className="relative h-screen min-h-[600px] flex items-center justify-center bg-zinc-900 overflow-hidden">
+  <div className="absolute inset-0 z-0">
+    <img 
+      src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" 
+      alt="Salon Interior" 
+      className="w-full h-full object-cover opacity-50"
+    />
+    <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent"></div>
+  </div>
+  
+  <div className="relative z-10 text-center px-6 max-w-4xl mx-auto text-white animate-in fade-in slide-in-from-bottom-10 duration-1000">
+    <p className="text-sm md:text-base tracking-[0.3em] uppercase mb-6 font-medium">Beauty Redefined</p>
+    <h1 className="text-5xl md:text-7xl font-serif mb-8 leading-tight">
+      Experience the Art <br/> of Hair
+    </h1>
+    <p className="text-lg md:text-xl text-zinc-200 mb-10 font-light max-w-2xl mx-auto">
+      A sanctuary of style in the heart of the city. We blend modern techniques with timeless elegance to reveal your best self.
+    </p>
+    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <Button onClick={() => setIsBookingOpen(true)} className="min-w-[180px]">
+        Book Appointment
+      </Button>
+      {/* View Services CTA removed from here */}
+    </div>
+  </div>
+</section>
       {/* USP Section (Section 1.1.1) */}
       <section className="py-24 px-6 bg-white">
         <div className="container mx-auto">
