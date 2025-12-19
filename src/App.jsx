@@ -9,8 +9,8 @@ import {
 const SERVICES = [
   { id: 1, category: 'Haircuts', name: 'Signature Cut & Style', price: 95, duration: 60, description: 'A precision cut tailored to your face shape and lifestyle, finished with a luxury blowout.' },
   { id: 2, category: 'Color', name: 'Balayage & Gloss', price: 210, duration: 180, description: 'Hand-painted highlights for a natural, sun-kissed look.' },
-  { id: 3, category: 'Treatments', name: 'Keratin Smoothing', price: 250, duration: 150, description: 'Eliminate frizz and restore shine with our premium keratin infusion therapy.' },
-  { id: 4, category: 'Styling', name: 'Luxury Blowout', price: 55, duration: 45, description: 'Wash, condition, and a long-lasting blowout style for any occasion.' }
+  { id: 3, category: 'Treatments', name: 'Keratin Smoothing', price: 250, duration: 150, description: 'Eliminate frizz and restore shine.' },
+  { id: 4, category: 'Styling', name: 'Luxury Blowout', price: 55, duration: 45, description: 'Wash, condition, and a long-lasting style.' }
 ];
 
 const STYLISTS = [
@@ -24,10 +24,12 @@ const STYLISTS = [
 const Toast = ({ message, isVisible, onClose }) => {
   if (!isVisible) return null;
   return (
-    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 bg-black text-white px-6 py-4 shadow-2xl animate-toast-in">
-      <CheckCircle size={18} className="text-white" />
-      <span className="text-[10px] uppercase tracking-[0.2em] font-bold">{message}</span>
-      <button onClick={onClose} className="ml-4 opacity-50 hover:opacity-100"><X size={14} /></button>
+    <div className="fixed bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 z-[200] w-[90%] sm:w-auto flex items-center justify-between gap-3 bg-black text-white px-6 py-4 shadow-2xl animate-toast-in">
+      <div className="flex items-center gap-3">
+        <CheckCircle size={16} className="text-white" />
+        <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold">{message}</span>
+      </div>
+      <button onClick={onClose} className="opacity-50 hover:opacity-100"><X size={14} /></button>
     </div>
   );
 };
@@ -54,7 +56,7 @@ const Button = ({ children, onClick, variant = 'primary', className = '' }) => {
     outline: "bg-transparent text-white border border-white hover:bg-white hover:text-black"
   };
   return (
-    <button onClick={onClick} className={`px-8 py-4 transition-all duration-500 font-bold tracking-[0.2em] text-[10px] uppercase relative overflow-hidden group ${variants[variant]} ${className}`}>
+    <button onClick={onClick} className={`px-6 py-4 sm:px-10 sm:py-5 transition-all duration-500 font-bold tracking-[0.2em] text-[9px] sm:text-[10px] uppercase relative overflow-hidden group ${variants[variant]} ${className}`}>
       <span className="relative z-10">{children}</span>
       <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white/10 opacity-20 group-hover:animate-shimmer-fast" />
     </button>
@@ -68,35 +70,35 @@ const BookingModal = ({ isOpen, onClose, showToast }) => {
   if (!isOpen) return null;
 
   const handleComplete = () => {
-    showToast("Appointment Secured");
+    showToast("Booking Successful");
     setStep(1);
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-lg overflow-hidden relative">
-        <button onClick={onClose} className="absolute top-6 right-6 z-10 hover:rotate-90 transition-transform"><X size={24} /></button>
-        <div className="p-12">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/90 backdrop-blur-sm p-0 sm:p-4">
+      <div className="bg-white w-full max-w-lg overflow-hidden relative rounded-t-2xl sm:rounded-none">
+        <button onClick={onClose} className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 p-2"><X size={24} /></button>
+        <div className="p-8 sm:p-12">
           {step === 1 ? (
             <div className="animate-slab-up">
-              <h4 className="text-2xl font-serif mb-8">Select Service</h4>
-              <div className="space-y-3">
+              <h4 className="text-xl sm:text-2xl font-serif mb-6">Select Service</h4>
+              <div className="space-y-2">
                 {SERVICES.map(s => (
-                  <button key={s.id} onClick={() => { setBookingData({...bookingData, service: s}); setStep(2); }} className="w-full p-4 border border-zinc-100 text-left flex justify-between items-center hover:border-black transition-all group">
-                    <span className="text-xs uppercase tracking-widest font-bold">{s.name}</span>
-                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  <button key={s.id} onClick={() => { setBookingData({...bookingData, service: s}); setStep(2); }} className="w-full p-4 border border-zinc-100 text-left flex justify-between items-center hover:border-black transition-all">
+                    <span className="text-[10px] uppercase tracking-widest font-bold">{s.name}</span>
+                    <ChevronRight size={14} />
                   </button>
                 ))}
               </div>
             </div>
           ) : (
             <div className="animate-slab-up text-center">
-              <div className="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-6"><Scissors size={32} /></div>
-              <h4 className="text-2xl font-serif mb-2">Finalize Booking</h4>
-              <p className="text-zinc-500 text-sm mb-8">Confirming {bookingData.service?.name}</p>
-              <Button onClick={handleComplete} className="w-full">Confirm Appointment</Button>
-              <button onClick={() => setStep(1)} className="mt-6 text-[10px] uppercase tracking-widest font-bold opacity-50 hover:opacity-100">Back</button>
+              <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-6"><CheckCircle size={28} /></div>
+              <h4 className="text-xl sm:text-2xl font-serif mb-2">Finalize</h4>
+              <p className="text-zinc-500 text-xs mb-8">Confirming {bookingData.service?.name}</p>
+              <Button onClick={handleComplete} className="w-full">Book Now</Button>
+              <button onClick={() => setStep(1)} className="mt-6 text-[9px] uppercase tracking-widest font-bold opacity-40">Go Back</button>
             </div>
           )}
         </div>
@@ -119,9 +121,9 @@ const Navbar = ({ onBookClick }) => {
 
   return (
     <>
-      <nav className={`fixed top-0 w-full z-[60] transition-all duration-500 ${isScrolled || isOpen ? 'bg-white py-4 shadow-sm' : 'bg-transparent py-8'}`}>
+      <nav className={`fixed top-0 w-full z-[60] transition-all duration-500 ${isScrolled || isOpen ? 'bg-white py-4 shadow-sm' : 'bg-transparent py-6 sm:py-8'}`}>
         <div className="container mx-auto px-6 flex justify-between items-center">
-          <a href="#" className={`text-xl font-serif tracking-[0.5em] font-bold transition-colors ${isScrolled || isOpen ? 'text-black' : 'text-white'}`}>LUMIÈRE</a>
+          <a href="#" className={`text-lg sm:text-xl font-serif tracking-[0.4em] font-bold transition-colors ${isScrolled || isOpen ? 'text-black' : 'text-white'}`}>LUMIÈRE</a>
           
           <div className="hidden lg:flex items-center space-x-12">
             {navLinks.map((item) => (
@@ -131,28 +133,27 @@ const Navbar = ({ onBookClick }) => {
           </div>
 
           <button className={`p-2 transition-colors ${isScrolled || isOpen ? 'text-black' : 'text-white'}`} onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X size={24} /> : <div className="flex flex-col gap-1.5"><div className="w-6 h-0.5 bg-current"></div><div className="w-4 h-0.5 bg-current"></div></div>}
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </nav>
 
-      {/* MOBILE SLAB MENU */}
-      <div className={`fixed inset-0 z-[55] bg-zinc-50 flex flex-col justify-center px-12 transition-all duration-700 ease-expo ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
-        <div className="space-y-6">
+      <div className={`fixed inset-0 z-[55] bg-zinc-50 flex flex-col justify-center px-8 sm:px-12 transition-all duration-700 ease-expo ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+        <div className="space-y-4 sm:space-y-6">
           {navLinks.map((link, i) => (
             <div key={link} className="overflow-hidden">
               <a 
                 href={`#${link.toLowerCase()}`}
                 onClick={() => setIsOpen(false)}
-                className={`block text-4xl sm:text-6xl font-serif transition-all duration-700 ease-out ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}
+                className={`block text-3xl sm:text-6xl font-serif transition-all duration-700 ease-out ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'}`}
                 style={{ transitionDelay: `${i * 100 + 200}ms` }}
               >
                 {link}
               </a>
             </div>
           ))}
-          <div className={`pt-10 transition-all duration-700 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '600ms' }}>
-            <Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-full sm:w-auto">Reserve Session</Button>
+          <div className={`pt-8 transition-all duration-700 ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{ transitionDelay: '600ms' }}>
+            <Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-full sm:w-auto">Book Online</Button>
           </div>
         </div>
       </div>
@@ -166,7 +167,7 @@ export default function App() {
 
   const showToast = (msg) => {
     setToast({ visible: true, message: msg });
-    setTimeout(() => setToast({ visible: false, message: '' }), 4000);
+    setTimeout(() => setToast({ visible: false, message: '' }), 3000);
   };
 
   return (
@@ -175,74 +176,53 @@ export default function App() {
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} showToast={showToast} />
       <Toast isVisible={toast.visible} message={toast.message} onClose={() => setToast({ ...toast, visible: false })} />
 
-      {/* Hero */}
-      <section className="relative h-screen flex items-center justify-center bg-black">
+      {/* HERO SECTION - MOBILE OPTIMIZED */}
+      <section className="relative min-h-[100svh] flex items-center justify-center bg-black overflow-hidden">
         <ImageWithSkeleton 
           src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" 
-          className="absolute inset-0 w-full h-full opacity-60" 
+          className="absolute inset-0 w-full h-full opacity-50 sm:opacity-70 scale-105" 
         />
-        <div className="relative z-10 text-center px-6">
-          <p className="text-[10px] uppercase tracking-[0.6em] text-white/60 mb-8 animate-slab-up">Sandton • Cape Town</p>
-          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[10rem] font-serif text-white leading-[0.9] mb-12 animate-slab-up [animation-delay:200ms]">
-            Pure <br/> <span className="italic font-normal">Elegance</span>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+        
+        <div className="relative z-10 text-center px-4 sm:px-6 w-full">
+          <p className="text-[8px] sm:text-[10px] uppercase tracking-[0.5em] text-white/70 mb-6 sm:mb-10 animate-slab-up">Defining Hair Artistry</p>
+          <h1 className="text-[12vw] sm:text-7xl md:text-8xl lg:text-[10rem] font-serif text-white leading-[0.85] mb-10 sm:mb-14 animate-slab-up [animation-delay:200ms]">
+            Atelier <br/> <span className="italic font-normal">Lumière</span>
           </h1>
           <div className="animate-slab-up [animation-delay:400ms]">
-            <Button onClick={() => setIsBookingOpen(true)}>Book Appointment</Button>
+            <Button onClick={() => setIsBookingOpen(true)}>Secure Booking</Button>
           </div>
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section id="services" className="py-24 sm:py-40 px-6">
+      {/* Services */}
+      <section id="services" className="py-20 sm:py-40 px-6">
         <div className="container mx-auto max-w-7xl">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-            <div className="max-w-2xl">
-              <span className="text-[10px] uppercase tracking-[0.4em] text-zinc-400 font-bold">Services</span>
-              <h2 className="text-4xl sm:text-6xl font-serif mt-6 leading-tight">Artisanal hair design tailored to you.</h2>
-            </div>
-            <ArrowRight size={40} className="text-zinc-200 hidden md:block" />
+          <div className="mb-12 sm:mb-20">
+            <span className="text-[10px] uppercase tracking-[0.4em] text-zinc-400 font-bold">The Menu</span>
+            <h2 className="text-3xl sm:text-6xl font-serif mt-4">Selected Services</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-100 border-y border-zinc-100">
             {SERVICES.map((s) => (
-              <div key={s.id} className="bg-white p-10 sm:p-16 hover:bg-zinc-50 transition-colors group cursor-pointer" onClick={() => setIsBookingOpen(true)}>
-                <h3 className="text-2xl sm:text-3xl font-serif mb-6">{s.name}</h3>
-                <p className="text-sm text-zinc-500 mb-10 leading-relaxed max-w-sm">{s.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold tracking-[0.2em]">R{s.price}</span>
-                  <div className="w-8 h-px bg-black scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
-                </div>
+              <div key={s.id} className="bg-white p-8 sm:p-16 hover:bg-zinc-50 transition-colors group cursor-pointer" onClick={() => setIsBookingOpen(true)}>
+                <h3 className="text-xl sm:text-3xl font-serif mb-4">{s.name}</h3>
+                <p className="text-xs sm:text-sm text-zinc-500 mb-8 leading-relaxed line-clamp-2">{s.description}</p>
+                <span className="text-[10px] font-bold tracking-[0.2em]">R{s.price}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Team */}
-      <section id="stylists" className="py-24 bg-zinc-50 px-6">
-        <div className="container mx-auto max-w-7xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 sm:gap-24">
-            {STYLISTS.map((s) => (
-              <div key={s.id} className="group">
-                <ImageWithSkeleton src={s.image} className="aspect-[3/4] grayscale group-hover:grayscale-0 transition-all duration-700" />
-                <h4 className="text-xl font-serif mt-8 mb-2">{s.name}</h4>
-                <p className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">{s.role}</p>
-              </div>
-            ))}
+      <footer className="bg-white text-black py-20 px-6 border-t border-zinc-100 text-center">
+        <h2 className="text-[14vw] sm:text-7xl lg:text-[12rem] font-serif tracking-tighter font-bold mb-10">LUMIÈRE</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-8 text-[9px] uppercase tracking-widest text-zinc-400 font-bold">
+          <p>© 2024 Atelier Lumière</p>
+          <div className="flex space-x-8">
+            <a href="#" className="hover:text-black">Instagram</a>
+            <a href="#" className="hover:text-black">Facebook</a>
           </div>
-        </div>
-      </section>
-
-      <footer className="bg-white text-black py-24 px-6 border-t border-zinc-100">
-        <div className="container mx-auto max-w-7xl flex flex-col items-center">
-          <h2 className="text-5xl sm:text-7xl lg:text-[12rem] font-serif tracking-[-0.02em] font-bold mb-20">LUMIÈRE</h2>
-          <div className="w-full flex flex-col md:flex-row justify-between items-center gap-12 text-[10px] uppercase tracking-[0.3em] font-bold text-zinc-400">
-            <p>© 2024 Atelier Noir</p>
-            <div className="flex space-x-12">
-              <a href="#" className="hover:text-black transition-colors">Instagram</a>
-              <a href="#" className="hover:text-black transition-colors">Facebook</a>
-            </div>
-            <p>Cape Town • Sandton</p>
-          </div>
+          <p>Cape Town • Sandton</p>
         </div>
       </footer>
     </div>
