@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,10 +6,11 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    scroll-behavior: smooth; /* Standard browser smooth scroll */
   }
   body {
     font-family: 'Inter', sans-serif;
+    @apply text-zinc-900 bg-white;
   }
   .font-serif {
     font-family: 'Playfair Display', serif;
@@ -20,8 +21,8 @@
   .hide-scrollbar::-webkit-scrollbar { display: none; }
   .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   
-  .custom-scrollbar::-webkit-scrollbar { width: 5px; }
-  .custom-scrollbar::-webkit-scrollbar-thumb { background: #e4e4e7; border-radius: 10px; }
+  .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #18181b; }
 
   .nav-link-grow { position: relative; }
   .nav-link-grow::after {
@@ -29,17 +30,28 @@
     position: absolute;
     width: 0;
     height: 1px;
-    bottom: -4px;
-    left: 50%;
+    bottom: -8px;
+    left: 0;
     background-color: currentColor;
-    transition: all 0.3s ease-in-out;
-    transform: translateX(-50%);
+    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
   }
   .nav-link-grow:hover::after { width: 100%; }
+}
+
+@keyframes slow-zoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 20s ease-in-out infinite alternate;
 }
 
 @keyframes shimmer {
   from { left: -100%; }
   to { left: 200%; }
 }
-.animate-shimmer { animation: shimmer 2s infinite; }
+
+.animate-shimmer {
+  animation: shimmer 3s infinite;
+}
