@@ -554,22 +554,50 @@ export default function App() {
         </div>
       </section>
 
-      {/* Testimonials (Section 1.1.3 - Social Proof) */}
-      <section className="py-24 px-6 bg-zinc-900 text-white">
-        <div className="container mx-auto max-w-4xl text-center">
-          <div className="mb-12">
-             <Star className="inline-block mx-1 text-white fill-current" size={20} />
-             <Star className="inline-block mx-1 text-white fill-current" size={20} />
-             <Star className="inline-block mx-1 text-white fill-current" size={20} />
-             <Star className="inline-block mx-1 text-white fill-current" size={20} />
-             <Star className="inline-block mx-1 text-white fill-current" size={20} />
+{/* Testimonials Section */}
+<section className="py-24 px-6 bg-zinc-900 text-white overflow-hidden">
+  <div className="container mx-auto max-w-6xl">
+    <div className="text-center mb-16">
+      <h3 className="text-zinc-500 uppercase tracking-[0.3em] text-xs font-semibold mb-3">Kind Words</h3>
+      <h2 className="text-3xl md:text-4xl font-serif text-white">Client Experiences</h2>
+    </div>
+
+    {/* Mobile: Scroll Carousel (flex) | Desktop: Static Grid (md:grid) */}
+    <div className="flex overflow-x-auto pb-8 snap-x snap-mandatory hide-scrollbar md:grid md:grid-cols-3 md:gap-8 md:overflow-visible">
+      {TESTIMONIALS.map((review) => (
+        <div 
+          key={review.id} 
+          className="min-w-[85%] sm:min-w-[60%] md:min-w-0 mr-6 md:mr-0 snap-center bg-zinc-800/40 p-8 border border-zinc-700/50 flex flex-col justify-between transition-all duration-300 hover:bg-zinc-800/60"
+        >
+          <div>
+            <div className="flex mb-6">
+              {[...Array(review.rating)].map((_, i) => (
+                <Star key={i} size={14} className="text-white fill-current mr-1" />
+              ))}
+            </div>
+            <p className="text-lg font-serif italic mb-8 leading-relaxed text-zinc-200">
+              "{review.text}"
+            </p>
           </div>
-          <h2 className="text-3xl md:text-5xl font-serif leading-tight mb-12">
-            "{TESTIMONIALS[0].text}"
-          </h2>
-          <p className="text-lg font-medium tracking-wide">— {TESTIMONIALS[0].name}</p>
+          <div className="flex justify-between items-end border-t border-zinc-700/50 pt-6">
+            <div>
+              <p className="text-sm font-medium tracking-wide uppercase">{review.name}</p>
+              <p className="text-xs text-zinc-500 mt-1">Verified Client</p>
+            </div>
+            <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{review.date}</span>
+          </div>
         </div>
-      </section>
+      ))}
+    </div>
+    
+    {/* Visual cue for mobile users */}
+    <div className="flex justify-center gap-2 mt-4 md:hidden">
+      <div className="w-8 h-0.5 bg-white/30"></div>
+      <div className="w-8 h-0.5 bg-white/10"></div>
+      <div className="w-8 h-0.5 bg-white/10"></div>
+    </div>
+  </div>
+</section>
 
 {/* Gallery Teaser (Section 1.2.3) */}
       <section id="gallery" className="grid grid-cols-2 md:grid-cols-4 overflow-hidden">
