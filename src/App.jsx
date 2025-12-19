@@ -537,14 +537,19 @@ export default function App() {
            
            <div className="grid md:grid-cols-3 gap-12">
               {STYLISTS.map((stylist) => (
-                <div key={stylist.id} className="group text-center">
-                  <div className="relative overflow-hidden mb-6 mx-auto w-full aspect-[3/4] max-w-sm">
-                    <img 
-                      src={stylist.image} 
-                      alt={stylist.name} 
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 transform group-hover:scale-105"
-                    />
-                  </div>
+               <div key={stylist.id} className="group text-center transform transition-all duration-700 hover:-translate-y-2">
+  <div className="relative overflow-hidden mb-6 mx-auto w-full aspect-[3/4] max-w-sm">
+    <img 
+      src={stylist.image} 
+      alt={stylist.name} 
+      className="w-full h-full object-cover grayscale transition-all duration-1000 ease-in-out group-hover:grayscale-0 group-hover:scale-110"
+    />
+    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
+  </div>
+  <h4 className="text-xl font-serif mb-1">{stylist.name}</h4>
+  <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-3">{stylist.role}</p>
+  <p className="text-zinc-500 text-sm leading-relaxed max-w-xs mx-auto">{stylist.bio}</p>
+</div>
                   <h4 className="text-xl font-serif mb-1">{stylist.name}</h4>
                   <p className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-3">{stylist.role}</p>
                   <p className="text-zinc-500 text-sm leading-relaxed max-w-xs mx-auto">{stylist.bio}</p>
