@@ -51,7 +51,83 @@ const SectionHeader = ({ title, subtitle, centered = true }) => (
   </div>
 );
 
-/* --- MAIN COMPONENTS --- */
+/* --- NAV COMPONENT --- */
+const Navbar = ({ onBookClick }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+  }, [isOpen]);
+
+  const links = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
+
+  return (
+    <>
+      <nav className={`fixed top-0 w-full z-[100] transition-all duration-700 ${isScrolled && !isOpen ? 'bg-white/80 backdrop-blur-md py-4 shadow-sm' : 'bg-transparent py-6 text-white'}`}>
+        <div className="container mx-auto px-6 flex justify-between items-center">
+          <a href="#" className={`text-2xl font-serif tracking-widest font-bold transition-colors duration-500 ${(isScrolled || isOpen) ? 'text-black' : 'text-white'}`}>
+            L U M I È R E
+          </a>
+          
+          <div className="hidden md:flex items-center space-x-8">
+            {links.map((l) => (
+              <a key={l} href={`#${l.toLowerCase()}`} className={`text-sm uppercase tracking-wide font-medium nav-link-grow ${isScrolled ? 'text-zinc-800' : 'text-white'}`}>{l}</a>
+            ))}
+            <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'}>Book Now</Button>
+          </div>
+
+          <button 
+            className="md:hidden flex flex-col justify-center items-center w-10 h-10 space-y-1.5 focus:outline-none z-[110]"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <span className={`block w-6 h-0.5 transition-all duration-500 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`block w-4 h-0.5 transition-all duration-500 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+            <span className={`block w-6 h-0.5 transition-all duration-500 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          </button>
+        </div>
+      </nav>
+
+      {/* BLUR OVERLAY */}
+      <div className={`fixed inset-0 z-[90] transition-all duration-1000 ease-in-out ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        {/* The blurred background */}
+        <div className="absolute inset-0 bg-white/40 backdrop-blur-2xl" />
+        
+        <div className="relative h-full flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center space-y-10">
+            {links.map((l, i) => (
+              <a 
+                key={l} 
+                href={`#${l.toLowerCase()}`} 
+                onClick={() => setIsOpen(false)} 
+                className={`text-5xl font-serif text-black hover:text-zinc-400 transition-colors ${isOpen ? `animate-menu-item delay-${i+1}` : ''}`}
+              >
+                {l}
+              </a>
+            ))}
+            <div className={`${isOpen ? 'animate-menu-item delay-6' : ''} pt-6`}>
+              <Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-64 py-5">Request Booking</Button>
+            </div>
+          </div>
+          
+          <div className={`absolute bottom-12 flex space-x-12 transition-all duration-1000 delay-500 ${isOpen ? 'opacity-60 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            <Instagram size={24} className="hover:text-black cursor-pointer" />
+            <Facebook size={24} className="hover:text-black cursor-pointer" />
+            <Mail size={24} className="hover:text-black cursor-pointer" />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+/* --- BOOKING MODAL --- */
 const BookingModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
   const [bookingData, setBookingData] = useState({ service: null, stylist: null, date: null, time: null });
@@ -62,7 +138,7 @@ const BookingModal = ({ isOpen, onClose }) => {
   const isSalonOpen = (dateObj) => dateObj.getDay() !== 0 && dateObj.getDay() !== 1;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog">
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog">
       <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
         <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
           <div><h3 className="font-serif text-2xl">Book Appointment</h3><p className="text-zinc-500 text-sm">Step {step} of 4</p></div>
@@ -72,9 +148,9 @@ const BookingModal = ({ isOpen, onClose }) => {
           {step === 1 && (
             <div className="grid grid-cols-1 gap-3">
               {SERVICES.map((s) => (
-                <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); setStep(2); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black transition-all text-left">
+                <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); setStep(2); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black transition-all text-left group">
                   <div><p className="font-medium">{s.name}</p><p className="text-sm text-zinc-500">{s.duration} mins • R{s.price}</p></div>
-                  <ChevronRight size={16} />
+                  <ChevronRight size={16} className="text-zinc-300 group-hover:text-black" />
                 </button>
               ))}
             </div>
@@ -135,56 +211,6 @@ const BookingModal = ({ isOpen, onClose }) => {
         </div>
       </div>
     </div>
-  );
-};
-
-const Navbar = ({ onBookClick }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
-  }, [isOpen]);
-
-  const links = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
-
-  return (
-    <nav className={`fixed top-0 w-full z-[80] transition-all duration-500 ${isScrolled || isOpen ? 'bg-white py-4 shadow-sm' : 'bg-transparent py-6 text-white'}`}>
-      <div className="container mx-auto px-6 flex justify-between items-center relative z-[90]">
-        <a href="#" className={`text-2xl font-serif tracking-widest font-bold transition-colors ${isScrolled || isOpen ? 'text-black' : 'text-white'}`}>L U M I È R E</a>
-        
-        <div className="hidden md:flex items-center space-x-8">
-          {links.map((l) => (
-            <a key={l} href={`#${l.toLowerCase()}`} className={`text-sm uppercase tracking-wide font-medium nav-link-grow ${isScrolled ? 'text-zinc-800' : 'text-white'}`}>{l}</a>
-          ))}
-          <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'}>Book Now</Button>
-        </div>
-
-        <button 
-          className="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 focus:outline-none"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <span className={`block w-6 h-0.5 transition-all duration-300 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`block w-6 h-0.5 transition-all duration-300 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-          <span className={`block w-6 h-0.5 transition-all duration-300 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-        </button>
-      </div>
-
-      <div className={`fixed inset-0 bg-white z-[85] flex flex-col items-center justify-center transition-transform duration-700 ease-in-out ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
-        <div className="flex flex-col items-center space-y-8">
-          {links.map((l, i) => (
-            <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setIsOpen(false)} className={`text-4xl font-serif text-black hover:text-zinc-500 ${isOpen ? `animate-link delay-${i+1}` : ''}`}>{l}</a>
-          ))}
-          <div className={`${isOpen ? 'animate-link delay-6' : ''} pt-6`}><Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-64">Book Now</Button></div>
-        </div>
-      </div>
-    </nav>
   );
 };
 
