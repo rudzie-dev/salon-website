@@ -1,9 +1,7 @@
-/* index.css */
 @font-face {
   font-family: 'IvyMode';
   src: url('/fonts/fonntscom-IvyModeRegular.woff2') format('woff2'),
-       url('/fonts/fonntscom-IvyModeRegular.woff') format('woff'),
-       url('/fonts/fonntscom-IvyModeRegular.otf') format('opentype');
+       url('/fonts/fonntscom-IvyModeRegular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -21,14 +19,12 @@
     font-family: 'Inter', sans-serif;
     @apply antialiased text-zinc-900;
   }
-  /* This ensures the 'font-serif' class uses your IvyMode font */
   .font-serif {
     font-family: 'IvyMode', serif !important;
   }
 }
 
 @layer utilities {
-  /* Hide scrollbars for the date picker and review carousel */
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -37,7 +33,6 @@
     scrollbar-width: none;
   }
 
-  /* Smooth scrollbar for the booking modal body */
   .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
   }
@@ -46,7 +41,30 @@
     border-radius: 10px;
   }
 
-  /* Animated underline for nav links */
+  /* Full Screen Mobile Menu Animations */
+  @keyframes slideUpFade {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-link {
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+  }
+
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.15s; }
+  .delay-3 { animation-delay: 0.2s; }
+  .delay-4 { animation-delay: 0.25s; }
+  .delay-5 { animation-delay: 0.3s; }
+  .delay-6 { animation-delay: 0.35s; }
+
   .nav-link-grow {
     position: relative;
   }
@@ -74,39 +92,3 @@
 .animate-shimmer {
   animation: shimmer 2s infinite;
 }
-/* index.css additions */
-
-/* Overlay Fade In */
-.menu-overlay-enter {
-  opacity: 0;
-  backdrop-filter: blur(0px);
-}
-.menu-overlay-enter-active {
-  opacity: 1;
-  backdrop-filter: blur(12px);
-  transition: all 0.5s ease-out;
-}
-
-/* Staggered Link Animation */
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-link {
-  animation: slideUpFade 0.6s ease-out forwards;
-  opacity: 0;
-}
-
-/* Delay for each link to create the stagger effect */
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.3s; }
-.delay-4 { animation-delay: 0.4s; }
-.delay-5 { animation-delay: 0.5s; }
