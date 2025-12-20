@@ -4,7 +4,7 @@ import {
   Instagram, Facebook, ChevronRight, CheckCircle, ArrowRight, Clock
 } from 'lucide-react';
 
-/* --- DATA --- */
+/* --- SHARED DATA --- */
 const SERVICES = [
   { id: 1, name: 'Signature Cut & Style', price: 95, duration: 60, description: 'A precision cut tailored to your face shape, finished with a luxury blowout.' },
   { id: 2, name: 'Balayage & Gloss', price: 210, duration: 180, description: 'Hand-painted highlights for a natural look, including a gloss treatment.' },
@@ -26,9 +26,8 @@ const TESTIMONIALS = [
   { id: 3, name: "Amara Diop", text: "Finally, a salon that masters curly hair. Amara treated my curls with such care.", rating: 5, date: "3 weeks ago" }
 ];
 
-/* --- UI COMPONENTS --- */
+/* --- REUSABLE COMPONENTS --- */
 const Button = ({ children, onClick, variant = 'primary', className = '', ...props }) => {
-  const baseStyle = "px-8 py-3 transition-all duration-300 font-medium tracking-wide text-sm uppercase relative overflow-hidden group";
   const variants = {
     primary: "bg-black text-white hover:bg-zinc-800",
     secondary: "bg-white text-black border border-black hover:bg-zinc-50",
@@ -36,7 +35,11 @@ const Button = ({ children, onClick, variant = 'primary', className = '', ...pro
   };
 
   return (
-    <button onClick={onClick} className={`${baseStyle} ${variants[variant]} ${className}`} {...props}>
+    <button 
+      onClick={onClick} 
+      className={`px-8 py-3 transition-all duration-300 font-medium tracking-wide text-sm uppercase relative overflow-hidden group ${variants[variant]} ${className}`} 
+      {...props}
+    >
       <span className="relative z-10">{children}</span>
       <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white/10 opacity-40 group-hover:animate-shimmer" />
     </button>
@@ -45,13 +48,13 @@ const Button = ({ children, onClick, variant = 'primary', className = '', ...pro
 
 const SectionHeader = ({ title, subtitle, centered = true }) => (
   <div className={`mb-12 ${centered ? 'text-center' : 'text-left'}`}>
-    <h3 className="text-zinc-500 uppercase tracking-widest text-xs font-semibold mb-3">{subtitle}</h3>
+    <p className="text-zinc-500 uppercase tracking-widest text-xs font-semibold mb-3">{subtitle}</p>
     <h2 className="text-3xl md:text-4xl font-serif text-zinc-900">{title}</h2>
-    <div className={`w-16 h-0.5 bg-zinc-900 mt-6 ${centered ? 'mx-auto' : ''}`}></div>
+    <div className={`w-16 h-0.5 bg-zinc-900 mt-6 ${centered ? 'mx-auto' : ''}`} />
   </div>
 );
 
-/* --- NAV COMPONENT --- */
+/* --- NAVIGATION --- */
 const Navbar = ({ onBookClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -66,15 +69,17 @@ const Navbar = ({ onBookClick }) => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
   }, [isOpen]);
 
-  const links = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
+  const navLinks = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
 
   return (
     <nav className={`fixed top-0 w-full z-[80] transition-all duration-500 ${isScrolled || isOpen ? 'bg-white py-4 shadow-sm' : 'bg-transparent py-6 text-white'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center relative z-[90]">
-        <a href="#" className={`text-2xl font-serif tracking-widest font-bold transition-colors ${(isScrolled || isOpen) ? 'text-black' : 'text-white'}`}>L U M I È R E</a>
+        <a href="#" className={`text-2xl font-serif tracking-widest font-bold transition-colors ${(isScrolled || isOpen) ? 'text-black' : 'text-white'}`}>
+          L U M I È R E
+        </a>
         
         <div className="hidden md:flex items-center space-x-8">
-          {links.map((l) => (
+          {navLinks.map((l) => (
             <a key={l} href={`#${l.toLowerCase()}`} className={`text-sm uppercase tracking-wide font-medium nav-link-grow ${isScrolled ? 'text-zinc-800' : 'text-white'}`}>{l}</a>
           ))}
           <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'}>Book Now</Button>
@@ -84,57 +89,60 @@ const Navbar = ({ onBookClick }) => {
           className="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
         >
-          <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-          <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-          <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
+          <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
         </button>
       </div>
 
       <div className={`fixed inset-0 bg-white z-[85] flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="flex flex-col items-center space-y-8">
-          {links.map((l, i) => (
+          {navLinks.map((l, i) => (
             <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setIsOpen(false)} className={`text-4xl font-serif text-black hover:text-zinc-500 ${isOpen ? `animate-link delay-${i+1}` : ''}`}>{l}</a>
           ))}
-          <div className={`${isOpen ? 'animate-link delay-5' : ''} pt-6`}><Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-64">Book Now</Button></div>
+          <div className={`${isOpen ? 'animate-link delay-5' : ''} pt-6`}>
+            <Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-64">Book Now</Button>
+          </div>
         </div>
       </div>
     </nav>
   );
 };
 
-/* --- BOOKING MODAL --- */
+/* --- BOOKING SYSTEM --- */
 const BookingModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
   const [bookingData, setBookingData] = useState({ service: null, stylist: null, date: null, time: null });
 
   if (!isOpen) return null;
 
-  const resetBooking = () => { setStep(1); setBookingData({ service: null, stylist: null, date: null, time: null }); onClose(); };
-  const isSalonOpen = (dateObj) => dateObj.getDay() !== 0 && dateObj.getDay() !== 1;
+  const reset = () => { setStep(1); setBookingData({ service: null, stylist: null, date: null, time: null }); onClose(); };
+  const isClosed = (d) => d.getDay() === 0 || d.getDay() === 1;
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog">
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
-        <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
+        <div className="flex justify-between items-center p-6 border-b">
           <div><h3 className="font-serif text-2xl">Book Appointment</h3><p className="text-zinc-500 text-sm">Step {step} of 4</p></div>
-          <button onClick={resetBooking} className="p-2 hover:bg-zinc-100 rounded-full transition-colors"><X size={20} /></button>
+          <button onClick={reset} className="p-2 hover:bg-zinc-100 rounded-full transition-colors"><X size={20} /></button>
         </div>
+        
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
           {step === 1 && (
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid gap-3">
               {SERVICES.map((s) => (
-                <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); setStep(2); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black transition-all text-left">
+                <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); setStep(2); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black transition-all text-left group">
                   <div><p className="font-medium">{s.name}</p><p className="text-sm text-zinc-500">{s.duration} mins • R{s.price}</p></div>
-                  <ChevronRight size={16} />
+                  <ChevronRight size={16} className="text-zinc-300 group-hover:text-black" />
                 </button>
               ))}
             </div>
           )}
           {step === 2 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4">
               <button onClick={() => { setBookingData({ ...bookingData, stylist: { name: 'First Available' } }); setStep(3); }} className="p-4 border border-zinc-200 hover:border-black flex items-center gap-4">
                 <div className="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center"><Scissors size={20} /></div>
-                <div><p className="font-medium">Any Professional</p></div>
+                <p className="font-medium">First Available</p>
               </button>
               {STYLISTS.map((s) => (
                 <button key={s.id} onClick={() => { setBookingData({ ...bookingData, stylist: s }); setStep(3); }} className="p-4 border border-zinc-200 hover:border-black flex items-center gap-4 text-left">
@@ -149,10 +157,10 @@ const BookingModal = ({ isOpen, onClose }) => {
               <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
                 {[...Array(14)].map((_, i) => {
                   const d = new Date(); d.setDate(d.getDate() + i);
-                  const open = isSalonOpen(d);
+                  const closed = isClosed(d);
                   const fullDate = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
                   return (
-                    <button key={i} disabled={!open} onClick={() => setBookingData({ ...bookingData, date: fullDate })} className={`flex-shrink-0 w-20 py-4 border transition-all ${!open ? 'opacity-20' : bookingData.date === fullDate ? 'bg-black text-white' : 'hover:border-black'}`}>
+                    <button key={i} disabled={closed} onClick={() => setBookingData({ ...bookingData, date: fullDate })} className={`flex-shrink-0 w-20 py-4 border transition-all ${closed ? 'opacity-20' : bookingData.date === fullDate ? 'bg-black text-white' : 'hover:border-black'}`}>
                       <span className="text-[10px] uppercase block mb-1">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
                       <span className="text-xl font-bold">{d.getDate()}</span>
                     </button>
@@ -170,19 +178,20 @@ const BookingModal = ({ isOpen, onClose }) => {
           )}
           {step === 4 && (
             <div className="space-y-6 text-center">
-              <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4"><CheckCircle size={32} /></div>
-              <div className="bg-zinc-50 p-6 space-y-2 text-left">
+              <CheckCircle size={48} className="text-green-500 mx-auto mb-4" />
+              <div className="bg-zinc-50 p-6 space-y-2 text-left border border-zinc-100">
                 <p><strong>Service:</strong> {bookingData.service?.name}</p>
                 <p><strong>Stylist:</strong> {bookingData.stylist?.name}</p>
                 <p><strong>When:</strong> {bookingData.date} at {bookingData.time}</p>
-                <p className="text-xl font-bold pt-4 border-t">Total: R{bookingData.service?.price}</p>
+                <p className="text-xl font-bold pt-4 border-t mt-4">Total: R{bookingData.service?.price}</p>
               </div>
             </div>
           )}
         </div>
+        
         <div className="p-6 border-t flex justify-between">
-          {step > 1 && step < 4 && <button onClick={() => setStep(step - 1)} className="underline">Back</button>}
-          {step === 4 ? <Button onClick={() => { alert("Confirmed!"); resetBooking(); }} className="w-full">Finalize Booking</Button> : <div />}
+          {step > 1 && step < 4 && <button onClick={() => setStep(step - 1)} className="underline text-sm uppercase tracking-widest font-bold">Back</button>}
+          {step === 4 && <Button onClick={() => { alert("Booking Confirmed!"); reset(); }} className="w-full">Finalize Booking</Button>}
         </div>
       </div>
     </div>
@@ -191,7 +200,6 @@ const BookingModal = ({ isOpen, onClose }) => {
 
 export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
 
   return (
     <div className="antialiased">
@@ -214,7 +222,7 @@ export default function App() {
           <SectionHeader title="Our Menu" subtitle="Curated Treatments" />
           <div className="grid md:grid-cols-2 gap-8">
             {SERVICES.map((s) => (
-              <div key={s.id} className="bg-white p-8 border hover:shadow-lg transition-all flex justify-between cursor-pointer group" onClick={() => setIsBookingOpen(true)}>
+              <div key={s.id} className="bg-white p-8 border border-zinc-100 hover:shadow-lg transition-all flex justify-between cursor-pointer group" onClick={() => setIsBookingOpen(true)}>
                 <div>
                   <h4 className="text-xl font-serif mb-2">{s.name}</h4>
                   <p className="text-zinc-500 text-sm mb-4">{s.description}</p>
@@ -257,7 +265,7 @@ export default function App() {
                   <div className="flex mb-8">{[...Array(r.rating)].map((_, i) => <Star key={i} size={14} className="fill-current mr-1" />)}</div>
                   <p className="text-xl font-serif italic mb-10 leading-relaxed">"{r.text}"</p>
                 </div>
-                <div className="flex justify-between items-end border-t border-zinc-700 pt-8">
+                <div className="flex justify-between items-end border-t border-zinc-700 pt-8 mt-4">
                   <div><p className="text-sm uppercase tracking-widest font-bold">{r.name}</p><p className="text-[10px] text-zinc-500 uppercase mt-1">Verified Client</p></div>
                   <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{r.date}</span>
                 </div>
@@ -288,11 +296,11 @@ export default function App() {
               <div className="flex gap-6"><Clock className="text-black" /><p>Tue - Fri: 10am - 8pm | Sat: 9am - 6pm</p></div>
             </div>
           </div>
-          <form className="bg-white p-10 border shadow-sm space-y-6" onSubmit={(e) => { e.preventDefault(); alert("Sent!"); }}>
+          <form className="bg-white p-10 border border-zinc-100 shadow-sm space-y-6" onSubmit={(e) => e.preventDefault()}>
             <h3 className="text-3xl font-serif mb-8">Send a Message</h3>
-            <input required placeholder="Name" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} className="w-full p-4 bg-zinc-50 outline-none focus:ring-1 focus:ring-black" />
-            <input required type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})} className="w-full p-4 bg-zinc-50 outline-none focus:ring-1 focus:ring-black" />
-            <textarea required placeholder="Message" rows="4" value={form.message} onChange={(e) => setForm({...form, message: e.target.value})} className="w-full p-4 bg-zinc-50 outline-none focus:ring-1 focus:ring-black" />
+            <input required placeholder="Name" className="w-full p-4 bg-zinc-50 outline-none focus:ring-1 focus:ring-black" />
+            <input required type="email" placeholder="Email" className="w-full p-4 bg-zinc-50 outline-none focus:ring-1 focus:ring-black" />
+            <textarea required placeholder="Message" rows="4" className="w-full p-4 bg-zinc-50 outline-none focus:ring-1 focus:ring-black" />
             <Button type="submit" className="w-full">Submit Inquiry</Button>
           </form>
         </div>
@@ -304,7 +312,7 @@ export default function App() {
           <Instagram size={24} className="hover:opacity-100 cursor-pointer" />
           <Facebook size={24} className="hover:opacity-100 cursor-pointer" />
         </div>
-        <p className="text-zinc-600 text-xs uppercase tracking-widest font-medium">© 2024 Lumière Salon Cape Town. All rights reserved.</p>
+        <p className="text-zinc-600 text-[10px] uppercase tracking-widest">© 2024 Lumière Salon. Cape Town.</p>
       </footer>
     </div>
   );
