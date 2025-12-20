@@ -198,7 +198,7 @@ const BookingModal = ({ isOpen, onClose }) => {
 
 const Navbar = ({ onBookClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -206,29 +206,69 @@ const Navbar = ({ onBookClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = 'unset';
+  }, [isOpen]);
+
+  const navLinks = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
+
   return (
-    <nav className={`fixed top-0 w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-4' : 'bg-transparent py-6 text-white'}`}>
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled || isOpen ? 'bg-white/95 backdrop-blur-md py-4' : 'bg-transparent py-6 text-white'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center">
-        <a href="#" className={`text-2xl font-serif tracking-widest font-bold ${isScrolled ? 'text-black' : 'text-white'}`}>L U M I È R E</a>
+        {/* Logo */}
+        <a href="#" className={`text-2xl font-serif tracking-widest font-bold z-50 transition-colors duration-300 ${isScrolled || isOpen ? 'text-black' : 'text-white'}`}>
+          L U M I È R E
+        </a>
+
+        {/* Desktop Links */}
         <div className="hidden md:flex items-center space-x-8">
-          {['Home', 'Services', 'Stylists', 'Gallery', 'Contact'].map((l) => (
+          {navLinks.map((l) => (
             <a key={l} href={`#${l.toLowerCase()}`} className={`nav-link-grow text-sm uppercase tracking-wide font-medium transition-opacity ${isScrolled ? 'text-zinc-800' : 'text-white'}`}>{l}</a>
           ))}
-          <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'} className={isScrolled ? '' : 'bg-white text-black border-none'}>Book Now</Button>
+          <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'}>Book Now</Button>
         </div>
-        <button className={`md:hidden ${isScrolled ? 'text-black' : 'text-white'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Menu">
-          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+
+        {/* Animated Burger Button */}
+        <button 
+          className="md:hidden z-50 relative w-10 h-10 flex flex-col justify-center items-center focus:outline-none"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle Menu"
+        >
+          <span className={`block w-6 h-0.5 transition-all duration-300 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? 'rotate-45 translate-y-1.5' : ''}`}></span>
+          <span className={`block w-6 h-0.5 my-1 transition-all duration-300 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+          <span className={`block w-6 h-0.5 transition-all duration-300 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></span>
         </button>
       </div>
       
-      {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-xl py-10 px-6 flex flex-col space-y-6 animate-in slide-in-from-top-5">
-           {['Home', 'Services', 'Stylists', 'Gallery', 'Contact'].map((l) => (
-            <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)} className="text-black text-xl font-serif">{l}</a>
+      {/* Full Screen Mobile Menu Overlay */}
+      <div className={`fixed inset-0 bg-white z-40 flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
+        <div className="flex flex-col items-center space-y-8">
+          {navLinks.map((link, index) => (
+            <a 
+              key={link} 
+              href={`#${link.toLowerCase()}`} 
+              onClick={() => setIsOpen(false)}
+              className={`text-4xl font-serif text-black hover:text-zinc-500 transition-colors ${isOpen ? `animate-link delay-${index + 1}` : ''}`}
+            >
+              {link}
+            </a>
           ))}
-          <Button onClick={() => { setMobileMenuOpen(false); onBookClick(); }} className="w-full">Book Now</Button>
+          <div className={`${isOpen ? 'animate-link delay-5' : ''} pt-4`}>
+             <Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-64 py-5">
+               Request Appointment
+             </Button>
+          </div>
         </div>
-      )}
+
+        {/* Social Links in Mobile Menu Footer */}
+        <div className={`absolute bottom-12 flex space-x-8 transition-opacity duration-1000 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+          <Instagram size={20} className="text-zinc-400 hover:text-black transition-colors" />
+          <Facebook size={20} className="text-zinc-400 hover:text-black transition-colors" />
+          <Mail size={20} className="text-zinc-400 hover:text-black transition-colors" />
+        </div>
+      </div>
     </nav>
   );
 };
