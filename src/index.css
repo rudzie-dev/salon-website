@@ -41,7 +41,33 @@
     border-radius: 10px;
   }
 
-  /* Snap Utilities for Carousel */
+  /* --- LOADING SCREEN ANIMATIONS --- */
+  
+  /* SVG Drawing: Animates the stroke of the letters */
+  .animate-draw {
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    animation: draw 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Strip Exit: Slides vertical blocks upward */
+  .exit-strip {
+    animation: stripUp 1.2s cubic-bezier(0.8, 0, 0.2, 1) forwards;
+  }
+
+  @keyframes stripUp {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100%); }
+  }
+
+  /* --- CAROUSEL & UI --- */
+
   .snap-x-mandatory {
     scroll-snap-type: x mandatory;
   }
@@ -49,7 +75,6 @@
     scroll-snap-align: center;
   }
 
-  /* Navigation Underline */
   .nav-link-grow {
     position: relative;
   }
@@ -68,7 +93,6 @@
     width: 100%;
   }
 
-  /* Mobile Menu Link Entry */
   @keyframes slideUpFade {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -82,12 +106,12 @@
   .delay-3 { animation-delay: 0.2s; }
   .delay-4 { animation-delay: 0.25s; }
   .delay-5 { animation-delay: 0.3s; }
-}
 
-@keyframes shimmer {
-  from { left: -100%; }
-  to { left: 200%; }
-}
-.animate-shimmer {
-  animation: shimmer 2s infinite;
+  @keyframes shimmer {
+    from { left: -100%; }
+    to { left: 200%; }
+  }
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
 }
