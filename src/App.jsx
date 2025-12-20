@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, Scissors, Star, MapPin, Phone, Mail, 
   Instagram, Facebook, ChevronRight, CheckCircle, ArrowRight, Clock
 } from 'lucide-react';
 
-/* --- SHARED DATA --- */
+/* --- DATA --- */
 const SERVICES = [
   { id: 1, name: 'Signature Cut & Style', price: 95, duration: 60, description: 'A precision cut tailored to your face shape, finished with a luxury blowout.' },
   { id: 2, name: 'Balayage & Gloss', price: 210, duration: 180, description: 'Hand-painted highlights for a natural look, including a gloss treatment.' },
@@ -26,7 +26,7 @@ const TESTIMONIALS = [
   { id: 3, name: "Amara Diop", text: "Finally, a salon that masters curly hair. Amara treated my curls with such care.", rating: 5, date: "3 weeks ago" }
 ];
 
-/* --- REUSABLE COMPONENTS --- */
+/* --- UI COMPONENTS --- */
 const Button = ({ children, onClick, variant = 'primary', className = '', ...props }) => {
   const variants = {
     primary: "bg-black text-white hover:bg-zinc-800",
@@ -35,11 +35,7 @@ const Button = ({ children, onClick, variant = 'primary', className = '', ...pro
   };
 
   return (
-    <button 
-      onClick={onClick} 
-      className={`px-8 py-3 transition-all duration-300 font-medium tracking-wide text-sm uppercase relative overflow-hidden group ${variants[variant]} ${className}`} 
-      {...props}
-    >
+    <button onClick={onClick} className={`px-8 py-3 transition-all duration-300 font-medium tracking-wide text-sm uppercase relative overflow-hidden group ${variants[variant]} ${className}`} {...props}>
       <span className="relative z-10">{children}</span>
       <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white/10 opacity-40 group-hover:animate-shimmer" />
     </button>
@@ -54,7 +50,7 @@ const SectionHeader = ({ title, subtitle, centered = true }) => (
   </div>
 );
 
-/* --- NAVIGATION --- */
+/* --- NAV --- */
 const Navbar = ({ onBookClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -69,26 +65,21 @@ const Navbar = ({ onBookClick }) => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
   }, [isOpen]);
 
-  const navLinks = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
+  const links = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
 
   return (
     <nav className={`fixed top-0 w-full z-[80] transition-all duration-500 ${isScrolled || isOpen ? 'bg-white py-4 shadow-sm' : 'bg-transparent py-6 text-white'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center relative z-[90]">
-        <a href="#home" className={`text-2xl font-serif tracking-widest font-bold transition-colors ${(isScrolled || isOpen) ? 'text-black' : 'text-white'}`}>
-          L U M I È R E
-        </a>
+        <a href="#home" onClick={() => setIsOpen(false)} className={`text-2xl font-serif tracking-widest font-bold transition-colors ${(isScrolled || isOpen) ? 'text-black' : 'text-white'}`}>L U M I È R E</a>
         
         <div className="hidden md:flex items-center space-x-8">
-          {navLinks.map((l) => (
+          {links.map((l) => (
             <a key={l} href={`#${l.toLowerCase()}`} className={`text-sm uppercase tracking-wide font-medium nav-link-grow ${isScrolled ? 'text-zinc-800' : 'text-white'}`}>{l}</a>
           ))}
           <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'}>Book Now</Button>
         </div>
 
-        <button 
-          className="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 focus:outline-none"
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <button className="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 focus:outline-none" onClick={() => setIsOpen(!isOpen)}>
           <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
           <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
           <span className={`block w-6 h-0.5 transition-all duration-300 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
@@ -97,19 +88,17 @@ const Navbar = ({ onBookClick }) => {
 
       <div className={`fixed inset-0 bg-white z-[85] flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="flex flex-col items-center space-y-8">
-          {navLinks.map((l, i) => (
+          {links.map((l, i) => (
             <a key={l} href={`#${l.toLowerCase()}`} onClick={() => setIsOpen(false)} className={`text-4xl font-serif text-black hover:text-zinc-500 ${isOpen ? `animate-link delay-${i+1}` : ''}`}>{l}</a>
           ))}
-          <div className={`${isOpen ? 'animate-link delay-5' : ''} pt-6`}>
-            <Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-64">Book Now</Button>
-          </div>
+          <div className={`${isOpen ? 'animate-link delay-5' : ''} pt-6`}><Button onClick={() => { setIsOpen(false); onBookClick(); }} className="w-64">Book Now</Button></div>
         </div>
       </div>
     </nav>
   );
 };
 
-/* --- BOOKING SYSTEM --- */
+/* --- BOOKING MODAL --- */
 const BookingModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
   const [bookingData, setBookingData] = useState({ service: null, stylist: null, date: null, time: null });
@@ -126,7 +115,6 @@ const BookingModal = ({ isOpen, onClose }) => {
           <div><h3 className="font-serif text-2xl">Book Appointment</h3><p className="text-zinc-500 text-sm">Step {step} of 4</p></div>
           <button onClick={reset} className="p-2 hover:bg-zinc-100 rounded-full transition-colors"><X size={20} /></button>
         </div>
-        
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
           {step === 1 && (
             <div className="grid gap-3">
@@ -188,13 +176,62 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
         </div>
-        
         <div className="p-6 border-t flex justify-between">
           {step > 1 && step < 4 && <button onClick={() => setStep(step - 1)} className="underline text-sm uppercase tracking-widest font-bold">Back</button>}
           {step === 4 && <Button onClick={() => { alert("Booking Confirmed!"); reset(); }} className="w-full">Finalize Booking</Button>}
         </div>
       </div>
     </div>
+  );
+};
+
+/* --- TESTIMONIALS SECTION --- */
+const Testimonials = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
+
+  const onScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, offsetWidth } = scrollRef.current;
+      const index = Math.round(scrollLeft / offsetWidth);
+      setActiveIndex(index);
+    }
+  };
+
+  const scrollTo = (i) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ left: i * scrollRef.current.offsetWidth, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section className="py-24 px-6 bg-zinc-900 text-white overflow-hidden">
+      <div className="container mx-auto max-w-6xl">
+        <SectionHeader title="Client Experiences" subtitle="Kind Words" />
+        <div className="relative">
+          <div ref={scrollRef} onScroll={onScroll} className="flex overflow-x-auto pb-12 gap-6 hide-scrollbar snap-x-mandatory scroll-smooth md:grid md:grid-cols-3 md:snap-none">
+            {TESTIMONIALS.map((r) => (
+              <div key={r.id} className="min-w-[90%] md:min-w-0 bg-zinc-800/40 p-10 border border-zinc-700/50 flex flex-col justify-between snap-center">
+                <div>
+                  <div className="flex mb-8">{[...Array(r.rating)].map((_, i) => <Star key={i} size={14} className="fill-current mr-1 text-white" />)}</div>
+                  <p className="text-xl font-serif italic mb-10 leading-relaxed">"{r.text}"</p>
+                </div>
+                <div className="flex justify-between items-end border-t border-zinc-700 pt-8 mt-4">
+                  <div><p className="text-sm uppercase tracking-widest font-bold">{r.name}</p><p className="text-[10px] text-zinc-500 uppercase mt-1">Verified Client</p></div>
+                  <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{r.date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Dots */}
+          <div className="flex justify-center space-x-3 md:hidden">
+            {TESTIMONIALS.map((_, i) => (
+              <button key={i} onClick={() => scrollTo(i)} className={`h-1.5 rounded-full transition-all duration-300 ${activeIndex === i ? 'w-8 bg-white' : 'w-2 bg-zinc-700'}`} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -206,7 +243,6 @@ export default function App() {
       <Navbar onBookClick={() => setIsBookingOpen(true)} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
-      {/* Hero - Added id="home" here */}
       <section id="home" className="relative h-screen flex items-center justify-center bg-zinc-900 overflow-hidden">
         <img src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="absolute inset-0 w-full h-full object-cover opacity-50" alt="Hero" />
         <div className="relative z-10 text-center text-white px-6">
@@ -216,7 +252,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* Services */}
       <section id="services" className="py-24 px-6 bg-zinc-50">
         <div className="container mx-auto max-w-6xl">
           <SectionHeader title="Our Menu" subtitle="Curated Treatments" />
@@ -235,7 +270,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* Stylists */}
       <section id="stylists" className="py-24 px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
           <SectionHeader title="Meet The Experts" subtitle="Our Team" />
@@ -254,28 +288,8 @@ export default function App() {
         </div>
       </section>
 
-      {/* Reviews */}
-      <section className="py-24 px-6 bg-zinc-900 text-white overflow-hidden">
-        <div className="container mx-auto max-w-6xl">
-          <SectionHeader title="Client Experiences" subtitle="Kind Words" />
-          <div className="flex overflow-x-auto pb-10 gap-6 hide-scrollbar md:grid md:grid-cols-3">
-            {TESTIMONIALS.map((r) => (
-              <div key={r.id} className="min-w-[85%] md:min-w-0 bg-zinc-800/40 p-10 border border-zinc-700/50 flex flex-col justify-between">
-                <div>
-                  <div className="flex mb-8">{[...Array(r.rating)].map((_, i) => <Star key={i} size={14} className="fill-current mr-1" />)}</div>
-                  <p className="text-xl font-serif italic mb-10 leading-relaxed">"{r.text}"</p>
-                </div>
-                <div className="flex justify-between items-end border-t border-zinc-700 pt-8 mt-4">
-                  <div><p className="text-sm uppercase tracking-widest font-bold">{r.name}</p><p className="text-[10px] text-zinc-500 uppercase mt-1">Verified Client</p></div>
-                  <span className="text-[10px] text-zinc-600 uppercase tracking-widest">{r.date}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Testimonials />
 
-      {/* Gallery */}
       <section id="gallery" className="grid grid-cols-2 md:grid-cols-4">
         {["v1765596663/freepik__35mm-film-photography-luxury-modern-hair-salon-int__8283_vhnahv.png", "v1765596654/freepik__the-style-is-candid-image-photography-with-natural__8284_cbgbc6.png", "v1765596629/freepik__the-style-is-candid-image-photography-with-natural__8286_e0zz4v.png", "v1765596644/freepik__35mm-film-photography-minimalist-black-display-cab__8285_jwej9v.png"].map((img, i) => (
           <div key={i} className="h-64 md:h-96 overflow-hidden">
@@ -284,7 +298,6 @@ export default function App() {
         ))}
       </section>
 
-      {/* Contact */}
       <section id="contact" className="py-24 px-6 bg-zinc-50">
         <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-20">
           <div>
