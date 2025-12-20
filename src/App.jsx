@@ -29,7 +29,7 @@ const TESTIMONIALS = [
 /* --- UI COMPONENTS --- */
 const Button = ({ children, onClick, variant = 'primary', className = '', ...props }) => {
   const variants = {
-    primary: "bg-black text-white hover:bg-zinc-800",
+    primary: "bg-black text-white hover:bg-zinc-800 border border-black",
     secondary: "bg-white text-black border border-black hover:bg-zinc-50",
     outline: "bg-transparent text-white border border-white hover:bg-white hover:text-black"
   };
@@ -243,12 +243,13 @@ export default function App() {
       <Navbar onBookClick={() => setIsBookingOpen(true)} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
+      {/* Hero Section with Outline CTA */}
       <section id="home" className="relative h-screen flex items-center justify-center bg-zinc-900 overflow-hidden">
         <img src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="absolute inset-0 w-full h-full object-cover opacity-50" alt="Hero" />
         <div className="relative z-10 text-center text-white px-6">
           <p className="text-xs uppercase tracking-[0.4em] mb-6">Beauty Redefined</p>
           <h1 className="text-5xl md:text-8xl font-serif mb-10 leading-tight">Experience the Art <br/> of Hair</h1>
-          <Button onClick={() => setIsBookingOpen(true)}>Book Appointment</Button>
+          <Button variant="outline" onClick={() => setIsBookingOpen(true)}>Book Appointment</Button>
         </div>
       </section>
 
