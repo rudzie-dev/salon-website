@@ -74,7 +74,7 @@ const Navbar = ({ onBookClick }) => {
   return (
     <nav className={`fixed top-0 w-full z-[80] transition-all duration-500 ${isScrolled || isOpen ? 'bg-white py-4 shadow-sm' : 'bg-transparent py-6 text-white'}`}>
       <div className="container mx-auto px-6 flex justify-between items-center relative z-[90]">
-        <a href="#" className={`text-2xl font-serif tracking-widest font-bold transition-colors ${(isScrolled || isOpen) ? 'text-black' : 'text-white'}`}>
+        <a href="#home" className={`text-2xl font-serif tracking-widest font-bold transition-colors ${(isScrolled || isOpen) ? 'text-black' : 'text-white'}`}>
           L U M I È R E
         </a>
         
@@ -206,8 +206,8 @@ export default function App() {
       <Navbar onBookClick={() => setIsBookingOpen(true)} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
-      {/* Hero */}
-      <section className="relative h-screen flex items-center justify-center bg-zinc-900 overflow-hidden">
+      {/* Hero - Added id="home" here */}
+      <section id="home" className="relative h-screen flex items-center justify-center bg-zinc-900 overflow-hidden">
         <img src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="absolute inset-0 w-full h-full object-cover opacity-50" alt="Hero" />
         <div className="relative z-10 text-center text-white px-6">
           <p className="text-xs uppercase tracking-[0.4em] mb-6">Beauty Redefined</p>
