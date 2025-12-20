@@ -1,49 +1,72 @@
+@font-face {
+  font-family: 'IvyMode';
+  src: url('/fonts/fonntscom-IvyModeRegular.woff2') format('woff2'),
+       url('/fonts/fonntscom-IvyModeRegular.woff') format('woff');
+  font-weight: normal; font-style: normal; font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root { scroll-padding-top: 80px; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply antialiased text-zinc-900 bg-white selection:bg-zinc-950 selection:text-white overflow-x-hidden;
+  }
+  .font-serif { font-family: 'IvyMode', serif !important; }
+}
+
 @layer utilities {
-  /* SVG Draw Animation */
+  .hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* --- LOADER ANIMATIONS --- */
   .animate-draw {
     stroke-dasharray: 600;
     stroke-dashoffset: 600;
     animation: draw 3s ease-in-out infinite alternate;
   }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
 
-  @keyframes draw {
-    to { stroke-dashoffset: 0; }
-  }
-
-  /* Strip Exit Animation */
   .exit-strip {
-    animation: stripUp 1s cubic-bezier(0.85, 0, 0.15, 1) forwards;
+    animation: stripUp 1.2s cubic-bezier(0.85, 0, 0.15, 1) forwards;
   }
-
   @keyframes stripUp {
     from { transform: translateY(0); }
     to { transform: translateY(-100%); }
   }
 
-  /* Progress Bar Shimmer */
-  .animate-shimmer {
+  .animate-shimmer-progress {
     animation: loadingShimmer 2s infinite linear;
     width: 200%;
     position: absolute;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   }
-
   @keyframes loadingShimmer {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(50%); }
   }
 
-  /* Support for reduced motion accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-draw, .animate-shimmer {
-      animation: none !important;
-    }
-    .exit-strip {
-      animation: fadeOut 0.5s ease forwards !important;
-    }
+  /* --- UI ANIMATIONS --- */
+  .nav-link-grow { position: relative; }
+  .nav-link-grow::after {
+    content: ''; position: absolute; width: 0; height: 1px;
+    bottom: -4px; left: 0; background-color: currentColor;
+    transition: width 0.4s ease;
   }
-}
+  .nav-link-grow:hover::after { width: 100%; }
 
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  @keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-link { animation: slideUpFade 0.6s ease-out forwards; opacity: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-draw, .animate-shimmer-progress, .exit-strip { animation: none !important; }
+    .exit-strip { opacity: 0; transition: opacity 0.5s ease; }
+  }
 }
