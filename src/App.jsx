@@ -64,10 +64,9 @@ const BookingModal = ({ isOpen, onClose }) => {
   const handleBack = () => setStep(step - 1);
   const resetBooking = () => { setStep(1); setBookingData({ service: null, stylist: null, date: null, time: null }); onClose(); };
 
-  // Helper to check if salon is open on a given date (Closed Sun/Mon based on footer info)
   const isSalonOpen = (dateObj) => {
     const day = dateObj.getDay();
-    return day !== 0 && day !== 1; // 0 = Sunday, 1 = Monday
+    return day !== 0 && day !== 1; // Closed Sun (0) and Mon (1)
   };
 
   return (
@@ -79,7 +78,7 @@ const BookingModal = ({ isOpen, onClose }) => {
             <h3 className="font-serif text-2xl">Book Appointment</h3>
             <p className="text-zinc-500 text-sm mt-1">Step {step} of 4</p>
           </div>
-          <button onClick={resetBooking} className="p-2 hover:bg-zinc-100 rounded-full transition-colors" aria-label="Close modal">
+          <button onClick={resetBooking} className="p-2 hover:bg-zinc-100 rounded-full transition-colors" aria-label="Close booking">
             <X size={20} />
           </button>
         </div>
@@ -127,17 +126,17 @@ const BookingModal = ({ isOpen, onClose }) => {
                 {[...Array(14)].map((_, i) => {
                   const d = new Date();
                   d.setDate(d.getDate() + i);
-                  const isOpen = isSalonOpen(d);
+                  const open = isSalonOpen(d);
                   const fullDate = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
                   const isSelected = bookingData.date === fullDate;
 
                   return (
                     <button 
                       key={i} 
-                      disabled={!isOpen}
+                      disabled={!open}
                       onClick={() => setBookingData({ ...bookingData, date: fullDate })}
                       className={`flex-shrink-0 w-20 py-4 border transition-all flex flex-col items-center ${
-                        !isOpen ? 'opacity-20 cursor-not-allowed bg-zinc-50' : 
+                        !open ? 'opacity-20 cursor-not-allowed bg-zinc-50' : 
                         isSelected ? 'border-black bg-black text-white' : 'border-zinc-200 hover:border-zinc-400'
                       }`}
                     >
@@ -217,7 +216,7 @@ const Navbar = ({ onBookClick }) => {
           ))}
           <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'} className={isScrolled ? '' : 'bg-white text-black border-none'}>Book Now</Button>
         </div>
-        <button className={`md:hidden ${isScrolled ? 'text-black' : 'text-white'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
+        <button className={`md:hidden ${isScrolled ? 'text-black' : 'text-white'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle Menu">
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
@@ -236,12 +235,12 @@ const Navbar = ({ onBookClick }) => {
 
 export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
   const handleContactSubmit = (e) => {
     e.preventDefault();
-    alert(`Thank you ${contactForm.name}, your message has been sent!`);
-    setContactForm({ name: '', email: '', message: '' });
+    alert(`Message received from ${formData.name}!`);
+    setFormData({ name: '', email: '', message: '' });
   };
 
   return (
@@ -251,7 +250,7 @@ export default function App() {
 
       <section className="relative h-screen min-h-[600px] flex items-center justify-center bg-zinc-900 overflow-hidden">
         <div className="absolute inset-0">
-          <img src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="w-full h-full object-cover opacity-50" alt="Salon interior" />
+          <img src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="w-full h-full object-cover opacity-50" alt="Salon Interior" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent"></div>
         </div>
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto text-white">
@@ -285,7 +284,7 @@ export default function App() {
           <div className="grid md:grid-cols-3 gap-12">
             {STYLISTS.map((s) => (
               <div key={s.id} className="group text-center">
-                <div className="relative overflow-hidden mb-8 aspect-[3/4] bg-zinc-100">
+                <div className="relative overflow-hidden mb-8 aspect-[3/4]">
                   <img src={s.image} loading="lazy" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-110" alt={s.name} />
                 </div>
                 <h4 className="text-2xl font-serif mb-1">{s.name}</h4>
@@ -319,8 +318,8 @@ export default function App() {
 
       <section id="gallery" className="grid grid-cols-2 md:grid-cols-4 overflow-hidden">
         {["v1765596663/freepik__35mm-film-photography-luxury-modern-hair-salon-int__8283_vhnahv.png", "v1765596654/freepik__the-style-is-candid-image-photography-with-natural__8284_cbgbc6.png", "v1765596629/freepik__the-style-is-candid-image-photography-with-natural__8286_e0zz4v.png", "v1765596644/freepik__35mm-film-photography-minimalist-black-display-cab__8285_jwej9v.png"].map((img, i) => (
-          <div key={i} className="h-64 md:h-96 overflow-hidden bg-zinc-200">
-            <img src={`https://res.cloudinary.com/dgstbaoic/image/upload/${img}`} loading="lazy" className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" alt="Salon gallery image" />
+          <div key={i} className="h-64 md:h-96 overflow-hidden">
+            <img src={`https://res.cloudinary.com/dgstbaoic/image/upload/${img}`} loading="lazy" className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" alt="Salon Gallery" />
           </div>
         ))}
       </section>
@@ -330,38 +329,18 @@ export default function App() {
           <div>
             <SectionHeader title="Visit Us" subtitle="Get In Touch" centered={false} />
             <div className="space-y-10 text-zinc-500">
-              <div className="flex gap-6"><MapPin className="text-black" aria-hidden="true" /><p>Shop 10, Luxe Square, Foreshore, Cape Town</p></div>
-              <div className="flex gap-6"><Phone className="text-black" aria-hidden="true" /><p>(021) 555 0123</p></div>
-              <div className="flex gap-6"><Mail className="text-black" aria-hidden="true" /><p>hello@lumieresalon.com</p></div>
-              <div className="flex gap-6"><Clock className="text-black" aria-hidden="true" /><p>Tue - Fri: 10am - 8pm | Sat: 9am - 6pm</p></div>
+              <div className="flex gap-6"><MapPin className="text-black" /><p>Shop 10, Luxe Square, Foreshore, Cape Town</p></div>
+              <div className="flex gap-6"><Phone className="text-black" /><p>(021) 555 0123</p></div>
+              <div className="flex gap-6"><Mail className="text-black" /><p>hello@lumieresalon.com</p></div>
+              <div className="flex gap-6"><Clock className="text-black" /><p>Tue - Fri: 10am - 8pm | Sat: 9am - 6pm</p></div>
             </div>
           </div>
           <div className="bg-white p-10 border border-zinc-100 shadow-sm">
             <h3 className="text-3xl font-serif mb-8">Send a Message</h3>
             <form className="space-y-6" onSubmit={handleContactSubmit}>
-              <input 
-                required
-                placeholder="Name" 
-                value={contactForm.name}
-                onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" 
-              />
-              <input 
-                required
-                type="email"
-                placeholder="Email" 
-                value={contactForm.email}
-                onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" 
-              />
-              <textarea 
-                required
-                placeholder="Message" 
-                rows="4" 
-                value={contactForm.message}
-                onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" 
-              />
+              <input required placeholder="Name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" />
+              <input required type="email" placeholder="Email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" />
+              <textarea required placeholder="Message" rows="4" value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} className="w-full p-4 bg-zinc-50 border-none focus:ring-1 focus:ring-black transition-all outline-none" />
               <Button type="submit" className="w-full py-4">Submit Inquiry</Button>
             </form>
           </div>
@@ -371,8 +350,8 @@ export default function App() {
       <footer className="bg-zinc-900 text-white py-20 px-6 text-center">
         <h2 className="text-4xl font-serif font-bold tracking-[0.3em] mb-10">L U M I È R E</h2>
         <div className="flex justify-center space-x-10 mb-16 opacity-60 hover:opacity-100 transition-opacity">
-          <a href="#" aria-label="Follow us on Instagram"><Instagram size={24} /></a>
-          <a href="#" aria-label="Follow us on Facebook"><Facebook size={24} /></a>
+          <a href="#" aria-label="Instagram"><Instagram size={24} /></a>
+          <a href="#" aria-label="Facebook"><Facebook size={24} /></a>
         </div>
         <p className="text-zinc-600 text-xs uppercase tracking-widest font-medium">© 2024 Lumière Salon Cape Town. All rights reserved.</p>
       </footer>
