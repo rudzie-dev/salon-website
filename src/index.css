@@ -1,3 +1,4 @@
+/* Removed Google Font import to prioritize IvyMode */
 @font-face {
   font-family: 'IvyMode';
   src: url('/fonts/fonntscom-IvyModeRegular.woff2') format('woff2'),
@@ -17,21 +18,21 @@
   }
   body {
     font-family: 'Inter', sans-serif;
-    @apply antialiased text-zinc-900;
+    @apply antialiased text-zinc-900 bg-white;
   }
-  /* Maps font-serif to your local IvyMode font */
+  /* Combined all font-serif overrides into one clean rule */
   .font-serif {
     font-family: 'IvyMode', serif !important;
   }
 }
 
 @layer utilities {
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -42,16 +43,10 @@
     border-radius: 10px;
   }
 
-  /* Slide Up Animation for Mobile Menu Links */
+  /* Core Animations */
   @keyframes slideUpFade {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .animate-link {
@@ -88,7 +83,6 @@
   from { left: -100%; }
   to { left: 200%; }
 }
-
 .animate-shimmer {
   animation: shimmer 2s infinite;
 }
