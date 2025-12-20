@@ -2,9 +2,7 @@
   font-family: 'IvyMode';
   src: url('/fonts/fonntscom-IvyModeRegular.woff2') format('woff2'),
        url('/fonts/fonntscom-IvyModeRegular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+  font-weight: normal; font-style: normal; font-display: swap;
 }
 
 @tailwind base;
@@ -12,106 +10,63 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    scroll-behavior: smooth;
-  }
+  :root { scroll-padding-top: 80px; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: 'Inter', sans-serif;
-    @apply antialiased text-zinc-900 bg-white;
+    font-family: 'Inter', system-ui, sans-serif;
+    @apply antialiased text-zinc-900 bg-white selection:bg-zinc-950 selection:text-white overflow-x-hidden;
   }
-  .font-serif {
-    font-family: 'IvyMode', serif !important;
-  }
+  .font-serif { font-family: 'IvyMode', serif !important; }
 }
 
 @layer utilities {
-  .hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+  .hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
 
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #e4e4e7;
-    border-radius: 10px;
-  }
-
-  /* --- LOADING SCREEN ANIMATIONS --- */
-  
-  /* SVG Drawing: Animates the stroke of the letters */
+  /* --- LOADER ANIMATIONS --- */
   .animate-draw {
-    stroke-dasharray: 500;
-    stroke-dashoffset: 500;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
     animation: draw 3s ease-in-out infinite alternate;
   }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
 
-  @keyframes draw {
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  /* Strip Exit: Slides vertical blocks upward */
   .exit-strip {
-    animation: stripUp 1.2s cubic-bezier(0.8, 0, 0.2, 1) forwards;
+    animation: stripUp 1.2s cubic-bezier(0.85, 0, 0.15, 1) forwards;
   }
-
   @keyframes stripUp {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-100%); }
+    from { transform: translateY(0); }
+    to { transform: translateY(-100%); }
   }
 
-  /* --- CAROUSEL & UI --- */
-
-  .snap-x-mandatory {
-    scroll-snap-type: x mandatory;
-  }
-  .snap-center {
-    scroll-snap-align: center;
-  }
-
-  .nav-link-grow {
-    position: relative;
-  }
-  .nav-link-grow::after {
-    content: '';
+  .animate-shimmer-progress {
+    animation: loadingShimmer 2s infinite linear;
+    width: 200%;
     position: absolute;
-    width: 0;
-    height: 1px;
-    bottom: -4px;
-    left: 50%;
-    background-color: currentColor;
-    transition: all 0.3s ease-in-out;
-    transform: translateX(-50%);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   }
-  .nav-link-grow:hover::after {
-    width: 100%;
+  @keyframes loadingShimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(50%); }
   }
+
+  /* --- UI ANIMATIONS --- */
+  .nav-link-grow { position: relative; }
+  .nav-link-grow::after {
+    content: ''; position: absolute; width: 0; height: 1px;
+    bottom: -4px; left: 0; background-color: currentColor;
+    transition: width 0.4s ease;
+  }
+  .nav-link-grow:hover::after { width: 100%; }
 
   @keyframes slideUpFade {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .animate-link {
-    animation: slideUpFade 0.5s ease-out forwards;
-    opacity: 0;
-  }
-  .delay-1 { animation-delay: 0.1s; }
-  .delay-2 { animation-delay: 0.15s; }
-  .delay-3 { animation-delay: 0.2s; }
-  .delay-4 { animation-delay: 0.25s; }
-  .delay-5 { animation-delay: 0.3s; }
+  .animate-link { animation: slideUpFade 0.6s ease-out forwards; opacity: 0; }
 
-  @keyframes shimmer {
-    from { left: -100%; }
-    to { left: 200%; }
-  }
-  .animate-shimmer {
-    animation: shimmer 2s infinite;
+  @media (prefers-reduced-motion: reduce) {
+    .animate-draw, .animate-shimmer-progress, .exit-strip { animation: none !important; }
+    .exit-strip { opacity: 0; transition: opacity 0.5s ease; }
   }
 }
