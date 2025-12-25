@@ -171,37 +171,46 @@ const BookingModal = ({ isOpen, onClose }) => {
   const handleFinalize = () => {
     const phoneNumber = "27676862733"; 
     
-    // Capture state values precisely
+    // 1. PULL EVERY DETAIL DIRECTLY FROM STATE
     const name = customerName.trim();
-    const service = bookingData.service?.name ?? "MISSING SERVICE";
-    const price = bookingData.service?.price ?? "0";
-    const stylist = bookingData.stylist?.name ?? "First Available";
-    const date = bookingData.date ?? "MISSING DATE";
-    const time = bookingData.time ?? "MISSING TIME";
+    const serviceName = bookingData.service?.name;
+    const servicePrice = bookingData.service?.price;
+    const stylistName = bookingData.stylist?.name;
+    const appointmentDate = bookingData.date;
+    const appointmentTime = bookingData.time;
 
-    // Build the message with absolute clarity
+    // 2. CONSTRUCT THE MESSAGE WITH EVERY SINGLE DETAIL
+    // We use %0A for clean line breaks in WhatsApp
     const message = 
       `Hi Lumière Salon!%0A%0A` +
-      `I'd like to book an appointment:%0A` +
+      `BOOKING DETAILS:%0A` +
       `Name: ${name}%0A` +
-      `Service: ${service}%0A` +
-      `Stylist: ${stylist}%0A` +
-      `When: ${date} at ${time}%0A` +
-      `Total Price: R${price}%0A%0A` +
-      `Please let me know if this slot is available!`;
+      `Service: ${serviceName}%0A` +
+      `Stylist: ${stylistName}%0A` +
+      `Date: ${appointmentDate}%0A` +
+      `Time: ${appointmentTime}%0A` +
+      `Total Price: R${servicePrice}%0A%0A` +
+      `Please let me know if this works!`;
 
+    // 3. TRIGGER WHATSAPP
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
     
-    // Slight delay before reset to ensure the browser processes the URL
-    setTimeout(reset, 800);
+    // 4. RESET AFTER OPENING
+    setTimeout(reset, 1000);
   };
 
   const isClosed = (d) => d.getDay() === 0 || d.getDay() === 1;
 
+  // Check if ALL data is present for the final button
+  const isBookingComplete = 
+    customerName.trim().length > 0 && 
+    bookingData.service && 
+    bookingData.date && 
+    bookingData.time;
+
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
-        {/* Header */}
+      <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300">
         <div className="flex justify-between items-center p-6 border-b">
           <div>
             <h3 className="font-serif text-2xl">Book Appointment</h3>
@@ -211,19 +220,17 @@ const BookingModal = ({ isOpen, onClose }) => {
         </div>
         
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-          {/* STEP 1: Services */}
           {step === 1 && (
             <div className="grid gap-3">
               {SERVICES.map((s) => (
-                <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); setStep(2); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black transition-all text-left group">
+                <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); setStep(2); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black transition-all text-left">
                   <div><p className="font-medium">{s.name}</p><p className="text-sm text-zinc-500">{s.duration} mins • R{s.price}</p></div>
-                  <ChevronRight size={16} className="text-zinc-300 group-hover:text-black" />
+                  <ChevronRight size={16} />
                 </button>
               ))}
             </div>
           )}
 
-          {/* STEP 2: Stylists */}
           {step === 2 && (
             <div className="grid sm:grid-cols-2 gap-4">
               <button onClick={() => { setBookingData({ ...bookingData, stylist: { name: 'First Available' } }); setStep(3); }} className="p-4 border border-zinc-200 hover:border-black flex items-center gap-4">
@@ -239,7 +246,6 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* STEP 3: Date/Time */}
           {step === 3 && (
             <div className="space-y-6">
               <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
@@ -258,56 +264,46 @@ const BookingModal = ({ isOpen, onClose }) => {
               {bookingData.date && (
                 <div className="grid grid-cols-3 gap-2">
                   {['10:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'].map((t) => (
-                    <button key={t} onClick={() => { setBookingData({ ...bookingData, time: t }); setStep(4); }} className="py-3 border border-zinc-200 hover:bg-black hover:text-white transition-colors">{t}</button>
+                    <button key={t} onClick={() => { setBookingData({ ...bookingData, time: t }); setStep(4); }} className="py-3 border border-zinc-200 hover:bg-black hover:text-white">{t}</button>
                   ))}
                 </div>
               )}
             </div>
           )}
 
-          {/* STEP 4: Review and Name (STRICT VALIDATION) */}
           {step === 4 && (
             <div className="space-y-6 text-left">
-              <div className="text-center">
-                <CheckCircle size={48} className="text-green-500 mx-auto mb-2" />
-                <h4 className="text-lg font-medium">One Last Step</h4>
-              </div>
-              
-              <div className="bg-zinc-50 p-4 space-y-2 text-sm border border-zinc-100">
+              <div className="bg-zinc-50 p-6 space-y-3 border border-zinc-100">
+                <h4 className="font-bold uppercase text-xs tracking-widest text-zinc-400">Booking Summary</h4>
                 <p><strong>Service:</strong> {bookingData.service?.name}</p>
                 <p><strong>Stylist:</strong> {bookingData.stylist?.name}</p>
                 <p><strong>When:</strong> {bookingData.date} at {bookingData.time}</p>
-                <p className="font-bold border-t pt-2 mt-2 text-lg uppercase">Total: R{bookingData.service?.price}</p>
+                <p className="text-xl font-bold border-t pt-3">Price: R{bookingData.service?.price}</p>
               </div>
-
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest font-bold">Please enter your Full Name</label>
+                <label className="text-xs uppercase font-bold tracking-tighter">Enter Your Name to Confirm</label>
                 <input 
                   type="text" 
-                  placeholder="Required to confirm booking" 
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full p-4 border border-zinc-200 outline-none focus:border-black transition-all bg-white shadow-inner"
+                  className="w-full p-4 border border-zinc-300 outline-none focus:border-black"
+                  placeholder="Your Name"
                 />
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer actions */}
-        <div className="p-6 border-t flex justify-between items-center">
-          {step > 1 && <button onClick={() => setStep(step - 1)} className="underline text-sm uppercase tracking-widest font-bold">Back</button>}
-          
-          {step === 4 ? (
+        <div className="p-6 border-t flex justify-between">
+          {step > 1 && <button onClick={() => setStep(step - 1)} className="underline text-sm uppercase font-bold">Back</button>}
+          {step === 4 && (
             <Button 
               onClick={handleFinalize} 
-              disabled={customerName.trim().length < 2} // Button stays disabled until a name is typed
-              className={`flex-1 ml-4 ${customerName.trim().length < 2 ? 'opacity-50 cursor-not-allowed bg-zinc-300' : 'bg-green-600 hover:bg-green-700'}`}
+              disabled={!isBookingComplete}
+              className={`flex-1 ml-4 ${!isBookingComplete ? 'bg-zinc-200' : 'bg-black text-white'}`}
             >
-              Confirm Booking
+              Send to WhatsApp
             </Button>
-          ) : (
-            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Complete step {step} to continue</p>
           )}
         </div>
       </div>
