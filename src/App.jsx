@@ -163,12 +163,14 @@ const BookingModal = ({ isOpen, onClose }) => {
 
   // NEW: WhatsApp Redirect Function
   const handleFinalize = () => {
-    const phoneNumber = "27123456789"; // Replace with the actual Salon WhatsApp number
+    const phoneNumber = "27123456789"; // Replace with actual number
+    
+    // Removed the "*" characters from the labels below
     const message = `Hi Lumière Salon! I'd like to book an appointment:%0A%0A` +
-      `*Service:* ${bookingData.service?.name}%0A` +
-      `*Stylist:* ${bookingData.stylist?.name}%0A` +
-      `*When:* ${bookingData.date} at ${bookingData.time}%0A` +
-      `*Total Price:* R${bookingData.service?.price}%0A%0A` +
+      `Service: ${bookingData.service?.name}%0A` +
+      `Stylist: ${bookingData.stylist?.name}%0A` +
+      `When: ${bookingData.date} at ${bookingData.time}%0A` +
+      `Total Price: R${bookingData.service?.price}%0A%0A` +
       `Please let me know if this slot is available!`;
 
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
