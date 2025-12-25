@@ -169,7 +169,7 @@ const BookingModal = ({ isOpen, onClose }) => {
   };
 
   const handleFinalize = () => {
-    const phoneNumber = "27123456789"; // Your client's phone number
+    const phoneNumber = "27676862733"; // Your client's phone number
     
     // Safety checks to ensure we have the data
     const sName = bookingData.service?.name || "Not selected";
