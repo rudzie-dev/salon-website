@@ -155,7 +155,26 @@ const BookingModal = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const reset = () => { setStep(1); setBookingData({ service: null, stylist: null, date: null, time: null }); onClose(); };
+  const reset = () => { 
+    setStep(1); 
+    setBookingData({ service: null, stylist: null, date: null, time: null }); 
+    onClose(); 
+  };
+
+  // NEW: WhatsApp Redirect Function
+  const handleFinalize = () => {
+    const phoneNumber = "27123456789"; // Replace with the actual Salon WhatsApp number
+    const message = `Hi Lumière Salon! I'd like to book an appointment:%0A%0A` +
+      `*Service:* ${bookingData.service?.name}%0A` +
+      `*Stylist:* ${bookingData.stylist?.name}%0A` +
+      `*When:* ${bookingData.date} at ${bookingData.time}%0A` +
+      `*Total Price:* R${bookingData.service?.price}%0A%0A` +
+      `Please let me know if this slot is available!`;
+
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+    reset();
+  };
+
   const isClosed = (d) => d.getDay() === 0 || d.getDay() === 1;
 
   return (
@@ -165,7 +184,9 @@ const BookingModal = ({ isOpen, onClose }) => {
           <div><h3 className="font-serif text-2xl">Book Appointment</h3><p className="text-zinc-500 text-sm">Step {step} of 4</p></div>
           <button onClick={reset} className="p-2 hover:bg-zinc-100 rounded-full transition-colors"><X size={20} /></button>
         </div>
+        
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+          {/* STEP 1: Services */}
           {step === 1 && (
             <div className="grid gap-3">
               {SERVICES.map((s) => (
@@ -176,6 +197,8 @@ const BookingModal = ({ isOpen, onClose }) => {
               ))}
             </div>
           )}
+
+          {/* STEP 2: Stylists */}
           {step === 2 && (
             <div className="grid sm:grid-cols-2 gap-4">
               <button onClick={() => { setBookingData({ ...bookingData, stylist: { name: 'First Available' } }); setStep(3); }} className="p-4 border border-zinc-200 hover:border-black flex items-center gap-4">
@@ -190,6 +213,8 @@ const BookingModal = ({ isOpen, onClose }) => {
               ))}
             </div>
           )}
+
+          {/* STEP 3: Date & Time */}
           {step === 3 && (
             <div className="space-y-6">
               <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
@@ -214,6 +239,8 @@ const BookingModal = ({ isOpen, onClose }) => {
               )}
             </div>
           )}
+
+          {/* STEP 4: Summary */}
           {step === 4 && (
             <div className="space-y-6 text-center">
               <CheckCircle size={48} className="text-green-500 mx-auto mb-4" />
@@ -226,15 +253,16 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
         </div>
+
         <div className="p-6 border-t flex justify-between">
           {step > 1 && step < 4 && <button onClick={() => setStep(step - 1)} className="underline text-sm uppercase tracking-widest font-bold">Back</button>}
-          {step === 4 && <Button onClick={() => { alert("Booking Confirmed!"); reset(); }} className="w-full">Finalize Booking</Button>}
+          {/* UPDATED BUTTON */}
+          {step === 4 && <Button onClick={handleFinalize} className="w-full">Finalize Booking via WhatsApp</Button>}
         </div>
       </div>
     </div>
   );
 };
-
 /* --- TESTIMONIALS --- */
 const Testimonials = () => {
   const [activeIndex, setActiveIndex] = useState(0);
