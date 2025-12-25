@@ -169,34 +169,31 @@ const BookingModal = ({ isOpen, onClose }) => {
   };
 
   const handleFinalize = () => {
-    // UPDATED: Your personal number
     const phoneNumber = "27676862733"; 
     
-    // Safety variables to catch every possible instance
-    const sName = bookingData.service?.name ?? "Service not selected";
-    const sPrice = bookingData.service?.price ?? "TBD";
-    const sStylist = bookingData.stylist?.name ?? "First Available";
-    const bDate = bookingData.date ?? "Date not set";
-    const bTime = bookingData.time ?? "Time not set";
-    const cName = customerName.trim() || "A Customer";
+    // Capture state values precisely
+    const name = customerName.trim();
+    const service = bookingData.service?.name ?? "MISSING SERVICE";
+    const price = bookingData.service?.price ?? "0";
+    const stylist = bookingData.stylist?.name ?? "First Available";
+    const date = bookingData.date ?? "MISSING DATE";
+    const time = bookingData.time ?? "MISSING TIME";
 
-    // Build the clean message (No stars, clear line breaks)
+    // Build the message with absolute clarity
     const message = 
-      `Hi Lumière Salon! My name is ${cName}.%0A%0A` +
-      `I would like to book an appointment:%0A` +
-      `Service: ${sName}%0A` +
-      `Stylist: ${sStylist}%0A` +
-      `When: ${bDate} at ${bTime}%0A` +
-      `Total Price: R${sPrice}%0A%0A` +
+      `Hi Lumière Salon!%0A%0A` +
+      `I'd like to book an appointment:%0A` +
+      `Name: ${name}%0A` +
+      `Service: ${service}%0A` +
+      `Stylist: ${stylist}%0A` +
+      `When: ${date} at ${time}%0A` +
+      `Total Price: R${price}%0A%0A` +
       `Please let me know if this slot is available!`;
 
-    // Open WhatsApp
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
     
-    // Delay reset so the browser can finish opening the link
-    setTimeout(() => {
-      reset();
-    }, 500);
+    // Slight delay before reset to ensure the browser processes the URL
+    setTimeout(reset, 800);
   };
 
   const isClosed = (d) => d.getDay() === 0 || d.getDay() === 1;
@@ -214,7 +211,7 @@ const BookingModal = ({ isOpen, onClose }) => {
         </div>
         
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-          {/* STEP 1: SERVICES */}
+          {/* STEP 1: Services */}
           {step === 1 && (
             <div className="grid gap-3">
               {SERVICES.map((s) => (
@@ -226,7 +223,7 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* STEP 2: STYLISTS */}
+          {/* STEP 2: Stylists */}
           {step === 2 && (
             <div className="grid sm:grid-cols-2 gap-4">
               <button onClick={() => { setBookingData({ ...bookingData, stylist: { name: 'First Available' } }); setStep(3); }} className="p-4 border border-zinc-200 hover:border-black flex items-center gap-4">
@@ -242,9 +239,9 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* STEP 3: DATE & TIME */}
+          {/* STEP 3: Date/Time */}
           {step === 3 && (
-            <div className="space-y-6 text-left">
+            <div className="space-y-6">
               <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
                 {[...Array(14)].map((_, i) => {
                   const d = new Date(); d.setDate(d.getDate() + i);
@@ -268,42 +265,49 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* STEP 4: SUMMARY & NAME */}
+          {/* STEP 4: Review and Name (STRICT VALIDATION) */}
           {step === 4 && (
-            <div className="space-y-6 text-left animate-in slide-in-from-bottom-2 duration-300">
+            <div className="space-y-6 text-left">
               <div className="text-center">
                 <CheckCircle size={48} className="text-green-500 mx-auto mb-2" />
-                <h4 className="text-lg font-medium">Almost Done</h4>
+                <h4 className="text-lg font-medium">One Last Step</h4>
               </div>
               
               <div className="bg-zinc-50 p-4 space-y-2 text-sm border border-zinc-100">
                 <p><strong>Service:</strong> {bookingData.service?.name}</p>
                 <p><strong>Stylist:</strong> {bookingData.stylist?.name}</p>
                 <p><strong>When:</strong> {bookingData.date} at {bookingData.time}</p>
-                <p className="font-bold border-t pt-2 mt-2">Total: R{bookingData.service?.price}</p>
+                <p className="font-bold border-t pt-2 mt-2 text-lg uppercase">Total: R{bookingData.service?.price}</p>
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs uppercase tracking-widest font-bold">Your Name</label>
+                <label className="text-xs uppercase tracking-widest font-bold">Please enter your Full Name</label>
                 <input 
                   type="text" 
-                  placeholder="Tell us your name..." 
+                  placeholder="Required to confirm booking" 
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full p-3 border border-zinc-200 outline-none focus:border-black transition-colors"
+                  className="w-full p-4 border border-zinc-200 outline-none focus:border-black transition-all bg-white shadow-inner"
                 />
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer Actions */}
+        {/* Footer actions */}
         <div className="p-6 border-t flex justify-between items-center">
           {step > 1 && <button onClick={() => setStep(step - 1)} className="underline text-sm uppercase tracking-widest font-bold">Back</button>}
+          
           {step === 4 ? (
-            <Button onClick={handleFinalize} className="flex-1 ml-4 bg-green-600 hover:bg-green-700">Confirm & Open WhatsApp</Button>
+            <Button 
+              onClick={handleFinalize} 
+              disabled={customerName.trim().length < 2} // Button stays disabled until a name is typed
+              className={`flex-1 ml-4 ${customerName.trim().length < 2 ? 'opacity-50 cursor-not-allowed bg-zinc-300' : 'bg-green-600 hover:bg-green-700'}`}
+            >
+              Confirm Booking
+            </Button>
           ) : (
-            <p className="text-xs text-zinc-400 italic">Please complete all steps to book</p>
+            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold">Complete step {step} to continue</p>
           )}
         </div>
       </div>
