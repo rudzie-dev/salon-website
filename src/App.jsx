@@ -151,118 +151,79 @@ const Navbar = ({ onBookClick }) => {
 /* --- BOOKING MODAL --- */
 const BookingModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
-  const [bookingData, setBookingData] = useState({ service: null, stylist: null, date: null, time: null });
+  const [customerName, setCustomerName] = useState(""); // New field for better UX
+  const [bookingData, setBookingData] = useState({ 
+    service: null, 
+    stylist: null, 
+    date: null, 
+    time: null 
+  });
 
   if (!isOpen) return null;
 
   const reset = () => { 
     setStep(1); 
+    setCustomerName("");
     setBookingData({ service: null, stylist: null, date: null, time: null }); 
     onClose(); 
   };
 
-  // NEW: WhatsApp Redirect Function
   const handleFinalize = () => {
-    const phoneNumber = "27123456789"; // Replace with actual number
+    const phoneNumber = "27123456789"; // Your client's phone number
     
-    // Removed the "*" characters from the labels below
-    const message = `Hi Lumière Salon! I'd like to book an appointment:%0A%0A` +
-      `Service: ${bookingData.service?.name}%0A` +
-      `Stylist: ${bookingData.stylist?.name}%0A` +
-      `When: ${bookingData.date} at ${bookingData.time}%0A` +
-      `Total Price: R${bookingData.service?.price}%0A%0A` +
-      `Please let me know if this slot is available!`;
+    // Safety checks to ensure we have the data
+    const sName = bookingData.service?.name || "Not selected";
+    const sPrice = bookingData.service?.price || "0";
+    const stylist = bookingData.stylist?.name || "First Available";
+    const bDate = bookingData.date || "TBD";
+    const bTime = bookingData.time || "TBD";
+    const cName = customerName || "A Customer";
+
+    const message = `Hi Lumière Salon! My name is ${cName}.%0A` +
+      `I'd like to book an appointment:%0A%0A` +
+      `Service: ${sName}%0A` +
+      `Stylist: ${stylist}%0A` +
+      `When: ${bDate} at ${bTime}%0A` +
+      `Total Price: R${sPrice}%0A%0A` +
+      `Please let me know if this works!`;
 
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
     reset();
   };
 
-  const isClosed = (d) => d.getDay() === 0 || d.getDay() === 1;
+  // ... (Keep your isClosed function and the rest of the steps) ...
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
-        <div className="flex justify-between items-center p-6 border-b">
-          <div><h3 className="font-serif text-2xl">Book Appointment</h3><p className="text-zinc-500 text-sm">Step {step} of 4</p></div>
-          <button onClick={reset} className="p-2 hover:bg-zinc-100 rounded-full transition-colors"><X size={20} /></button>
-        </div>
-        
-        <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-          {/* STEP 1: Services */}
-          {step === 1 && (
-            <div className="grid gap-3">
-              {SERVICES.map((s) => (
-                <button key={s.id} onClick={() => { setBookingData({ ...bookingData, service: s }); setStep(2); }} className="flex justify-between items-center p-4 border border-zinc-200 hover:border-black transition-all text-left group">
-                  <div><p className="font-medium">{s.name}</p><p className="text-sm text-zinc-500">{s.duration} mins • R{s.price}</p></div>
-                  <ChevronRight size={16} className="text-zinc-300 group-hover:text-black" />
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* STEP 2: Stylists */}
-          {step === 2 && (
-            <div className="grid sm:grid-cols-2 gap-4">
-              <button onClick={() => { setBookingData({ ...bookingData, stylist: { name: 'First Available' } }); setStep(3); }} className="p-4 border border-zinc-200 hover:border-black flex items-center gap-4">
-                <div className="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center"><Scissors size={20} /></div>
-                <p className="font-medium">First Available</p>
-              </button>
-              {STYLISTS.map((s) => (
-                <button key={s.id} onClick={() => { setBookingData({ ...bookingData, stylist: s }); setStep(3); }} className="p-4 border border-zinc-200 hover:border-black flex items-center gap-4 text-left">
-                  <img src={s.image} alt={s.name} className="w-12 h-12 rounded-full object-cover grayscale" />
-                  <div><p className="font-medium">{s.name}</p><p className="text-xs text-zinc-500">{s.role}</p></div>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* STEP 3: Date & Time */}
-          {step === 3 && (
-            <div className="space-y-6">
-              <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
-                {[...Array(14)].map((_, i) => {
-                  const d = new Date(); d.setDate(d.getDate() + i);
-                  const closed = isClosed(d);
-                  const fullDate = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
-                  return (
-                    <button key={i} disabled={closed} onClick={() => setBookingData({ ...bookingData, date: fullDate })} className={`flex-shrink-0 w-20 py-4 border transition-all ${closed ? 'opacity-20' : bookingData.date === fullDate ? 'bg-black text-white' : 'hover:border-black'}`}>
-                      <span className="text-[10px] uppercase block mb-1">{d.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                      <span className="text-xl font-bold">{d.getDate()}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              {bookingData.date && (
-                <div className="grid grid-cols-3 gap-2">
-                  {['10:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'].map((t) => (
-                    <button key={t} onClick={() => { setBookingData({ ...bookingData, time: t }); setStep(4); }} className="py-3 border border-zinc-200 hover:bg-black hover:text-white transition-colors">{t}</button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* STEP 4: Summary */}
+    // ... inside your modal ...
+    
+          {/* UPDATED STEP 4: Summary + Name Input */}
           {step === 4 && (
-            <div className="space-y-6 text-center">
-              <CheckCircle size={48} className="text-green-500 mx-auto mb-4" />
-              <div className="bg-zinc-50 p-6 space-y-2 text-left border border-zinc-100">
-                <p><strong>Service:</strong> {bookingData.service?.name}</p>
-                <p><strong>Stylist:</strong> {bookingData.stylist?.name}</p>
-                <p><strong>When:</strong> {bookingData.date} at {bookingData.time}</p>
-                <p className="text-xl font-bold pt-4 border-t mt-4">Total: R{bookingData.service?.price}</p>
+            <div className="space-y-6">
+              <div className="text-center">
+                <CheckCircle size={48} className="text-green-500 mx-auto mb-2" />
+                <h4 className="text-lg font-medium">Review Details</h4>
+              </div>
+              
+              <div className="bg-zinc-50 p-4 space-y-2 text-sm border border-zinc-100">
+                <p>Service: {bookingData.service?.name}</p>
+                <p>Stylist: {bookingData.stylist?.name}</p>
+                <p>When: {bookingData.date} at {bookingData.time}</p>
+                <p className="font-bold border-t pt-2 mt-2">Total: R{bookingData.service?.price}</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-widest font-bold">Your Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Enter your name" 
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full p-3 border border-zinc-200 outline-none focus:border-black transition-colors"
+                />
               </div>
             </div>
           )}
-        </div>
-
-        <div className="p-6 border-t flex justify-between">
-          {step > 1 && step < 4 && <button onClick={() => setStep(step - 1)} className="underline text-sm uppercase tracking-widest font-bold">Back</button>}
-          {/* UPDATED BUTTON */}
-          {step === 4 && <Button onClick={handleFinalize} className="w-full">Finalize Booking via WhatsApp</Button>}
-        </div>
-      </div>
-    </div>
+    // ... rest of the modal ...
   );
 };
 /* --- TESTIMONIALS --- */
