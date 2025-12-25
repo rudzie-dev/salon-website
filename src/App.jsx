@@ -152,7 +152,12 @@ const Navbar = ({ onBookClick }) => {
 const BookingModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
   const [customerName, setCustomerName] = useState("");
-  const [bookingData, setBookingData] = useState({ service: null, stylist: null, date: null, time: null });
+  const [bookingData, setBookingData] = useState({ 
+    service: null, 
+    stylist: null, 
+    date: null, 
+    time: null 
+  });
 
   if (!isOpen) return null;
 
@@ -164,24 +169,34 @@ const BookingModal = ({ isOpen, onClose }) => {
   };
 
   const handleFinalize = () => {
+    // UPDATED: Your personal number
     const phoneNumber = "27676862733"; 
-    const sName = bookingData.service?.name || "Service not selected";
-    const sPrice = bookingData.service?.price || "0";
-    const stylist = bookingData.stylist?.name || "First Available";
-    const bDate = bookingData.date || "Date not set";
-    const bTime = bookingData.time || "Time not set";
-    const cName = customerName.trim() || "Customer";
+    
+    // Safety variables to catch every possible instance
+    const sName = bookingData.service?.name ?? "Service not selected";
+    const sPrice = bookingData.service?.price ?? "TBD";
+    const sStylist = bookingData.stylist?.name ?? "First Available";
+    const bDate = bookingData.date ?? "Date not set";
+    const bTime = bookingData.time ?? "Time not set";
+    const cName = customerName.trim() || "A Customer";
 
-    const message = `Hi Lumière Salon! My name is ${cName}.%0A%0A` +
-      `I would like to book the following appointment:%0A` +
+    // Build the clean message (No stars, clear line breaks)
+    const message = 
+      `Hi Lumière Salon! My name is ${cName}.%0A%0A` +
+      `I would like to book an appointment:%0A` +
       `Service: ${sName}%0A` +
-      `Stylist: ${stylist}%0A` +
+      `Stylist: ${sStylist}%0A` +
       `When: ${bDate} at ${bTime}%0A` +
       `Total Price: R${sPrice}%0A%0A` +
       `Please let me know if this slot is available!`;
 
+    // Open WhatsApp
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
-    reset();
+    
+    // Delay reset so the browser can finish opening the link
+    setTimeout(() => {
+      reset();
+    }, 500);
   };
 
   const isClosed = (d) => d.getDay() === 0 || d.getDay() === 1;
@@ -189,6 +204,7 @@ const BookingModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
+        {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <div>
             <h3 className="font-serif text-2xl">Book Appointment</h3>
@@ -198,7 +214,7 @@ const BookingModal = ({ isOpen, onClose }) => {
         </div>
         
         <div className="flex-1 p-6 overflow-y-auto custom-scrollbar">
-          {/* STEP 1 */}
+          {/* STEP 1: SERVICES */}
           {step === 1 && (
             <div className="grid gap-3">
               {SERVICES.map((s) => (
@@ -210,7 +226,7 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* STEP 2 */}
+          {/* STEP 2: STYLISTS */}
           {step === 2 && (
             <div className="grid sm:grid-cols-2 gap-4">
               <button onClick={() => { setBookingData({ ...bookingData, stylist: { name: 'First Available' } }); setStep(3); }} className="p-4 border border-zinc-200 hover:border-black flex items-center gap-4">
@@ -226,9 +242,9 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* STEP 3 */}
+          {/* STEP 3: DATE & TIME */}
           {step === 3 && (
-            <div className="space-y-6">
+            <div className="space-y-6 text-left">
               <div className="flex gap-2 overflow-x-auto pb-4 hide-scrollbar">
                 {[...Array(14)].map((_, i) => {
                   const d = new Date(); d.setDate(d.getDate() + i);
@@ -252,24 +268,26 @@ const BookingModal = ({ isOpen, onClose }) => {
             </div>
           )}
 
-          {/* STEP 4 */}
+          {/* STEP 4: SUMMARY & NAME */}
           {step === 4 && (
-            <div className="space-y-6">
+            <div className="space-y-6 text-left animate-in slide-in-from-bottom-2 duration-300">
               <div className="text-center">
                 <CheckCircle size={48} className="text-green-500 mx-auto mb-2" />
-                <h4 className="text-lg font-medium">Review Details</h4>
+                <h4 className="text-lg font-medium">Almost Done</h4>
               </div>
-              <div className="bg-zinc-50 p-4 space-y-2 text-sm border border-zinc-100 text-left">
-                <p>Service: {bookingData.service?.name}</p>
-                <p>Stylist: {bookingData.stylist?.name}</p>
-                <p>When: {bookingData.date} at {bookingData.time}</p>
+              
+              <div className="bg-zinc-50 p-4 space-y-2 text-sm border border-zinc-100">
+                <p><strong>Service:</strong> {bookingData.service?.name}</p>
+                <p><strong>Stylist:</strong> {bookingData.stylist?.name}</p>
+                <p><strong>When:</strong> {bookingData.date} at {bookingData.time}</p>
                 <p className="font-bold border-t pt-2 mt-2">Total: R{bookingData.service?.price}</p>
               </div>
-              <div className="space-y-2 text-left">
+
+              <div className="space-y-2">
                 <label className="text-xs uppercase tracking-widest font-bold">Your Name</label>
                 <input 
                   type="text" 
-                  placeholder="Enter your name" 
+                  placeholder="Tell us your name..." 
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   className="w-full p-3 border border-zinc-200 outline-none focus:border-black transition-colors"
@@ -279,9 +297,14 @@ const BookingModal = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        <div className="p-6 border-t flex justify-between">
+        {/* Footer Actions */}
+        <div className="p-6 border-t flex justify-between items-center">
           {step > 1 && <button onClick={() => setStep(step - 1)} className="underline text-sm uppercase tracking-widest font-bold">Back</button>}
-          {step === 4 && <Button onClick={handleFinalize} className="flex-1 ml-4">Finalize via WhatsApp</Button>}
+          {step === 4 ? (
+            <Button onClick={handleFinalize} className="flex-1 ml-4 bg-green-600 hover:bg-green-700">Confirm & Open WhatsApp</Button>
+          ) : (
+            <p className="text-xs text-zinc-400 italic">Please complete all steps to book</p>
+          )}
         </div>
       </div>
     </div>
