@@ -93,11 +93,11 @@ const Button = ({ children, onClick, variant = 'primary', className = '', ...pro
   );
 };
 
-const SectionHeader = ({ title, subtitle, centered = true }) => (
+const SectionHeader = ({ title, subtitle, centered = true, dark = false }) => (
   <div className={`mb-20 ${centered ? 'text-center' : 'text-left'}`}>
-    <p className="text-zinc-400 uppercase tracking-[0.3em] text-[11px] font-semibold mb-4 letterspacing-wide">{subtitle}</p>
-    <h2 className="text-4xl md:text-5xl font-serif text-zinc-900 font-light tracking-tight leading-[1.1]">{title}</h2>
-    <div className={`w-12 h-[1px] bg-zinc-300 mt-8 ${centered ? 'mx-auto' : ''}`} />
+    <p className={`uppercase tracking-[0.3em] text-[11px] font-semibold mb-4 letterspacing-wide ${dark ? 'text-zinc-400' : 'text-zinc-400'}`}>{subtitle}</p>
+    <h2 className={`text-4xl md:text-5xl font-serif font-light tracking-tight leading-[1.1] ${dark ? 'text-white' : 'text-zinc-900'}`}>{title}</h2>
+    <div className={`w-12 h-[1px] mt-8 ${dark ? 'bg-white/30' : 'bg-zinc-300'} ${centered ? 'mx-auto' : ''}`} />
   </div>
 );
 
@@ -152,7 +152,7 @@ const Navbar = ({ onBookClick }) => {
         </button>
       </div>
 
-      <div className={`fixed inset-0 bg-white/95 backdrop-blur-2xl z-[85] flex flex-col items-center justify-center transition-all duration-700 ease-out ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
+      <div className={`fixed inset-0 bg-white/95 backdrop-blur-2xl z-[95] flex flex-col items-center justify-center transition-all duration-700 ease-out ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
         <div className="flex flex-col items-center space-y-10">
           {links.map((l, i) => (
             <a 
@@ -193,7 +193,30 @@ const BookingModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Booking confirmed! We\'ll send you a confirmation email shortly.');
+    
+    // Create WhatsApp message with booking details
+    const message = encodeURIComponent(
+      `Hi! I'd like to book an appointment at Lumière Salon.\n\n` +
+      `Service: ${formData.service}\n` +
+      `Stylist: ${formData.stylist}\n` +
+      `Date: ${formData.date}\n` +
+      `Time: ${formData.time}\n` +
+      `Name: ${formData.name}\n` +
+      `Email: ${formData.email}\n` +
+      `Phone: ${formData.phone}`
+    );
+    
+    // WhatsApp business number (replace with actual salon number)
+    const whatsappNumber = '27123456789'; // Format: country code + number (no + or spaces)
+    
+    // Create WhatsApp deep link
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${message}`;
+    
+    // Open WhatsApp
+    window.open(whatsappURL, '_blank');
+    
+    // Show confirmation
+    alert('Opening WhatsApp to confirm your booking!');
     onClose();
   };
 
@@ -363,7 +386,7 @@ const BookingModal = ({ isOpen, onClose }) => {
                   Back
                 </Button>
                 <Button type="submit" className="flex-1">
-                  Confirm Booking
+                  Book via WhatsApp
                 </Button>
               </div>
             </div>
@@ -396,7 +419,7 @@ const Testimonials = () => {
   return (
     <section className="py-32 px-6 bg-gradient-to-b from-zinc-900 to-black text-white overflow-hidden">
       <div className="container mx-auto max-w-6xl">
-        <SectionHeader title="Client Experiences" subtitle="Kind Words" />
+        <SectionHeader title="Client Experiences" subtitle="Kind Words" dark={true} />
         <div className="relative">
           <div ref={scrollRef} onScroll={onScroll} className="flex overflow-x-auto pb-12 gap-8 hide-scrollbar snap-x-mandatory scroll-smooth md:grid md:grid-cols-3 md:snap-none">
             {TESTIMONIALS.map((r) => (
