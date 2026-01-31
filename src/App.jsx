@@ -11,7 +11,7 @@ const SERVICES = [
   { id: 3, name: 'Keratin Smoothing', price: 250, duration: 150, description: 'Eliminate frizz and restore shine with premium keratin infusion.' },
   { id: 4, name: 'Luxury Blowout', price: 55, duration: 45, description: 'Wash, condition, and a long-lasting blowout style.' },
   { id: 5, name: 'Full Spectrum Color', price: 130, duration: 120, description: 'Rich, single-process color for vibrant, lasting results.' },
-  { id: 6, name: 'Gentlemen's Grooming', price: 65, duration: 45, description: 'Precision clipper or scissor cut, wash, and style.' }
+  { id: 6, name: 'Gentlemen\'s Grooming', price: 65, duration: 45, description: 'Precision clipper or scissor cut, wash, and style.' }
 ];
 
 const STYLISTS = [
