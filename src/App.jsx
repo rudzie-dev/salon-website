@@ -193,7 +193,7 @@ const BookingModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Booking confirmed! We'll send you a confirmation email shortly.');
+    alert('Booking confirmed! We\'ll send you a confirmation email shortly.');
     onClose();
   };
 
