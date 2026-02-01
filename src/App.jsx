@@ -26,7 +26,35 @@ const TESTIMONIALS = [
   { id: 3, name: "Amara Diop", text: "Finally, a salon that masters curly hair. Amara treated my curls with such care.", rating: 5, date: "3 weeks ago" }
 ];
 
-/* --- LOADING SCREEN --- */
+const FAQS = [
+  { 
+    id: 1, 
+    question: "Do I need to book in advance?", 
+    answer: "We highly recommend booking in advance to secure your preferred time slot. You can book via WhatsApp or by calling us directly. Walk-ins are welcome based on availability." 
+  },
+  { 
+    id: 2, 
+    question: "What is your cancellation policy?", 
+    answer: "We require at least 24 hours notice for cancellations or rescheduling. This allows us to offer the time slot to other clients. Late cancellations may incur a fee." 
+  },
+  { 
+    id: 3, 
+    question: "What payment methods do you accept?", 
+    answer: "We accept cash, all major credit and debit cards, as well as mobile payment options like SnapScan and Zapper." 
+  },
+  { 
+    id: 4, 
+    question: "Do you offer consultations?", 
+    answer: "Yes! All our services include a complimentary consultation to discuss your desired look and ensure we achieve the perfect result for you." 
+  },
+  { 
+    id: 5, 
+    question: "How long will my appointment take?", 
+    answer: "Appointment duration varies by service. A simple cut takes about 60 minutes, while color treatments can take 2-3 hours. We'll confirm the exact timing when you book." 
+  }
+];
+
+/* --- LOADING SCREEN COMPONENT --- */
 const LoadingScreen = () => {
   const [shouldRender, setShouldRender] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
@@ -65,6 +93,9 @@ const LoadingScreen = () => {
               LUMIÈRE
             </text>
           </svg>
+          <div className="mt-10 w-20 h-[0.5px] bg-white/10 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer" />
+          </div>
         </div>
       )}
     </div>
@@ -72,17 +103,18 @@ const LoadingScreen = () => {
 };
 
 /* --- SHARED COMPONENTS --- */
-const Button = ({ children, onClick, variant = 'primary', className = '', ...props }) => {
+const Button = ({ children, onClick, variant = 'primary', className = '', disabled = false, ...props }) => {
   const variants = {
-    primary: "bg-black text-white hover:bg-zinc-800 active:scale-[0.98]",
-    secondary: "bg-white/10 text-white backdrop-blur-xl border border-white/20 hover:bg-white/20 active:scale-[0.98]",
-    outline: "bg-transparent text-white border border-white/30 hover:bg-white hover:text-black active:scale-[0.98]"
+    primary: "bg-black text-white hover:bg-zinc-800 active:scale-[0.98] disabled:bg-zinc-400 disabled:cursor-not-allowed",
+    secondary: "bg-white/10 text-white backdrop-blur-xl border border-white/20 hover:bg-white/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed",
+    outline: "bg-transparent text-white border border-white/30 hover:bg-white hover:text-black active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
   };
 
   return (
     <button 
       onClick={onClick} 
-      className={`px-7 py-3.5 transition-all duration-400 font-medium tracking-wide text-sm uppercase rounded-full ${variants[variant]} ${className}`} 
+      disabled={disabled}
+      className={`px-7 py-3.5 transition-all duration-400 font-medium tracking-wide text-sm uppercase relative overflow-hidden group rounded-full ${variants[variant]} ${className}`} 
       {...props}
     >
       <span className="relative z-10">{children}</span>
@@ -92,7 +124,7 @@ const Button = ({ children, onClick, variant = 'primary', className = '', ...pro
 
 const SectionHeader = ({ title, subtitle, centered = true, dark = false }) => (
   <div className={`mb-20 ${centered ? 'text-center' : 'text-left'}`}>
-    <p className="uppercase tracking-[0.3em] text-[11px] font-semibold mb-4 text-zinc-400">{subtitle}</p>
+    <p className={`uppercase tracking-[0.3em] text-[11px] font-semibold mb-4 letterspacing-wide ${dark ? 'text-zinc-400' : 'text-zinc-400'}`}>{subtitle}</p>
     <h2 className={`text-4xl md:text-5xl font-serif font-light tracking-tight leading-[1.1] ${dark ? 'text-white' : 'text-zinc-900'}`}>{title}</h2>
     <div className={`w-12 h-[1px] mt-8 ${dark ? 'bg-white/30' : 'bg-zinc-300'} ${centered ? 'mx-auto' : ''}`} />
   </div>
@@ -109,7 +141,6 @@ const Navbar = ({ onBookClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Lock scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
   }, [isOpen]);
@@ -117,8 +148,8 @@ const Navbar = ({ onBookClick }) => {
   const links = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
 
   return (
-    <nav className={`fixed top-0 w-full z-[200] transition-all duration-700 ${isScrolled || isOpen ? 'bg-white/90 backdrop-blur-2xl py-4 shadow-sm' : 'bg-transparent py-6 text-white'}`}>
-      <div className="container mx-auto px-8 flex justify-between items-center relative z-[210]">
+    <nav className={`fixed top-0 w-full z-[80] transition-all duration-700 ${isScrolled || isOpen ? 'bg-white/80 backdrop-blur-2xl py-4 shadow-sm border-b border-zinc-100' : 'bg-transparent py-6 text-white'}`}>
+      <div className="container mx-auto px-8 flex justify-between items-center relative z-[90]">
         <a 
           href="#home" 
           onClick={() => setIsOpen(false)} 
@@ -132,7 +163,7 @@ const Navbar = ({ onBookClick }) => {
             <a 
               key={l} 
               href={`#${l.toLowerCase()}`} 
-              className={`text-[13px] uppercase tracking-wider font-medium transition-colors duration-300 ${isScrolled ? 'text-zinc-700 hover:text-black' : 'text-white/90 hover:text-white'}`}
+              className={`text-[13px] uppercase tracking-wider font-medium nav-link-grow transition-colors duration-300 ${isScrolled ? 'text-zinc-700 hover:text-black' : 'text-white/90 hover:text-white'}`}
             >
               {l}
             </a>
@@ -143,7 +174,6 @@ const Navbar = ({ onBookClick }) => {
         <button 
           className="md:hidden flex flex-col justify-center items-center w-8 h-8 space-y-1.5 focus:outline-none" 
           onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle Menu"
         >
           <span className={`block w-6 h-[1.5px] transition-all duration-400 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
           <span className={`block w-6 h-[1.5px] transition-all duration-400 ${(isScrolled || isOpen) ? 'bg-black' : 'bg-white'} ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
@@ -151,15 +181,14 @@ const Navbar = ({ onBookClick }) => {
         </button>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <div className={`fixed inset-0 bg-white/98 backdrop-blur-3xl z-[150] flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
-        <div className="flex flex-col items-center space-y-8 pt-12">
+      <div className={`fixed inset-0 bg-white/95 backdrop-blur-2xl z-[95] flex flex-col items-center justify-center transition-all duration-700 ease-out ${isOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
+        <div className="flex flex-col items-center space-y-10">
           {links.map((l, i) => (
             <a 
               key={l} 
               href={`#${l.toLowerCase()}`} 
               onClick={() => setIsOpen(false)} 
-              className={`text-3xl font-serif text-black hover:text-zinc-500 transition-all duration-300 ${isOpen ? 'animate-link' : ''}`}
+              className={`text-3xl font-serif text-black hover:text-zinc-600 transition-colors duration-300 ${isOpen ? 'animate-link' : ''}`}
               style={{ animationDelay: `${i * 0.1}s` }}
             >
               {l}
@@ -175,139 +204,238 @@ const Navbar = ({ onBookClick }) => {
 /* --- BOOKING MODAL --- */
 const BookingModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    service: '', stylist: '', date: '', time: '', name: '', email: '', phone: ''
+    service: '',
+    stylist: '',
+    date: '',
+    time: '',
+    name: '',
+    email: '',
+    phone: ''
   });
 
-  // Prevent background scroll when modal is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
+    if (!isOpen) {
       setTimeout(() => setStep(1), 300);
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    if (isOpen) {
+      window.addEventListener('keydown', handleEscape);
+    }
+    
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Create WhatsApp message with booking details
     const message = encodeURIComponent(
-      `Lumière Booking Request:\n\nService: ${formData.service}\nStylist: ${formData.stylist}\nDate: ${formData.date}\nTime: ${formData.time}\nClient: ${formData.name}\nPhone: ${formData.phone}`
+      `Hi! I'd like to book an appointment at Lumière Salon.\n\n` +
+      `Service: ${formData.service}\n` +
+      `Stylist: ${formData.stylist}\n` +
+      `Date: ${formData.date}\n` +
+      `Time: ${formData.time}\n` +
+      `Name: ${formData.name}\n` +
+      `Email: ${formData.email}\n` +
+      `Phone: ${formData.phone}`
     );
-    window.open(`https://wa.me/27123456789?text=${message}`, '_blank');
-    onClose();
+    
+    // WhatsApp business number - DEMO WEBSITE
+    // Replace with actual salon's WhatsApp number when deploying for client
+    const whatsappNumber = '27619229670'; // Demo WhatsApp for portfolio showcase NUMBER
+    
+    // Create WhatsApp deep link
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${message}`;
+    
+    // Simulate processing delay for better UX
+    setTimeout(() => {
+      // Open WhatsApp
+      window.open(whatsappURL, '_blank');
+      
+      setIsSubmitting(false);
+      onClose();
+    }, 800);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-6 animate-fadeIn">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 animate-fadeIn">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
       
       <div className="relative bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl animate-scaleIn">
-        <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-zinc-100 px-6 py-6 md:px-10 flex justify-between items-center z-10">
+        <div className="sticky top-0 bg-white/95 backdrop-blur-xl border-b border-zinc-100 px-10 py-8 flex justify-between items-center z-10">
           <div>
-            <h2 className="text-2xl md:text-3xl font-serif font-light">Book Appointment</h2>
-            <p className="text-xs text-zinc-400 mt-1 uppercase tracking-widest">Step {step} of 3</p>
+            <h2 className="text-3xl font-serif font-light tracking-tight">Book Your Experience</h2>
+            <p className="text-sm text-zinc-500 mt-2">Step {step} of 3</p>
           </div>
           <button onClick={onClose} className="text-zinc-400 hover:text-black transition-colors">
-            <X size={24} />
+            <X size={28} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 md:p-10 space-y-8">
+        <form onSubmit={handleSubmit} className="p-10 space-y-8">
           {step === 1 && (
             <div className="space-y-6 animate-slideUp">
-              <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Select Service</label>
-              <div className="grid gap-4">
-                {SERVICES.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setFormData({ ...formData, service: s.name })}
-                    className={`text-left p-5 border rounded-2xl transition-all ${formData.service === s.name ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'}`}
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h4 className="text-lg font-serif">{s.name}</h4>
-                        <p className="text-xs text-zinc-400 mt-1">R{s.price} • {s.duration} min</p>
+              <div>
+                <label className="block text-sm font-semibold text-zinc-700 mb-4 uppercase tracking-wider">Select Service</label>
+                <div className="grid gap-4">
+                  {SERVICES.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, service: s.name })}
+                      className={`text-left p-6 border-2 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${
+                        formData.service === s.name ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h4 className="text-lg font-serif mb-2">{s.name}</h4>
+                          <p className="text-sm text-zinc-600 mb-3">{s.description}</p>
+                          <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400">{s.duration} min • R{s.price}</p>
+                        </div>
+                        {formData.service === s.name && <CheckCircle size={24} className="text-black ml-4" />}
                       </div>
-                      {formData.service === s.name && <CheckCircle size={20} className="text-black" />}
-                    </div>
-                  </button>
-                ))}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <Button type="button" onClick={() => setStep(2)} disabled={!formData.service} className="w-full disabled:opacity-30">
-                Next Step
+              <Button type="button" onClick={() => setStep(2)} disabled={!formData.service} className="w-full disabled:opacity-50 disabled:cursor-not-allowed">
+                Continue <ChevronRight size={18} className="inline ml-2" />
               </Button>
             </div>
           )}
 
           {step === 2 && (
             <div className="space-y-6 animate-slideUp">
-              <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-[0.2em]">Select Stylist</label>
-              <div className="grid gap-4">
-                {STYLISTS.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setFormData({ ...formData, stylist: s.name })}
-                    className={`text-left p-4 border rounded-2xl flex items-center gap-4 transition-all ${formData.stylist === s.name ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'}`}
-                  >
-                    <img src={s.image} className="w-14 h-14 object-cover rounded-full grayscale" alt={s.name} />
-                    <div className="flex-1">
-                      <h4 className="text-lg font-serif">{s.name}</h4>
-                      <p className="text-xs text-zinc-400">{s.role}</p>
-                    </div>
-                    {formData.stylist === s.name && <CheckCircle size={20} className="text-black" />}
-                  </button>
-                ))}
+              <div>
+                <label className="block text-sm font-semibold text-zinc-700 mb-4 uppercase tracking-wider">Choose Your Stylist</label>
+                <div className="grid gap-4">
+                  {STYLISTS.map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, stylist: s.name })}
+                      className={`text-left p-6 border-2 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-6 ${
+                        formData.stylist === s.name ? 'border-black bg-zinc-50' : 'border-zinc-200 hover:border-zinc-300'
+                      }`}
+                    >
+                      <img src={s.image} className="w-20 h-20 object-cover rounded-xl grayscale" alt={s.name} />
+                      <div className="flex-1">
+                        <h4 className="text-lg font-serif mb-1">{s.name}</h4>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">{s.role}</p>
+                        <p className="text-sm text-zinc-600">{s.bio}</p>
+                      </div>
+                      {formData.stylist === s.name && <CheckCircle size={24} className="text-black" />}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="flex gap-4">
-                <Button type="button" onClick={() => setStep(1)} variant="secondary" className="flex-1">Back</Button>
-                <Button type="button" onClick={() => setStep(3)} disabled={!formData.stylist} className="flex-1 disabled:opacity-30">Next</Button>
+                <Button type="button" onClick={() => setStep(1)} variant="secondary" className="flex-1">
+                  Back
+                </Button>
+                <Button type="button" onClick={() => setStep(3)} disabled={!formData.stylist} className="flex-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                  Continue <ChevronRight size={18} className="inline ml-2" />
+                </Button>
               </div>
             </div>
           )}
 
           {step === 3 && (
             <div className="space-y-6 animate-slideUp">
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="date"
-                  min={new Date().toISOString().split("T")[0]}
-                  required
-                  value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  className="p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none"
-                />
-                <select
-                  required
-                  value={formData.time}
-                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                  className="p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none"
-                >
-                  <option value="">Time</option>
-                  {['10:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'].map(t => <option key={t} value={t}>{t}</option>)}
-                </select>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-zinc-700 mb-3 uppercase tracking-wider">Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-zinc-700 mb-3 uppercase tracking-wider">Time</label>
+                  <select
+                    required
+                    value={formData.time}
+                    onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                    className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all"
+                  >
+                    <option value="">Select time</option>
+                    {['10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM'].map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <input
-                placeholder="Full Name"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none"
-              />
-              <input
-                placeholder="Phone Number"
-                required
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none"
-              />
-              <div className="flex gap-4 pt-4">
-                <Button type="button" onClick={() => setStep(2)} variant="secondary" className="flex-1">Back</Button>
-                <Button type="submit" className="flex-1">Confirm via WhatsApp</Button>
+
+              <div>
+                <label className="block text-sm font-semibold text-zinc-700 mb-3 uppercase tracking-wider">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all"
+                  placeholder="Jane Doe"
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-zinc-700 mb-3 uppercase tracking-wider">Email</label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all"
+                    placeholder="jane@example.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-zinc-700 mb-3 uppercase tracking-wider">Phone</label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full p-4 bg-zinc-50 border border-zinc-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all"
+                    placeholder="+27 123 456 789"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-zinc-50 p-6 rounded-2xl border border-zinc-200 mt-8">
+                <h4 className="text-sm font-semibold uppercase tracking-wider text-zinc-700 mb-4">Booking Summary</h4>
+                <div className="space-y-2 text-sm text-zinc-600">
+                  <p><span className="font-medium text-zinc-900">Service:</span> {formData.service}</p>
+                  <p><span className="font-medium text-zinc-900">Stylist:</span> {formData.stylist}</p>
+                  <p><span className="font-medium text-zinc-900">Date & Time:</span> {formData.date} at {formData.time}</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Button type="button" onClick={() => setStep(2)} variant="secondary" className="flex-1">
+                  Back
+                </Button>
+                <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                  {isSubmitting ? 'Opening WhatsApp...' : 'Book via WhatsApp'}
+                </Button>
               </div>
             </div>
           )}
@@ -317,28 +445,97 @@ const BookingModal = ({ isOpen, onClose }) => {
   );
 };
 
-/* --- TESTIMONIALS --- */
-const Testimonials = () => (
-  <section className="py-32 px-6 bg-zinc-900 text-white">
-    <div className="container mx-auto max-w-6xl">
-      <SectionHeader title="Client Stories" subtitle="Testimonials" dark={true} />
-      <div className="grid md:grid-cols-3 gap-8">
-        {TESTIMONIALS.map((r) => (
-          <div key={r.id} className="bg-white/5 p-8 rounded-3xl border border-white/10 hover:bg-white/10 transition-all">
-            <div className="flex mb-4 text-white/40">{[...Array(r.rating)].map((_, i) => <Star key={i} size={14} className="fill-current" />)}</div>
-            <p className="text-lg font-serif italic mb-6">"{r.text}"</p>
-            <p className="text-[10px] uppercase tracking-widest font-bold">{r.name}</p>
-          </div>
-        ))}
+/* --- FAQ COMPONENT --- */
+const FAQ = () => {
+  const [openIndex, setOpenIndex] = useState(null);
+
+  return (
+    <section className="py-32 px-6 bg-zinc-50">
+      <div className="container mx-auto max-w-4xl">
+        <SectionHeader title="Frequently Asked Questions" subtitle="Good to Know" />
+        <div className="space-y-4">
+          {FAQS.map((faq, index) => (
+            <div key={faq.id} className="bg-white rounded-2xl border border-zinc-100 overflow-hidden hover:shadow-lg transition-all duration-300">
+              <button
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                className="w-full px-8 py-6 flex justify-between items-center text-left hover:bg-zinc-50 transition-colors"
+              >
+                <span className="text-lg font-serif pr-8">{faq.question}</span>
+                <ChevronRight 
+                  className={`flex-shrink-0 transition-transform duration-300 ${openIndex === index ? 'rotate-90' : ''}`} 
+                  size={20} 
+                />
+              </button>
+              <div 
+                className={`overflow-hidden transition-all duration-300 ${openIndex === index ? 'max-h-96' : 'max-h-0'}`}
+              >
+                <p className="px-8 pb-6 text-zinc-600 leading-relaxed">{faq.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
+
+/* --- TESTIMONIALS CAROUSEL --- */
+const Testimonials = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const scrollRef = useRef(null);
+
+  const onScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, offsetWidth } = scrollRef.current;
+      const index = Math.round(scrollLeft / offsetWidth);
+      setActiveIndex(index);
+    }
+  };
+
+  const scrollTo = (i) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ left: i * scrollRef.current.offsetWidth, behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section className="py-32 px-6 bg-gradient-to-b from-zinc-900 to-black text-white overflow-hidden">
+      <div className="container mx-auto max-w-6xl">
+        <SectionHeader title="Client Experiences" subtitle="Kind Words" dark={true} />
+        <div className="relative">
+          <div ref={scrollRef} onScroll={onScroll} className="flex overflow-x-auto pb-12 gap-8 hide-scrollbar snap-x-mandatory scroll-smooth md:grid md:grid-cols-3 md:snap-none">
+            {TESTIMONIALS.map((r) => (
+              <div key={r.id} className="min-w-[90%] md:min-w-0 bg-white/5 backdrop-blur-sm p-10 border border-white/10 flex flex-col justify-between snap-center rounded-2xl hover:bg-white/10 transition-all duration-500 hover:scale-[1.02]">
+                <div>
+                  <div className="flex mb-6">{[...Array(r.rating)].map((_, i) => <Star key={i} size={16} className="fill-current mr-1.5 text-white/90" />)}</div>
+                  <p className="text-xl font-serif italic mb-8 leading-relaxed text-white/95">"{r.text}"</p>
+                </div>
+                <div className="flex justify-between items-end border-t border-white/10 pt-6 mt-4">
+                  <div>
+                    <p className="text-sm uppercase tracking-wider font-semibold">{r.name}</p>
+                    <p className="text-[10px] text-zinc-400 uppercase mt-1.5 tracking-wider">Verified Client</p>
+                  </div>
+                  <span className="text-[10px] text-zinc-400 uppercase tracking-widest">{r.date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center space-x-3 md:hidden mt-8">
+            {TESTIMONIALS.map((_, i) => (
+              <button key={i} onClick={() => scrollTo(i)} className={`h-1 rounded-full transition-all duration-500 ${activeIndex === i ? 'w-10 bg-white' : 'w-2 bg-white/30'}`} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 /* --- MAIN APP --- */
 export default function App() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [contactFormStatus, setContactFormStatus] = useState('idle'); // idle, sending, success, error
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -346,73 +543,141 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setContactFormStatus('sending');
+    
+    const formData = new FormData(e.target);
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message')
+    };
+
+    try {
+      // Option 1: Send via WhatsApp (recommended for immediate response)
+      const whatsappMessage = encodeURIComponent(
+        `New Contact Form Submission:\n\n` +
+        `Name: ${data.name}\n` +
+        `Email: ${data.email}\n` +
+        `Message: ${data.message}`
+      );
+      const whatsappNumber = '27619229670'; // Demo WhatsApp for portfolio
+      window.open(`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`, '_blank');
+      
+      setContactFormStatus('success');
+      e.target.reset();
+      
+      setTimeout(() => setContactFormStatus('idle'), 5000);
+      
+      // Option 2: EmailJS Integration (uncomment if you prefer email)
+      // You'll need to sign up at emailjs.com and get your credentials
+      /*
+      const response = await emailjs.send(
+        'YOUR_SERVICE_ID',
+        'YOUR_TEMPLATE_ID',
+        data,
+        'YOUR_PUBLIC_KEY'
+      );
+      if (response.status === 200) {
+        setContactFormStatus('success');
+        e.target.reset();
+        setTimeout(() => setContactFormStatus('idle'), 5000);
+      }
+      */
+      
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setContactFormStatus('error');
+      setTimeout(() => setContactFormStatus('idle'), 5000);
+    }
+  };
+
   return (
-    <div className="antialiased overflow-x-hidden">
+    <div className="antialiased">
       <LoadingScreen />
       
       <Navbar onBookClick={() => setIsBookingOpen(true)} />
       <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
-      {/* Hero Section */}
+      {/* Hero Section with Parallax */}
       <section id="home" className="relative h-screen flex items-center justify-center bg-black overflow-hidden">
         <div 
-          className="absolute inset-0 w-full h-full pointer-events-none" 
-          style={{ transform: `translateY(${scrollY * 0.4}px)` }}
+          className="absolute inset-0 w-full h-full" 
+          style={{ transform: `translateY(${scrollY * 0.5}px)` }}
         >
           <img 
-            src="https://res.cloudinary.com/dgstbaoic/image/upload/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" 
-            className="w-full h-full object-cover opacity-40 grayscale" 
-            alt="Lumiere Hero" 
+            src="https://res.cloudinary.com/dgstbaoic/image/upload/w_1920,f_auto,q_auto:good/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" 
+            className="w-full h-full object-cover opacity-40" 
+            alt="Lumière Salon Interior"
+            loading="eager"
           />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
         </div>
         
-        <div className="relative z-0 text-center text-white px-6 animate-fadeInUp">
-          <p className="text-[11px] uppercase tracking-[0.4em] mb-8 text-white/60">Artisan Salon Experience</p>
-          <h1 className="text-5xl md:text-8xl font-serif mb-12 font-light leading-tight">
+        <div className="relative z-10 text-center text-white px-6 animate-fadeInUp">
+          <p className="text-[11px] uppercase tracking-[0.4em] mb-8 text-white/80 font-medium">Beauty Redefined</p>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif mb-12 leading-[1.05] font-light tracking-tight">
             Experience the Art<br/>of Hair
           </h1>
           <Button variant="outline" onClick={() => setIsBookingOpen(true)}>
             Book Appointment
           </Button>
         </div>
+
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center pt-2">
+            <div className="w-1 h-2 bg-white/50 rounded-full animate-pulse" />
+          </div>
+        </div>
       </section>
 
-      {/* Services */}
+      {/* Services Section */}
       <section id="services" className="py-32 px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
-          <SectionHeader title="The Menu" subtitle="Services" />
-          <div className="grid md:grid-cols-2 gap-8">
-            {SERVICES.map((s) => (
+          <SectionHeader title="Our Menu" subtitle="Curated Treatments" />
+          <div className="grid md:grid-cols-2 gap-6">
+            {SERVICES.map((s, i) => (
               <div 
                 key={s.id} 
-                className="p-8 border border-zinc-100 rounded-3xl hover:shadow-xl transition-all cursor-pointer group"
+                className="bg-zinc-50 p-10 border border-zinc-100 hover:shadow-2xl hover:border-zinc-200 transition-all duration-500 flex justify-between cursor-pointer group rounded-2xl hover:-translate-y-1"
                 onClick={() => setIsBookingOpen(true)}
+                style={{ animationDelay: `${i * 100}ms` }}
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="text-2xl font-serif mb-2">{s.name}</h4>
-                    <p className="text-zinc-500 text-sm">{s.description}</p>
-                  </div>
-                  <ArrowRight size={20} className="text-zinc-300 group-hover:text-black transition-all" />
+                <div className="flex-1">
+                  <h4 className="text-2xl font-serif mb-3 font-light">{s.name}</h4>
+                  <p className="text-zinc-600 text-sm mb-6 leading-relaxed">{s.description}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-widest text-zinc-400">{s.duration} Min • R{s.price}</p>
                 </div>
+                <ArrowRight className="self-center text-zinc-300 group-hover:text-black group-hover:translate-x-2 transition-all duration-500 ml-6" size={20} />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stylists */}
+      {/* Stylists Section */}
       <section id="stylists" className="py-32 px-6 bg-zinc-50">
-        <div className="container mx-auto max-w-6xl text-center">
-          <SectionHeader title="Meet The Experts" subtitle="The Team" />
-          <div className="grid md:grid-cols-3 gap-12">
-            {STYLISTS.map((s) => (
-              <div key={s.id} className="group">
-                <div className="aspect-[3/4] mb-6 overflow-hidden rounded-2xl">
-                  <img src={s.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={s.name} />
+        <div className="container mx-auto max-w-6xl">
+          <SectionHeader title="Meet The Experts" subtitle="Our Team" />
+          <div className="grid md:grid-cols-3 gap-16">
+            {STYLISTS.map((s, i) => (
+              <div key={s.id} className="group text-center" style={{ animationDelay: `${i * 150}ms` }}>
+                <div className="relative overflow-hidden mb-8 aspect-[3/4] rounded-2xl">
+                  <img 
+                    src={s.image} 
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
+                    alt={s.name}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500"%3E%3Crect width="400" height="500" fill="%23e4e4e7"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="system-ui" font-size="16" fill="%239ca3af"%3EImage unavailable%3C/text%3E%3C/svg%3E';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-700" />
                 </div>
-                <h4 className="text-2xl font-serif font-light">{s.name}</h4>
-                <p className="text-[10px] uppercase tracking-widest text-zinc-400 mt-2">{s.role}</p>
+                <h4 className="text-2xl font-serif mb-2 font-light tracking-tight">{s.name}</h4>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-4">{s.role}</p>
+                <p className="text-zinc-600 text-sm leading-relaxed max-w-xs mx-auto">{s.bio}</p>
               </div>
             ))}
           </div>
@@ -420,43 +685,146 @@ export default function App() {
       </section>
 
       <Testimonials />
+      
+      <FAQ />
 
-      {/* Gallery */}
+      {/* Gallery Section */}
       <section id="gallery" className="grid grid-cols-2 md:grid-cols-4">
-        {["v1765596663/freepik__35mm-film-photography-luxury-modern-hair-salon-int__8283_vhnahv.png", "v1765596654/freepik__the-style-is-candid-image-photography-with-natural__8284_cbgbc6.png", "v1765596629/freepik__the-style-is-candid-image-photography-with-natural__8286_e0zz4v.png", "v1765596644/freepik__35mm-film-photography-minimalist-black-display-cab__8285_jwej9v.png"].map((img, i) => (
-          <div key={i} className="h-64 md:h-[28rem] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
-            <img src={`https://res.cloudinary.com/dgstbaoic/image/upload/${img}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000" alt="Gallery" />
+        {[
+          { img: "v1765596663/freepik__35mm-film-photography-luxury-modern-hair-salon-int__8283_vhnahv.png", alt: "Luxury salon interior" },
+          { img: "v1765596654/freepik__the-style-is-candid-image-photography-with-natural__8284_cbgbc6.png", alt: "Natural hair styling" },
+          { img: "v1765596629/freepik__the-style-is-candid-image-photography-with-natural__8286_e0zz4v.png", alt: "Professional hair treatment" },
+          { img: "v1765596644/freepik__35mm-film-photography-minimalist-black-display-cab__8285_jwej9v.png", alt: "Modern hair products display" }
+        ].map((item, i) => (
+          <div key={i} className="h-80 md:h-[28rem] overflow-hidden group">
+            <img 
+              src={`https://res.cloudinary.com/dgstbaoic/image/upload/w_800,f_auto,q_auto/${item.img}`}
+              loading="lazy" 
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1200ms] ease-out grayscale group-hover:grayscale-0" 
+              alt={item.alt}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="500" viewBox="0 0 400 500"%3E%3Crect width="400" height="500" fill="%23e4e4e7"/%3E%3C/svg%3E';
+              }}
+            />
           </div>
         ))}
       </section>
 
-      {/* Contact */}
-      <section id="contact" className="py-32 px-6">
-        <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-20">
+      {/* Contact Section */}
+      <section id="contact" className="py-32 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <SectionHeader title="Visit Us" subtitle="Get In Touch" />
+          
+          {/* Google Maps */}
+          <div className="mb-16 rounded-3xl overflow-hidden shadow-lg h-96">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.0!2d29.7789!3d-28.5603!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1ef3b5f5f5f5f5f5%3A0x1234567890abcdef!2s21%20King%20St%2C%20Ladysmith%2C%203370!5e0!3m2!1sen!2sza!4v1234567890"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Lumière Salon Location - Ladysmith"
+            />
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-24">
           <div>
-            <SectionHeader title="Visit Us" subtitle="Contact" centered={false} />
-            <div className="space-y-6 text-zinc-500">
-              <div className="flex gap-4 items-center"><MapPin size={20} className="text-black" /> Shop 10, Luxe Square, Cape Town</div>
-              <div className="flex gap-4 items-center"><Phone size={20} className="text-black" /> (021) 555 0123</div>
-              <div className="flex gap-4 items-center"><Clock size={20} className="text-black" /> Tue - Sat: 10am - 7pm</div>
+            <SectionHeader title="Visit Us" subtitle="Get In Touch" centered={false} />
+            <div className="space-y-8 text-zinc-600">
+              <div className="flex gap-6 items-start group">
+                <MapPin className="text-black mt-1 group-hover:scale-110 transition-transform" size={20} />
+                <div>
+                  <p className="text-base mb-2">21 King Street, Kingsgate Centre<br/>Ladysmith, 3370</p>
+                  <a 
+                    href="https://maps.google.com/?q=21+King+Street+Ladysmith+3370" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-black underline hover:no-underline"
+                  >
+                    Get Directions →
+                  </a>
+                </div>
+              </div>
+              <div className="flex gap-6 items-start group">
+                <Phone className="text-black mt-1 group-hover:scale-110 transition-transform" size={20} />
+                <a href="tel:+27619229670" className="text-base hover:text-black transition-colors">061 922 9670</a>
+              </div>
+              <div className="flex gap-6 items-start group">
+                <Mail className="text-black mt-1 group-hover:scale-110 transition-transform" size={20} />
+                <a href="mailto:hello@lumieresalon.com" className="text-base hover:text-black transition-colors">hello@lumieresalon.com</a>
+              </div>
+              <div className="flex gap-6 items-start group">
+                <Clock className="text-black mt-1 group-hover:scale-110 transition-transform" size={20} />
+                <p className="text-base">Tue - Fri: 10am - 8pm<br/>Sat: 9am - 6pm</p>
+              </div>
             </div>
           </div>
-          <form className="bg-zinc-50 p-10 rounded-3xl space-y-4" onSubmit={e => e.preventDefault()}>
-            <input placeholder="Name" className="w-full p-4 bg-white rounded-xl outline-none border border-zinc-100" />
-            <input placeholder="Email" className="w-full p-4 bg-white rounded-xl outline-none border border-zinc-100" />
-            <textarea placeholder="How can we help?" rows="4" className="w-full p-4 bg-white rounded-xl outline-none border border-zinc-100" />
-            <Button className="w-full">Submit</Button>
+          
+          <form className="bg-zinc-50 p-12 border border-zinc-100 shadow-sm space-y-6 rounded-3xl" onSubmit={handleContactSubmit}>
+            <h3 className="text-3xl font-serif mb-10 font-light tracking-tight">Send a Message</h3>
+            <input 
+              required 
+              name="name"
+              placeholder="Name" 
+              className="w-full p-5 bg-white border border-zinc-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all" 
+            />
+            <input 
+              required 
+              type="email"
+              name="email" 
+              placeholder="Email" 
+              className="w-full p-5 bg-white border border-zinc-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all" 
+            />
+            <textarea 
+              required 
+              name="message"
+              placeholder="Message" 
+              rows="5" 
+              className="w-full p-5 bg-white border border-zinc-200 rounded-xl outline-none focus:ring-2 focus:ring-black transition-all resize-none" 
+            />
+            
+            {contactFormStatus === 'success' && (
+              <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-sm">
+                ✓ Message sent successfully! We'll get back to you soon.
+              </div>
+            )}
+            
+            {contactFormStatus === 'error' && (
+              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl text-sm">
+                ✗ Something went wrong. Please try again or contact us directly.
+              </div>
+            )}
+            
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={contactFormStatus === 'sending'}
+            >
+              {contactFormStatus === 'sending' ? 'Sending...' : 'Submit Inquiry'}
+            </Button>
           </form>
+        </div>
         </div>
       </section>
 
-      <footer className="bg-black text-white py-20 px-6 text-center">
-        <h2 className="text-2xl font-serif tracking-widest mb-10">LUMIÈRE</h2>
-        <div className="flex justify-center space-x-8 opacity-40 mb-10">
-          <Instagram size={20} className="hover:opacity-100 cursor-pointer transition-opacity" />
-          <Facebook size={20} className="hover:opacity-100 cursor-pointer transition-opacity" />
+      {/* Footer */}
+      <footer className="bg-gradient-to-b from-zinc-900 to-black text-white py-24 px-6 text-center">
+        <h2 className="text-3xl font-serif font-light tracking-[0.3em] mb-12">LUMIÈRE</h2>
+        <div className="flex justify-center space-x-12 mb-16 opacity-50">
+          <a 
+            href="https://instagram.com/arcodic" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="Visit our Instagram"
+            className="hover:opacity-100 cursor-pointer transition-all duration-300 hover:scale-110"
+          >
+            <Instagram size={22} />
+          </a>
         </div>
-        <p className="text-[10px] text-zinc-600 uppercase tracking-widest">© 2026 Lumière Salon. Cape Town.</p>
+        <p className="text-zinc-600 text-[10px] uppercase tracking-[0.3em]">© 2026 Lumière Salon. Demo by Arcodic.</p>
       </footer>
     </div>
   );
