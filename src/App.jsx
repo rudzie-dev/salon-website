@@ -716,20 +716,6 @@ export default function App() {
         <div className="container mx-auto max-w-6xl">
           <SectionHeader title="Visit Us" subtitle="Get In Touch" />
           
-          {/* Google Maps */}
-          <div className="mb-16 rounded-3xl overflow-hidden shadow-lg h-96">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.0!2d29.7789!3d-28.5603!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1ef3b5f5f5f5f5f5%3A0x1234567890abcdef!2s21%20King%20St%2C%20Ladysmith%2C%203370!5e0!3m2!1sen!2sza!4v1234567890"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Lumière Salon Location - Ladysmith"
-            />
-          </div>
-          
           <div className="grid md:grid-cols-2 gap-24">
           <div>
             <SectionHeader title="Visit Us" subtitle="Get In Touch" centered={false} />
@@ -822,6 +808,26 @@ export default function App() {
             className="hover:opacity-100 cursor-pointer transition-all duration-300 hover:scale-110"
           >
             <Instagram size={22} />
+          </a>
+          <a 
+            href="https://facebook.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="Visit our Facebook"
+            className="hover:opacity-100 cursor-pointer transition-all duration-300 hover:scale-110"
+          >
+            <Facebook size={22} />
+          </a>
+          <a 
+            href="https://twitter.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="Visit our Twitter"
+            className="hover:opacity-100 cursor-pointer transition-all duration-300 hover:scale-110"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+            </svg>
           </a>
         </div>
         <p className="text-zinc-600 text-[10px] uppercase tracking-[0.3em]">© 2026 Lumière Salon. Demo by Arcodic.</p>
