@@ -145,6 +145,26 @@ const Navbar = ({ onBookClick }) => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
   }, [isOpen]);
 
+  // Handle smooth scroll with offset for fixed navbar
+  const handleNavClick = (e, link) => {
+    e.preventDefault();
+    setIsOpen(false);
+    
+    const targetId = link.toLowerCase();
+    const element = document.getElementById(targetId);
+    
+    if (element) {
+      const navbarHeight = 80; // Approximate navbar height
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - navbarHeight;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const links = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
 
   return (
@@ -152,7 +172,7 @@ const Navbar = ({ onBookClick }) => {
       <div className="container mx-auto px-8 flex justify-between items-center relative z-[90]">
         <a 
           href="#home" 
-          onClick={() => setIsOpen(false)} 
+          onClick={(e) => handleNavClick(e, 'Home')} 
           className={`text-xl font-serif tracking-[0.3em] font-normal transition-all duration-500 ${(isScrolled || isOpen) ? 'text-black' : 'text-white'}`}
         >
           LUMIÈRE
@@ -162,7 +182,8 @@ const Navbar = ({ onBookClick }) => {
           {links.map((l) => (
             <a 
               key={l} 
-              href={`#${l.toLowerCase()}`} 
+              href={`#${l.toLowerCase()}`}
+              onClick={(e) => handleNavClick(e, l)}
               className={`text-[13px] uppercase tracking-wider font-medium nav-link-grow transition-colors duration-300 ${isScrolled ? 'text-zinc-700 hover:text-black' : 'text-white/90 hover:text-white'}`}
             >
               {l}
@@ -186,8 +207,8 @@ const Navbar = ({ onBookClick }) => {
           {links.map((l, i) => (
             <a 
               key={l} 
-              href={`#${l.toLowerCase()}`} 
-              onClick={() => setIsOpen(false)} 
+              href={`#${l.toLowerCase()}`}
+              onClick={(e) => handleNavClick(e, l)}
               className={`text-3xl font-serif text-black hover:text-zinc-600 transition-colors duration-300 ${isOpen ? 'animate-link' : ''}`}
               style={{ animationDelay: `${i * 0.1}s` }}
             >
