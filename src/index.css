@@ -14,6 +14,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 100px; /* Offset for fixed navbar */
   }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
@@ -25,83 +26,224 @@
     font-family: 'IvyMode', 'New York', 'Georgia', serif !important;
   }
   
-  /* Prevent blue highlight on mobile taps */
-  * {
-    -webkit-tap-highlight-color: transparent;
+  /* Apple-style focus states */
+  *:focus-visible {
+    outline: 2px solid #000;
+    outline-offset: 3px;
   }
 }
 
 @layer utilities {
-  /* Animation: Draw the SVG Logo */
-  @keyframes draw {
-    0% { stroke-dasharray: 0 100; stroke-dashoffset: 100; opacity: 0; }
-    50% { opacity: 1; }
-    100% { stroke-dasharray: 100 0; stroke-dashoffset: 0; opacity: 1; }
+  /* Scrollbar Utilities */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  /* --- LOADING SCREEN ANIMATIONS --- */
+  
+  /* SVG Drawing: Smoother Apple-style animation */
   .animate-draw {
-    animation: draw 2.5s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: draw 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
   }
 
-  /* Animation: Loading Screen Strips */
-  @keyframes exit-strip {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-100%); }
-  }
-  .exit-strip {
-    animation: exit-strip 1.2s cubic-bezier(0.85, 0, 0.15, 1) forwards;
-  }
-
-  /* Animation: Mobile Menu Links Stagger */
-  @keyframes link-fade-in {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
+  @keyframes draw {
     to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  /* Strip Exit: Apple-style spring physics */
+  .exit-strip {
+    animation: stripUp 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes stripUp {
+    0% { 
+      transform: translateY(0) scaleY(1);
       opacity: 1;
+    }
+    100% { 
+      transform: translateY(-100%) scaleY(0.8);
+      opacity: 0;
+    }
+  }
+
+  /* --- CAROUSEL & UI --- */
+
+  .snap-x-mandatory {
+    scroll-snap-type: x mandatory;
+  }
+  .snap-center {
+    scroll-snap-align: center;
+  }
+
+  /* Apple-style nav link grow effect */
+  .nav-link-grow {
+    position: relative;
+  }
+  .nav-link-grow::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -6px;
+    left: 50%;
+    background-color: currentColor;
+    transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translateX(-50%);
+  }
+  .nav-link-grow:hover::after {
+    width: 100%;
+  }
+
+  /* Fade In Animations - Apple timing */
+  @keyframes fadeIn {
+    from { 
+      opacity: 0;
+    }
+    to { 
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from { 
+      opacity: 0; 
+      transform: translateY(40px);
+    }
+    to { 
+      opacity: 1; 
       transform: translateY(0);
     }
   }
-  .animate-link {
-    animation: link-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
 
-  /* Fade In Up for Hero Text */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
+  @keyframes slideUp {
+    from { 
+      opacity: 0; 
       transform: translateY(30px);
     }
-    to {
-      opacity: 1;
+    to { 
+      opacity: 1; 
       transform: translateY(0);
     }
   }
-  .animate-fadeInUp {
-    animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
-  }
 
-  /* Scale In for Modals */
   @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95) translateY(10px);
+    from { 
+      opacity: 0; 
+      transform: scale(0.95);
     }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
+    to { 
+      opacity: 1; 
+      transform: scale(1);
     }
-  }
-  .animate-scaleIn {
-    animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  /* Blur Support for Safari */
-  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
-    .backdrop-blur-3xl {
-      backdrop-filter: blur(60px);
-      -webkit-backdrop-filter: blur(60px);
+  .animate-fadeIn {
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-fadeInUp {
+    animation: fadeInUp 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-slideUp {
+    animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Staggered link animations */
+  @keyframes slideUpFade {
+    from { 
+      opacity: 0; 
+      transform: translateY(30px);
     }
+    to { 
+      opacity: 1; 
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-link {
+    animation: slideUpFade 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    opacity: 0;
+  }
+
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  .delay-5 { animation-delay: 0.5s; }
+
+  /* Shimmer effect - Apple-style */
+  @keyframes shimmer {
+    0% { 
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.4;
+    }
+    100% { 
+      transform: translateX(200%);
+      opacity: 0;
+    }
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  /* Apple-style bounce for scroll indicator */
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(8px);
+    }
+  }
+
+  .animate-bounce {
+    animation: bounce 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  /* Pulse for loading indicator */
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Backdrop blur support */
+  @supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
     .backdrop-blur-2xl {
       backdrop-filter: blur(40px);
       -webkit-backdrop-filter: blur(40px);
@@ -114,27 +256,54 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
     }
+    .backdrop-blur-sm {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
   }
 
-  /* Apple-style shadows */
+  /* Apple-style shadow system */
+  .shadow-apple-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  .shadow-apple {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .shadow-apple-lg {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
   .shadow-apple-xl {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.08);
   }
 
-  /* Custom Scrollbar for Modal Content */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+  .shadow-apple-2xl {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
   }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+
+  /* Text selection */
+  ::selection {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: inherit;
   }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #e4e4e7;
-    border-radius: 10px;
+
+  /* Smooth transitions - Apple default */
+  * {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* Fix for Hero Image Parallax Smoothness */
-#home img {
-  will-change: transform;
+/* Custom properties for Apple-style design tokens */
+:root {
+  --spacing-unit: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --transition-fast: 200ms;
+  --transition-base: 400ms;
+  --transition-slow: 600ms;
 }
