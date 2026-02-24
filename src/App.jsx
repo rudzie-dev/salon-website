@@ -1,804 +1,270 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Phone, Star, Menu, X, ArrowRight, MapPin, Clock, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  X, Scissors, Star, MapPin, Phone, Mail, 
+  Instagram, Facebook, ChevronRight, CheckCircle, ArrowRight, Clock
+} from 'lucide-react';
 
-const useIsMobile = () => {
-  const [mob, setMob] = useState(window.innerWidth < 768);
-  useEffect(() => {
-    const fn = () => setMob(window.innerWidth < 768);
-    window.addEventListener("resize", fn);
-    return () => window.removeEventListener("resize", fn);
-  }, []);
-  return mob;
-};
-
-// ─── GOOGLE REVIEWS — paste your real reviews here ───────────────────────────
-// To update: go to Google Maps → find your business → click a review → copy the
-// reviewer's name and text and paste below. Stars are always 5.
-const REVIEWS = [
-  {
-    name: "Thabo M.",
-    date: "2 weeks ago",
-    text: "Excellent service from start to finish. Same-day install, professional and clean. My DSTV hasn't missed a beat since. Highly recommend.",
-  },
-  {
-    name: "Priya N.",
-    date: "1 month ago",
-    text: "Had my CCTV cameras installed the same day I called. Very knowledgeable and gave great advice on placement. Will definitely use again.",
-  },
-  {
-    name: "David K.",
-    date: "3 months ago",
-    text: "Fixed my gate motor when two other guys couldn't. Honest about what was needed, fair price. This is now my go-to for everything installation.",
-  },
-];
-
-// ─── INJECT STYLES ────────────────────────────────────────────────────────────
-const _css = document.createElement("style");
-_css.textContent = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Barlow:ital,wght@0,400;0,600;0,700;0,800;0,900;1,600;1,800&family=DM+Mono:wght@400;500&display=swap');
-
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; font-size: 16px; }
-  body {
-    background: #111009;
-    color: #E8E2D9;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .f-bar  { font-family: 'Barlow', sans-serif; }
-  .f-int  { font-family: 'Inter', sans-serif; }
-  .f-mono { font-family: 'DM Mono', monospace; }
-
-  /* ── Colour tokens ── */
-  :root {
-    --bg:       #111009;
-    --bg2:      #181510;
-    --bg3:      #1E1A13;
-    --border:   rgba(232,226,217,0.08);
-    --muted:    rgba(232,226,217,0.38);
-    --faint:    rgba(232,226,217,0.05);
-    --ink:      #E8E2D9;
-    --green:    #25d366;
-    --green-lo: rgba(37,211,102,0.08);
-  }
-
-  /* ── Paper grain overlay ── */
-  body::after {
-    content: '';
-    position: fixed; inset: 0; pointer-events: none; z-index: 9998;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.032'/%3E%3C/svg%3E");
-  }
-
-  /* ── Scrollbar ── */
-  ::-webkit-scrollbar { width: 3px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--bg3); }
-
-  a { color: inherit; text-decoration: none; }
-
-  /* ── Glint button — periodic auto-glint + hover ── */
-  @keyframes glintAuto {
-    0%,100% { --glint-pos: -100%; }
-    0%      { --glint-pos: -100%; }
-    8%      { --glint-pos: 200%; }
-    100%    { --glint-pos: 200%; }
-  }
-
-  .btn-glint {
-    position: relative; overflow: hidden;
-    display: inline-flex; align-items: center; gap: 9px;
-    font-family: 'DM Mono', monospace; font-size: 12px;
-    font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase;
-    color: var(--ink); background: transparent;
-    border: 1px solid rgba(232,226,217,0.2);
-    padding: 13px 22px; cursor: pointer; text-decoration: none;
-    transition: border-color 0.35s ease, box-shadow 0.35s ease, color 0.35s ease;
-    animation: glintAuto 5s ease-in-out infinite;
-  }
-  .btn-glint::before {
-    content: '';
-    position: absolute; top: 0; left: var(--glint-pos, -100%);
-    width: 50%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(37,211,102,0.18), transparent);
-    transition: none;
-    animation: inherit;
-  }
-  .btn-glint:hover {
-    border-color: rgba(37,211,102,0.55);
-    box-shadow: 0 0 0 3px rgba(37,211,102,0.06), inset 0 0 20px rgba(37,211,102,0.04);
-    color: #fff;
-  }
-  .btn-glint:hover::before {
-    animation: none;
-    left: 200%;
-    transition: left 0.5s ease;
-  }
-  .btn-glint:active { transform: scale(0.97); }
-
-  /* dark-bg variant (light border) */
-  .btn-glint-dk {
-    position: relative; overflow: hidden;
-    display: inline-flex; align-items: center; gap: 9px;
-    font-family: 'DM Mono', monospace; font-size: 13px;
-    font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
-    color: rgba(232,226,217,0.6); background: transparent;
-    border: 1px solid rgba(232,226,217,0.15);
-    padding: 15px 30px; cursor: pointer; text-decoration: none;
-    transition: border-color 0.35s ease, box-shadow 0.35s ease, color 0.35s ease;
-    animation: glintAuto 6s 1s ease-in-out infinite;
-  }
-  .btn-glint-dk::before {
-    content: '';
-    position: absolute; top: 0; left: var(--glint-pos, -100%);
-    width: 50%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(37,211,102,0.15), transparent);
-    animation: inherit;
-  }
-  .btn-glint-dk:hover {
-    border-color: rgba(37,211,102,0.5);
-    color: #fff;
-    box-shadow: 0 0 0 3px rgba(37,211,102,0.05), inset 0 0 24px rgba(37,211,102,0.05);
-  }
-  .btn-glint-dk:hover::before { animation: none; left: 200%; transition: left 0.5s ease; }
-  .btn-glint-dk:active { transform: scale(0.97); }
-
-  /* ── Float WA ── */
-  @keyframes waFloat {
-    0%,100% { box-shadow: 0 4px 24px rgba(37,211,102,0.28), 0 0 0 0 rgba(37,211,102,0); }
-    50%      { box-shadow: 0 8px 36px rgba(37,211,102,0.4), 0 0 0 6px rgba(37,211,102,0.06); }
-  }
-  .wa-float { animation: waFloat 3s ease-in-out infinite; }
-
-  /* ── Brand ticker ── */
-  @keyframes roll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-  .roll { animation: roll 32s linear infinite; display: flex; width: max-content; }
-  .roll:hover { animation-play-state: paused; }
-
-  /* ── Bento grid ── */
-  .bento {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: 220px 220px;
-    gap: 3px;
-  }
-  .bento-a { grid-column: span 2; grid-row: span 1; }
-  .bento-b { grid-column: span 2; grid-row: span 2; }
-  .bento-c { grid-column: span 1; }
-  .bento-d { grid-column: span 1; }
-  .bento-e { grid-column: span 1; }
-  .bento-f { grid-column: span 1; }
-
-  @media (max-width: 768px) {
-    .bento {
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto;
-    }
-    .bento-a, .bento-b { grid-column: span 2; aspect-ratio: 16/8; }
-    .bento-c, .bento-d, .bento-e, .bento-f { grid-column: span 1; aspect-ratio: 4/3; }
-  }
-
-  /* ── Service cards ── */
-  .svc-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    padding: 36px 32px;
-    position: relative; overflow: hidden;
-    transition: border-color 0.3s ease, background 0.3s ease;
-    cursor: default;
-  }
-  .svc-card:hover {
-    border-color: rgba(37,211,102,0.18);
-    background: var(--bg3);
-  }
-  .svc-card::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 0% 0%, rgba(37,211,102,0.04) 0%, transparent 60%);
-    opacity: 0; transition: opacity 0.4s ease;
-    pointer-events: none;
-  }
-  .svc-card:hover::after { opacity: 1; }
-
-  /* ── Review card ── */
-  .rev-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    padding: 32px;
-    transition: border-color 0.3s ease;
-  }
-  .rev-card:hover { border-color: rgba(232,226,217,0.16); }
-
-  /* ── Pill tag ── */
-  .tag {
-    display: inline-block;
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    padding: 4px 11px;
-  }
-
-  /* ── Live dot ── */
-  @keyframes liveDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
-  .live-dot { animation: liveDot 2s ease-in-out infinite; }
-
-  /* ── Mobile carousel ── */
-  .carousel-wrap {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    display: flex;
-    gap: 12px;
-    padding-bottom: 4px;
-  }
-  .carousel-wrap::-webkit-scrollbar { display: none; }
-  .carousel-item {
-    scroll-snap-align: start;
-    flex-shrink: 0;
-  }
-
-  /* ── Contact grid responsive ── */
-  @media (max-width: 768px) {
-    .contact-grid { grid-template-columns: 1fr !important; }
-  }
-
-  /* ── Nav responsive ── */
-  .nav-links { display: flex; gap: 28px; align-items: center; }
-  .nav-menu-btn { display: flex; }
-  @media (max-width: 768px) {
-    .nav-links { display: none !important; }
-  }
-  @media (min-width: 769px) {
-    .nav-menu-btn { display: none !important; }
-  }
-
-  /* ── Hero stats ── */
-  .hero-stats { display: flex; flex-wrap: wrap; gap: 0; margin-top: 80px; padding-top: 40px; border-top: 1px solid rgba(232,226,217,0.07); }
-  .hero-stat { flex: 1 1 130px; padding-right: 40px; padding-bottom: 16px; }
-  @media (max-width: 640px) {
-    .hero-stats { margin-top: 56px; }
-    .hero-stat { flex: 1 1 calc(50% - 20px); padding-right: 20px; padding-bottom: 20px; }
-    .hero-stat:nth-child(2n) { padding-right: 0; }
-  }
-
-  /* ── Section spacing ── */
-  .section { padding: 96px 0; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
-  .hero-container { max-width: 1200px; margin: 0; padding: 0 32px; }
-
-  @media (max-width: 640px) {
-    .container { padding: 0 20px; }
-    .hero-container { padding: 0 20px; }
-    .section { padding: 64px 0; }
-  }
-
-  /* ── Hero grid lines ── */
-  .hero-grid {
-    background-image:
-      linear-gradient(rgba(232,226,217,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(232,226,217,0.03) 1px, transparent 1px);
-    background-size: 72px 72px;
-  }
-`;
-document.head.appendChild(_css);
-
-// ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const PHONE     = "060 603 8238";
-const PHONE_RAW = "0606038238";
-const WA        = "https://wa.me/27606038238?text=Hi%20MG%20Installation%2C%20I%27d%20like%20a%20quote%20please";
-const EMAIL     = "matchlessgifts888@gmail.com";
-
-const BRANDS = ["DSTV","OpenView HD","Hikvision","Dahua","HiLook","Centurion","CAME","FAAC","Samsung","LG","Sony","DSC"];
-
+/* --- DATA --- */
 const SERVICES = [
-  { n:"01", title:"DSTV & OpenView HD",
-    body:"Fast, clean installs for homes and businesses. Signal problems, Xtraview setup, new decoders — we handle it all.",
-    tags:["New Installs","Signal Fixes","Xtraview","4K"] },
-  { n:"02", title:"CCTV & Security Cameras",
-    body:"Hikvision, Dahua and HiLook systems installed and configured. See your property live from your phone, anywhere.",
-    tags:["Hikvision","Dahua","Remote View","Maintenance"] },
-  { n:"03", title:"Gate Motors & Intercoms",
-    body:"Centurion sliding and swing gate motors, intercoms and access control for homes, complexes and businesses.",
-    tags:["Centurion","Sliding","Swing","Access Control"] },
-  { n:"04", title:"TV Wall Mounts",
-    body:"Fixed, tilt and full-motion mounts with clean cable management. Looks factory-fitted, every time.",
-    tags:["All Sizes","Full-Motion","Cable Neat"] },
-  { n:"05", title:"Callouts & Repairs",
-    body:"Something's not working? We come to you, diagnose the problem and fix it — same day where possible.",
-    tags:["Same Day","All Brands","Fair Pricing"] },
-  { n:"06", title:"Web Development",
-    body:"Professional websites built for local businesses. Fast, mobile-first and designed to bring in customers.",
-    tags:["Design","Build","SEO","Mobile"] },
+  { id: 1, name: 'Signature Cut & Style', price: 95, duration: 60, description: 'A precision cut tailored to your face shape, finished with a luxury blowout.' },
+  { id: 2, name: 'Balayage & Gloss', price: 210, duration: 180, description: 'Hand-painted highlights for a natural look, including a gloss treatment.' },
+  { id: 3, name: 'Keratin Smoothing', price: 250, duration: 150, description: 'Eliminate frizz and restore shine with premium keratin infusion.' },
+  { id: 4, name: 'Luxury Blowout', price: 55, duration: 45, description: 'Wash, condition, and a long-lasting blowout style.' },
+  { id: 5, name: 'Full Spectrum Color', price: 130, duration: 120, description: 'Rich, single-process color for vibrant, lasting results.' },
+  { id: 6, name: 'Gentlemen\'s Grooming', price: 65, duration: 45, description: 'Precision clipper or scissor cut, wash, and style.' }
 ];
 
-const BENTO_SLOTS = [
-  { cls:"bento-a", label:"Full Camera Overview",   sub:"Hikvision · Home Install",    img:"/1.webp" },
-  { cls:"bento-b", label:"DVR & Cable Routing",    sub:"Clean Install · Ladysmith",   img:"/2.webp" },
-  { cls:"bento-c", label:"Camera Placement",       sub:"Corner Mount · High Angle",   img:"/3.webp" },
-  { cls:"bento-d", label:"Exterior Coverage",      sub:"Driveway & Entry Points",     img:"/4.webp" },
-  { cls:"bento-e", label:"Night Vision Test",      sub:"IR · Full Colour Mode",       img:"/5.webp" },
-  { cls:"bento-f", label:"System Live View",       sub:"Remote View · iOS & Android", img:"/5.webp" },
+const STYLISTS = [
+  { id: 1, name: 'Zara Nkosi', role: 'Master Stylist', bio: 'Specializes in transformative cuts that frame the face perfectly.', image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765596669/image_1_1765596131656_gdrxvd.png' },
+  { id: 2, name: 'Liam Chen', role: 'Color Director', bio: 'Renowned for "lived-in" color techniques and the perfect blonde.', image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765596671/image_1_1765596191540_b2rh1t.png' },
+  { id: 3, name: 'Amara Dube', role: 'Texture Specialist', bio: 'Helping clients embrace and enhance their natural curl patterns.', image: 'https://res.cloudinary.com/dgstbaoic/image/upload/v1765596673/freepik__the-style-is-candid-image-photography-with-natural__8282_exxbxp.png' }
 ];
 
-// ─── WA SVG ───────────────────────────────────────────────────────────────────
-const WASvg = ({ size = 18 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" style={{flexShrink:0}}>
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-  </svg>
-);
+const TESTIMONIALS = [
+  { id: 1, name: "Sarah Jenkins", text: "The most transformative salon experience. Zara's precision is unparalleled.", rating: 5, date: "2 weeks ago" },
+  { id: 2, name: "Marcus Thorne", text: "Liam is a visionary with color. My balayage looks incredibly natural.", rating: 5, date: "1 month ago" },
+  { id: 3, name: "Amara Diop", text: "Finally, a salon that masters curly hair. Amara treated my curls with such care.", rating: 5, date: "3 weeks ago" }
+];
 
-// ─── FLOATING WA ──────────────────────────────────────────────────────────────
-const FloatWA = () => {
-  const [open, setOpen] = useState(false);
-  return (
-    <motion.a
-      href={WA} target="_blank"
-      className="wa-float f-mono"
-      style={{
-        position:"fixed", bottom:24, right:24, zIndex:50,
-        display:"flex", alignItems:"center", gap:10,
-        background:"#25d366", color:"#fff",
-        borderRadius:999,
-        padding: open ? "13px 22px" : "13px",
-        fontSize:12, fontWeight:500, letterSpacing:"0.07em",
-        cursor:"pointer", whiteSpace:"nowrap",
-      }}
-      initial={{ scale:0, opacity:0 }}
-      animate={{ scale:1, opacity:1 }}
-      transition={{ delay:1.8, type:"spring", stiffness:260, damping:20 }}
-      onHoverStart={() => setOpen(true)}
-      onHoverEnd={() => setOpen(false)}
-      whileTap={{ scale:0.93 }}
-    >
-      <WASvg size={20}/>
-      <AnimatePresence>
-        {open && (
-          <motion.span
-            initial={{ width:0, opacity:0 }}
-            animate={{ width:"auto", opacity:1 }}
-            exit={{ width:0, opacity:0 }}
-            transition={{ duration:0.22 }}
-            style={{ overflow:"hidden" }}
-          >
-            WhatsApp a Quote
-          </motion.span>
-        )}
-      </AnimatePresence>
-    </motion.a>
-  );
-};
+const FAQS = [
+  { id: 1, question: "Do I need to book in advance?", answer: "We highly recommend booking in advance to secure your preferred time slot. You can book via WhatsApp or by calling us directly. Walk-ins are welcome based on availability." },
+  { id: 2, question: "What is your cancellation policy?", answer: "We require at least 24 hours notice for cancellations or rescheduling. This allows us to offer the time slot to other clients. Late cancellations may incur a fee." },
+  { id: 3, question: "What payment methods do you accept?", answer: "We accept cash, all major credit and debit cards, as well as mobile payment options like SnapScan and Zapper." },
+  { id: 4, question: "Do you offer consultations?", answer: "Yes! All our services include a complimentary consultation to discuss your desired look and ensure we achieve the perfect result for you." },
+  { id: 5, question: "How long will my appointment take?", answer: "Appointment duration varies by service. A simple cut takes about 60 minutes, while color treatments can take 2-3 hours. We'll confirm the exact timing when you book." }
+];
 
-// ─── NAV ──────────────────────────────────────────────────────────────────────
-const Nav = () => {
-  const [scrolled, setScrolled] = useState(false);
-  const [mob, setMob] = useState(false);
+/* --- COMPONENTS --- */
+
+const LoadingScreen = () => {
+  const [shouldRender, setShouldRender] = useState(true);
+  const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", fn);
-    return () => window.removeEventListener("scroll", fn);
+    const timer = setTimeout(() => setIsExiting(true), 2500);
+    const removeTimer = setTimeout(() => setShouldRender(false), 3800);
+    return () => { clearTimeout(timer); clearTimeout(removeTimer); };
   }, []);
 
-  return (
-    <>
-      <motion.header
-        style={{
-          position:"fixed", top:0, left:0, right:0, zIndex:40,
-          borderBottom: scrolled ? "1px solid rgba(232,226,217,0.07)" : "1px solid transparent",
-          background: scrolled ? "rgba(17,16,9,0.88)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
-          transition:"all 0.4s ease",
-        }}
-        initial={{ y:-64, opacity:0 }}
-        animate={{ y:0, opacity:1 }}
-        transition={{ duration:0.7, ease:[0.22,1,0.36,1] }}
-      >
-        <div style={{ maxWidth:1200, margin:"0 auto", padding:"0 32px", height:64, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-
-          {/* Logo */}
-          <span className="f-bar" style={{ fontSize:18, fontWeight:800, letterSpacing:"0.04em", color:"#E8E2D9" }}>
-            MG<span style={{ fontWeight:400, opacity:0.3, marginLeft:6 }}>INSTALLATION</span>
-          </span>
-
-          {/* Centre links — hidden on mobile via CSS */}
-          <div className="nav-links">
-            {["Services","Work","Reviews","Contact"].map(l => (
-              <motion.a key={l} href={`#${l.toLowerCase()}`}
-                className="f-mono"
-                style={{ fontSize:11, letterSpacing:"0.14em", textTransform:"uppercase", color:"rgba(232,226,217,0.38)" }}
-                whileHover={{ color:"rgba(232,226,217,0.9)" }}
-              >{l}</motion.a>
-            ))}
-          </div>
-
-          {/* Right — WA + hamburger */}
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <motion.a
-              href={WA} target="_blank"
-              className="btn-glint"
-              style={{ borderRadius:999, padding:"9px 18px", fontSize:11 }}
-              whileTap={{ scale:0.95 }}
-            >
-              <WASvg size={13}/> WhatsApp
-            </motion.a>
-            {/* Hamburger — shown only on mobile via CSS */}
-            <motion.button
-              onClick={() => setMob(true)}
-              className="nav-menu-btn"
-              style={{ background:"none", border:"none", color:"rgba(232,226,217,0.4)", cursor:"pointer", padding:6 }}
-              whileTap={{ scale:0.9 }}
-            ><Menu size={20}/></motion.button>
-          </div>
-        </div>
-      </motion.header>
-
-      {/* Mobile fullscreen menu */}
-      <AnimatePresence>
-        {mob && (
-          <motion.div
-            style={{ position:"fixed", inset:0, zIndex:50, background:"#111009", display:"flex", flexDirection:"column", alignItems:"flex-start", justifyContent:"center", padding:"0 40px" }}
-            initial={{ opacity:0, x:40 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:40 }}
-            transition={{ duration:0.3, ease:[0.22,1,0.36,1] }}
-          >
-            <button onClick={() => setMob(false)}
-              style={{ position:"absolute", top:20, right:24, background:"none", border:"none", color:"rgba(232,226,217,0.35)", cursor:"pointer" }}>
-              <X size={22}/>
-            </button>
-
-            <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.22em", textTransform:"uppercase", color:"rgba(232,226,217,0.25)", marginBottom:32 }}>
-              Navigation
-            </div>
-
-            {["Services","Work","Reviews","Contact"].map((l,i) => (
-              <motion.a key={l} href={`#${l.toLowerCase()}`}
-                onClick={() => setMob(false)}
-                className="f-bar"
-                style={{ fontSize:48, fontWeight:800, color:"rgba(232,226,217,0.08)", letterSpacing:"-0.01em", lineHeight:1.15 }}
-                initial={{ opacity:0, x:-24 }}
-                animate={{ opacity:1, x:0 }}
-                transition={{ delay:i*0.07 }}
-                whileHover={{ color:"#E8E2D9" }}
-              >{l}</motion.a>
-            ))}
-
-            <motion.a href={WA} target="_blank"
-              className="btn-glint"
-              style={{ marginTop:48, borderRadius:999, padding:"14px 28px", fontSize:13 }}
-              initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.32 }}
-            >
-              <WASvg size={16}/> WhatsApp a Quote
-            </motion.a>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-};
-
-// ─── HERO ─────────────────────────────────────────────────────────────────────
-const Hero = () => {
-  const ref = useRef(null);
+  if (!shouldRender) return null;
 
   return (
-    <section ref={ref} className="hero-grid" style={{ minHeight:"100vh", background:"#111009", display:"flex", flexDirection:"column", justifyContent:"center", position:"relative", overflow:"hidden", paddingTop:64 }}>
-
-      {/* Warm amber radial — top left */}
-      <div style={{ position:"absolute", top:"-20%", left:"-10%", width:700, height:700, borderRadius:"50%",
-        background:"radial-gradient(circle, rgba(180,130,60,0.06) 0%, transparent 65%)", pointerEvents:"none" }}/>
-
-      {/* Green radial — bottom right */}
-      <div style={{ position:"absolute", bottom:"-10%", right:"-5%", width:600, height:600, borderRadius:"50%",
-        background:"radial-gradient(circle, rgba(37,211,102,0.05) 0%, transparent 65%)", pointerEvents:"none" }}/>
-
-      <div className="hero-container">
-        <motion.div
-          style={{ display:"inline-flex", alignItems:"center", gap:10, border:"1px solid rgba(232,226,217,0.1)", padding:"8px 16px", marginBottom:52 }}
-          initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.6, delay:0.2 }}
-        >
-          <span className="live-dot" style={{ width:7, height:7, borderRadius:"50%", background:"#25d366", boxShadow:"0 0 8px #25d366", flexShrink:0 }}/>
-          <span className="f-mono" style={{ fontSize:11, letterSpacing:"0.18em", textTransform:"uppercase", color:"rgba(232,226,217,0.4)" }}>
-            Available Now · Ladysmith & Surrounding Areas
-          </span>
-        </motion.div>
-
-        {/* Headline — direct, no fluff */}
-        <div style={{ overflow:"hidden", marginBottom:8 }}>
-          <motion.h1 className="f-bar"
-            style={{ fontSize:"clamp(52px,8vw,112px)", fontWeight:900, lineHeight:0.92, letterSpacing:"-0.02em", color:"#E8E2D9" }}
-            initial={{ y:110, opacity:0 }} animate={{ y:0, opacity:1 }}
-            transition={{ duration:0.9, ease:[0.22,1,0.36,1], delay:0.28 }}
-          >
-            Installed Right.
-          </motion.h1>
-        </div>
-        <div style={{ overflow:"hidden", marginBottom:40 }}>
-          <motion.h1 className="f-bar"
-            style={{ fontSize:"clamp(52px,8vw,112px)", fontWeight:900, fontStyle:"italic", lineHeight:0.92, letterSpacing:"-0.02em",
-              color:"transparent", WebkitTextStroke:"1px rgba(232,226,217,0.2)" }}
-            initial={{ y:110, opacity:0 }} animate={{ y:0, opacity:1 }}
-            transition={{ duration:0.9, ease:[0.22,1,0.36,1], delay:0.4 }}
-          >
-            First Time.
-          </motion.h1>
-        </div>
-
-        {/* Tagline */}
-        <motion.p className="f-int"
-          style={{ fontSize:17, fontWeight:300, color:"rgba(232,226,217,0.45)", maxWidth:520, lineHeight:1.75, marginBottom:44 }}
-          initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.8, delay:0.55 }}
-        >
-          Whether you're a homeowner wanting reliable TV and security, or a business needing gates,
-          intercoms and cameras — we get it done cleanly, on time, every time.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div
-          style={{ display:"flex", flexWrap:"wrap", gap:12 }}
-          initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.7, delay:0.7 }}
-        >
-          <a href={WA} target="_blank" className="btn-glint" style={{ fontSize:13, padding:"15px 28px" }}>
-            <WASvg size={16}/> WhatsApp a Quote
-          </a>
-          <a href="#services" className="btn-glint" style={{ fontSize:13, padding:"15px 28px" }}>
-            View Services <ArrowRight size={14}/>
-          </a>
-        </motion.div>
-
-        {/* Stats */}
-        <motion.div
-          className="hero-stats"
-          initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.9, delay:1.0 }}
-        >
-          {[["11+","Years Active"],["5.0 ★","Google Rating"],["7","Days / Week"],["100%","First-Time Fix Rate"]].map(([n,l],i) => (
-            <motion.div key={i} className="hero-stat"
-              initial={{ opacity:0, y:12 }}
-              animate={{ opacity:1, y:0 }}
-              transition={{ duration:0.55, delay:1.05 + i*0.1, ease:[0.22,1,0.36,1] }}
-            >
-              <div className="f-bar" style={{ fontSize:38, fontWeight:900, color:"#E8E2D9", lineHeight:1, letterSpacing:"-0.01em" }}>{n}</div>
-              <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(232,226,217,0.28)", marginTop:7 }}>{l}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-// ─── BRAND TICKER ─────────────────────────────────────────────────────────────
-const BrandBar = () => {
-  const doubled = [...BRANDS,...BRANDS];
-  return (
-    <div style={{ background:"#0D0C07", borderTop:"1px solid rgba(232,226,217,0.06)", borderBottom:"1px solid rgba(232,226,217,0.06)", padding:"28px 0", overflow:"hidden", position:"relative" }}>
-      <div style={{ position:"absolute", left:0, top:0, bottom:0, width:80, background:"linear-gradient(90deg,#0D0C07,transparent)", zIndex:2, pointerEvents:"none" }}/>
-      <div style={{ position:"absolute", right:0, top:0, bottom:0, width:80, background:"linear-gradient(-90deg,#0D0C07,transparent)", zIndex:2, pointerEvents:"none" }}/>
-      <div className="roll" style={{ gap:56, alignItems:"center" }}>
-        {doubled.map((b,i) => (
-          <span key={i} className="f-mono" style={{ fontSize:11, letterSpacing:"0.2em", textTransform:"uppercase", color:"rgba(232,226,217,0.2)", whiteSpace:"nowrap" }}>
-            {b}
-          </span>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center pointer-events-none">
+      <div className="absolute inset-0 flex overflow-hidden">
+        {[...Array(6)].map((_, i) => (
+          <div 
+            key={i} 
+            className={`flex-1 bg-gradient-to-b from-zinc-900 to-black h-full ${isExiting ? 'exit-strip' : ''}`}
+            style={{ animationDelay: `${i * 0.08}s` }}
+          />
         ))}
       </div>
-    </div>
-  );
-};
-
-// ─── SERVICES ─────────────────────────────────────────────────────────────────
-const Services = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once:true, margin:"-80px" });
-  const isMobile = useIsMobile();
-  const scrollRef = useRef(null);
-  const [active, setActive] = useState(0);
-
-  const scroll = (dir) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const w = el.clientWidth + 12;
-    el.scrollBy({ left: dir * w, behavior:"smooth" });
-  };
-
-  // Track which card is centred
-  const onScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const idx = Math.round(el.scrollLeft / (el.clientWidth + 12));
-    setActive(idx);
-  };
-
-  return (
-    <section id="services" className="section" style={{ background:"#111009" }}>
-      <div className="container">
-        <motion.div ref={ref}
-          style={{ marginBottom:48, paddingBottom:32, borderBottom:"1px solid rgba(232,226,217,0.07)" }}
-          initial={{ opacity:0, y:24 }} animate={inView?{opacity:1,y:0}:{}} transition={{ duration:0.7 }}
-        >
-          <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase", color:"rgba(232,226,217,0.25)", marginBottom:16 }}>— What We Do</div>
-          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:20 }}>
-            <h2 className="f-bar" style={{ fontSize:"clamp(36px,5vw,64px)", fontWeight:900, letterSpacing:"-0.02em", lineHeight:1, color:"#E8E2D9" }}>Our Services</h2>
-            <a href={WA} target="_blank" className="btn-glint">
-              <WASvg size={13}/> Get a Free Quote
-            </a>
+      {!isExiting && (
+        <div className="relative z-10 flex flex-col items-center">
+          <svg width="280" height="100" viewBox="0 0 280 100" className="overflow-visible">
+            <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" className="font-serif text-5xl md:text-6xl fill-transparent stroke-white/30 stroke-[0.4px] animate-draw" style={{ letterSpacing: '0.25em' }}>
+              LUMIÈRE
+            </text>
+          </svg>
+          <div className="mt-10 w-20 h-[0.5px] bg-white/10 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shimmer" />
           </div>
-        </motion.div>
-
-        {isMobile ? (
-          /* ── Mobile carousel ── */
-          <div style={{ position:"relative" }}>
-            <div
-              ref={scrollRef}
-              className="carousel-wrap"
-              onScroll={onScroll}
-            >
-              {SERVICES.map((s, i) => (
-                <div key={s.n} className="carousel-item svc-card" style={{ width:"82vw", maxWidth:340 }}>
-                  <div className="f-bar" style={{ position:"absolute", top:-10, right:20, fontSize:100, fontWeight:900,
-                    color:"rgba(232,226,217,0.03)", lineHeight:1, userSelect:"none", pointerEvents:"none" }}>{s.n}</div>
-                  <div className="f-mono" style={{ fontSize:11, letterSpacing:"0.16em", color:"rgba(232,226,217,0.22)", marginBottom:18 }}>{s.n}</div>
-                  <h3 className="f-bar" style={{ fontSize:20, fontWeight:700, color:"#E8E2D9", lineHeight:1.2, marginBottom:12 }}>{s.title}</h3>
-                  <p className="f-int" style={{ fontSize:14, fontWeight:300, color:"rgba(232,226,217,0.45)", lineHeight:1.75, marginBottom:22 }}>{s.body}</p>
-                  <div style={{ display:"flex", flexWrap:"wrap", gap:7 }}>
-                    {s.tags.map(t => <span key={t} className="tag">{t}</span>)}
-                  </div>
-                  <a href={WA} target="_blank" className="btn-glint" style={{ marginTop:20, padding:"10px 18px", fontSize:11, width:"100%", justifyContent:"center" }}>
-                    <WASvg size={11}/> Get a Quote
-                  </a>
-                </div>
-              ))}
-            </div>
-
-            {/* Dots */}
-            <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:20 }}>
-              {SERVICES.map((_,i) => (
-                <div key={i} style={{ width:6, height:6, borderRadius:"50%", transition:"background 0.3s",
-                  background: i===active ? "#E8E2D9" : "rgba(232,226,217,0.2)" }}/>
-              ))}
-            </div>
-          </div>
-        ) : (
-          /* ── Desktop grid — each card flows up from bottom in numbered order ── */
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(320px,1fr))", gap:3 }}>
-            {SERVICES.map((s,i) => (
-              <motion.div key={s.n} className="svc-card"
-                initial={{ opacity:0, y:56, scale:0.98 }}
-                whileInView={{ opacity:1, y:0, scale:1 }}
-                viewport={{ once:true, margin:"-40px" }}
-                transition={{ duration:0.65, delay:i*0.1, ease:[0.22,1,0.36,1] }}
-              >
-                <motion.div className="f-bar"
-                  style={{ position:"absolute", top:-10, right:20, fontSize:110, fontWeight:900,
-                    lineHeight:1, userSelect:"none", pointerEvents:"none" }}
-                  initial={{ opacity:0, y:20 }}
-                  whileInView={{ opacity:0.035, y:0 }}
-                  viewport={{ once:true }}
-                  transition={{ duration:0.8, delay:0.1 + i*0.1 }}
-                >{s.n}</motion.div>
-                <motion.div className="f-mono"
-                  style={{ fontSize:11, letterSpacing:"0.16em", color:"rgba(232,226,217,0.22)", marginBottom:18 }}
-                  initial={{ opacity:0, x:-8 }}
-                  whileInView={{ opacity:1, x:0 }}
-                  viewport={{ once:true }}
-                  transition={{ duration:0.4, delay:0.15 + i*0.1 }}
-                >{s.n}</motion.div>
-                <h3 className="f-bar" style={{ fontSize:22, fontWeight:700, letterSpacing:"-0.01em", color:"#E8E2D9", lineHeight:1.2, marginBottom:14 }}>{s.title}</h3>
-                <p className="f-int" style={{ fontSize:14, fontWeight:300, color:"rgba(232,226,217,0.45)", lineHeight:1.75, marginBottom:24 }}>{s.body}</p>
-                <div style={{ display:"flex", flexWrap:"wrap", gap:7, alignItems:"center" }}>
-                  {s.tags.map(t => <span key={t} className="tag">{t}</span>)}
-                  <motion.a href={WA} target="_blank" className="btn-glint"
-                    style={{ padding:"4px 11px", fontSize:10, letterSpacing:"0.1em", borderRadius:2, marginLeft:4 }}>
-                    <WASvg size={10}/> Quote
-                  </motion.a>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  );
-};
-
-// ─── BENTO IMAGE — real photo with gradient fallback ─────────────────────────
-const FALLBACK_GRADIENTS = [
-  "linear-gradient(135deg, #1a1a0f 0%, #0f1a0a 50%, #0a0f1a 100%)",
-  "linear-gradient(160deg, #111009 0%, #0d1a10 60%, #111009 100%)",
-  "linear-gradient(120deg, #0f0f0a 0%, #141a0d 55%, #0a0d14 100%)",
-  "linear-gradient(150deg, #111009 0%, #0a1410 50%, #111009 100%)",
-  "linear-gradient(140deg, #0d0c07 0%, #0f1a0c 60%, #0d0c07 100%)",
-  "linear-gradient(130deg, #111009 0%, #0c1a0e 55%, #111009 100%)",
-];
-
-const BentoImage = ({ src, alt, index = 0 }) => {
-  const [loaded, setLoaded] = useState(false);
-  const [errored, setErrored] = useState(false);
-  const showFallback = errored || !src;
-
-  return (
-    <div style={{ position:"absolute", inset:0 }}>
-      {/* Fallback gradient — always rendered behind */}
-      <div style={{
-        position:"absolute", inset:0,
-        background: FALLBACK_GRADIENTS[index % FALLBACK_GRADIENTS.length],
-      }}>
-        {showFallback && (
-          <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <div style={{ width:1, height:"60%", background:"rgba(232,226,217,0.04)" }}/>
-          </div>
-        )}
-      </div>
-      {/* Real image */}
-      {!errored && src && (
-        <img
-          src={src}
-          alt={alt}
-          onLoad={() => setLoaded(true)}
-          onError={() => setErrored(true)}
-          style={{
-            position:"absolute", inset:0,
-            width:"100%", height:"100%",
-            objectFit:"cover",
-            opacity: loaded ? 1 : 0,
-            transition:"opacity 0.5s ease",
-          }}
-        />
+        </div>
       )}
     </div>
   );
 };
 
-// ─── RECENT WORK (BENTO) ──────────────────────────────────────────────────────
-const Work = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once:true, margin:"-80px" });
+const Button = ({ children, onClick, variant = 'primary', className = '', disabled = false, ...props }) => {
+  const variants = {
+    primary: "bg-black text-white hover:bg-zinc-800 active:scale-[0.98] disabled:bg-zinc-400",
+    secondary: "bg-white/10 text-white backdrop-blur-xl border border-white/20 hover:bg-white/20 active:scale-[0.98]",
+    outline: "bg-transparent text-white border border-white/30 hover:bg-white hover:text-black active:scale-[0.98]"
+  };
+  return (
+    <button onClick={onClick} disabled={disabled} className={`px-7 py-3.5 transition-all duration-400 font-medium tracking-wide text-sm uppercase rounded-full ${variants[variant]} ${className}`} {...props}>
+      {children}
+    </button>
+  );
+};
+
+const SectionHeader = ({ title, subtitle, centered = true, dark = false }) => (
+  <div className={`mb-20 ${centered ? 'text-center' : 'text-left'}`}>
+    <p className="uppercase tracking-[0.3em] text-[11px] font-semibold mb-4 text-zinc-400">{subtitle}</p>
+    <h2 className={`text-4xl md:text-5xl font-serif font-light tracking-tight leading-[1.1] ${dark ? 'text-white' : 'text-zinc-900'}`}>{title}</h2>
+    <div className={`w-12 h-[1px] mt-8 ${dark ? 'bg-white/30' : 'bg-zinc-300'} ${centered ? 'mx-auto' : ''}`} />
+  </div>
+);
+
+const Navbar = ({ onBookClick }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const links = ['Home', 'Services', 'Stylists', 'Gallery', 'Contact'];
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+  }, [isOpen]);
+
+  const handleNavClick = (e, link) => {
+    e.preventDefault();
+    setIsOpen(false);
+    const targetId = link.toLowerCase();
+    const element = document.getElementById(targetId);
+    if (element) {
+      const offsetPosition = element.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <section id="work" className="section" style={{ background:"#0D0C07", borderTop:"1px solid rgba(232,226,217,0.05)" }}>
-      <div className="container">
-        <motion.div ref={ref}
-          style={{ marginBottom:48, paddingBottom:32, borderBottom:"1px solid rgba(232,226,217,0.07)" }}
-          initial={{ opacity:0, y:24 }} animate={inView?{opacity:1,y:0}:{}} transition={{ duration:0.7 }}
-        >
-          <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase", color:"rgba(232,226,217,0.25)", marginBottom:16 }}>— Portfolio</div>
-          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:20 }}>
-            <h2 className="f-bar" style={{ fontSize:"clamp(36px,5vw,64px)", fontWeight:900, letterSpacing:"-0.02em", lineHeight:1, color:"#E8E2D9" }}>Recent Work</h2>
-            <div style={{ textAlign:"right" }}>
-              <div className="f-mono" style={{ fontSize:11, color:"rgba(232,226,217,0.35)", letterSpacing:"0.1em" }}>Hikvision CCTV · Residential</div>
-              <div className="f-mono" style={{ fontSize:10, color:"rgba(232,226,217,0.18)", letterSpacing:"0.06em", marginTop:4 }}>5-Camera System · Ladysmith</div>
+    <>
+      <nav className={`fixed top-0 w-full z-[90] transition-all duration-700 ${isScrolled ? 'bg-white/80 backdrop-blur-2xl py-4 shadow-sm' : 'bg-transparent py-6 text-white'}`}>
+        <div className="container mx-auto px-8 flex justify-between items-center">
+          <a href="#home" onClick={(e) => handleNavClick(e, 'Home')} className={`text-xl font-serif tracking-[0.3em] transition-all duration-500 ${isScrolled || isOpen ? 'text-black' : 'text-white'}`}>
+            LUMIÈRE
+          </a>
+          
+          <div className="hidden md:flex items-center space-x-10">
+            {links.map((l) => (
+              <a key={l} href={`#${l.toLowerCase()}`} onClick={(e) => handleNavClick(e, l)} className={`text-[13px] uppercase tracking-wider font-medium nav-link-grow transition-colors ${isScrolled ? 'text-zinc-700 hover:text-black' : 'text-white/90 hover:text-white'}`}>
+                {l}
+              </a>
+            ))}
+            <Button onClick={onBookClick} variant={isScrolled ? 'primary' : 'secondary'}>Book Now</Button>
+          </div>
+
+          <button className="md:hidden relative z-[110] w-8 h-8 flex flex-col justify-center items-center space-y-1.5 focus:outline-none" onClick={() => setIsOpen(!isOpen)}>
+            <span className={`block w-6 h-[1.5px] transition-all duration-500 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+            <span className={`block w-6 h-[1.5px] transition-all duration-500 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
+            <span className={`block w-6 h-[1.5px] transition-all duration-500 ${isScrolled || isOpen ? 'bg-black' : 'bg-white'} ${isOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+          </button>
+        </div>
+      </nav>
+
+      {/* Refactored Fullscreen Menu Overlay */}
+      <div className={`fixed inset-0 z-[100] bg-white transition-all duration-700 ease-[cubic-bezier(0.32,0,0.07,1)] ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="flex flex-col h-full justify-center px-12 pt-20">
+          <div className="space-y-4">
+            {links.map((l, i) => (
+              <div key={l} className="overflow-hidden">
+                <a 
+                  href={`#${l.toLowerCase()}`}
+                  onClick={(e) => handleNavClick(e, l)}
+                  className={`block text-5xl font-serif text-black hover:text-zinc-500 transition-transform duration-700 ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}
+                  style={{ transitionDelay: `${i * 0.1}s` }}
+                >
+                  {l}
+                </a>
+              </div>
+            ))}
+          </div>
+          <div className={`mt-20 transition-all duration-1000 delay-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
+            <Button onClick={() => { onBookClick(); setIsOpen(false); }} className="w-full">Book Experience</Button>
+            <div className="mt-12 flex space-x-8 text-zinc-400">
+              <Instagram size={24} className="hover:text-black transition-colors" />
+              <Facebook size={24} className="hover:text-black transition-colors" />
             </div>
           </div>
-        </motion.div>
+        </div>
+      </div>
+    </>
+  );
+};
 
-        <div className="bento">
-          {BENTO_SLOTS.map((s,i) => (
-            <motion.div key={i}
-              className={s.cls}
-              style={{ background:"#181510", border:"1px solid rgba(232,226,217,0.06)", overflow:"hidden", position:"relative", cursor:"pointer" }}
-              initial={{ opacity:0, scale:0.97 }}
-              animate={inView?{opacity:1,scale:1}:{}}
-              transition={{ duration:0.55, delay:i*0.08 }}
-            >
-              {/* Image with gradient fallback */}
-              <BentoImage src={s.img} alt={s.label} index={i} />
+/* --- BOOKING MODAL, FAQ, TESTIMONIALS (Consolidated from Original) --- */
 
-              {/* Hover overlay */}
-              <motion.div
-                style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", justifyContent:"flex-end",
-                  padding:20, background:"linear-gradient(to top,rgba(17,16,9,0.9) 0%,transparent 55%)", opacity:0 }}
-                whileHover={{ opacity:1 }} transition={{ duration:0.2 }}
-              >
-                <div className="f-bar" style={{ fontSize:16, fontWeight:700, color:"#E8E2D9", letterSpacing:"-0.01em" }}>{s.label}</div>
-                <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.12em", color:"rgba(232,226,217,0.45)", marginTop:3 }}>{s.sub}</div>
-              </motion.div>
+const BookingModal = ({ isOpen, onClose }) => {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({ service: '', stylist: '', date: '', time: '', name: '', email: '', phone: '' });
 
-              {/* Corner index */}
-              <div className="f-mono" style={{ position:"absolute", top:14, left:14, fontSize:10, letterSpacing:"0.1em", color:"rgba(232,226,217,0.12)" }}>
-                {String(i+1).padStart(2,"0")}
-              </div>
-            </motion.div>
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const msg = encodeURIComponent(`Hi! I'd like to book ${formData.service} with ${formData.stylist} on ${formData.date} at ${formData.time}. Name: ${formData.name}`);
+    window.open(`https://wa.me/27619229670?text=${msg}`, '_blank');
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 animate-fadeIn">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={onClose} />
+      <div className="relative bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl animate-scaleIn">
+        <div className="sticky top-0 bg-white/95 border-b p-8 flex justify-between items-center z-10">
+          <h2 className="text-2xl font-serif">Book Your Appointment</h2>
+          <button onClick={onClose}><X size={24} /></button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          {step === 1 && (
+            <div className="space-y-4 animate-slideUp">
+              {SERVICES.map(s => (
+                <button key={s.id} type="button" onClick={() => { setFormData({...formData, service: s.name}); setStep(2); }} className="w-full text-left p-6 border rounded-2xl hover:bg-zinc-50 transition-all">
+                  <h4 className="font-serif text-lg">{s.name}</h4>
+                  <p className="text-sm text-zinc-500">R{s.price} • {s.duration} min</p>
+                </button>
+              ))}
+            </div>
+          )}
+          {step === 2 && (
+            <div className="space-y-4 animate-slideUp">
+              {STYLISTS.map(s => (
+                <button key={s.id} type="button" onClick={() => { setFormData({...formData, stylist: s.name}); setStep(3); }} className="w-full text-left p-6 border rounded-2xl flex items-center gap-4 hover:bg-zinc-50">
+                  <img src={s.image} className="w-12 h-12 rounded-full object-cover grayscale" />
+                  <div><h4 className="font-serif">{s.name}</h4><p className="text-xs text-zinc-400 uppercase">{s.role}</p></div>
+                </button>
+              ))}
+            </div>
+          )}
+          {step === 3 && (
+            <div className="space-y-6 animate-slideUp">
+              <input type="date" required onChange={e => setFormData({...formData, date: e.target.value})} className="w-full p-4 bg-zinc-50 rounded-xl border" />
+              <input type="text" placeholder="Full Name" required onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-4 bg-zinc-50 rounded-xl border" />
+              <Button type="submit" className="w-full">Confirm via WhatsApp</Button>
+            </div>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const Testimonials = () => (
+  <section className="py-32 px-6 bg-zinc-900 text-white overflow-hidden">
+    <div className="container mx-auto max-w-6xl">
+      <SectionHeader title="Client Experiences" subtitle="Kind Words" dark={true} />
+      <div className="grid md:grid-cols-3 gap-8">
+        {TESTIMONIALS.map((r) => (
+          <div key={r.id} className="bg-white/5 p-10 border border-white/10 rounded-2xl hover:bg-white/10 transition-all">
+            <p className="text-lg font-serif italic mb-8 leading-relaxed">"{r.text}"</p>
+            <p className="text-xs uppercase tracking-widest font-semibold">{r.name}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+const FAQ = () => {
+  const [openIndex, setOpenIndex] = useState(null);
+  return (
+    <section className="py-32 px-6 bg-zinc-50">
+      <div className="container mx-auto max-w-4xl">
+        <SectionHeader title="Frequently Asked Questions" subtitle="Good to Know" />
+        <div className="space-y-4">
+          {FAQS.map((faq, index) => (
+            <div key={faq.id} className="bg-white rounded-2xl border border-zinc-100 overflow-hidden">
+              <button onClick={() => setOpenIndex(openIndex === index ? null : index)} className="w-full px-8 py-6 flex justify-between items-center text-left">
+                <span className="text-lg font-serif">{faq.question}</span>
+                <ChevronRight className={`transition-transform ${openIndex === index ? 'rotate-90' : ''}`} size={20} />
+              </button>
+              {openIndex === index && <p className="px-8 pb-6 text-zinc-600 animate-slideUp">{faq.answer}</p>}
+            </div>
           ))}
         </div>
       </div>
@@ -806,220 +272,108 @@ const Work = () => {
   );
 };
 
-// ─── REVIEWS ──────────────────────────────────────────────────────────────────
-const Reviews = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once:true, margin:"-80px" });
-  const isMobile = useIsMobile();
-  const scrollRef = useRef(null);
-  const [active, setActive] = useState(0);
+/* --- MAIN APP --- */
+export default function App() {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
-  const onScroll = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setActive(Math.round(el.scrollLeft / (el.clientWidth + 12)));
-  };
-
-  const ReviewCard = ({ r }) => (
-    <div className="rev-card" style={{ height:"100%" }}>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:20 }}>
-        <div style={{ display:"flex", gap:3 }}>
-          {[...Array(5)].map((_,j) => <Star key={j} size={13} fill="#f59e0b" style={{ color:"#f59e0b" }}/>)}
-        </div>
-        <span className="f-mono" style={{ fontSize:10, color:"rgba(232,226,217,0.2)" }}>{r.date}</span>
-      </div>
-      <p className="f-int" style={{ fontSize:15, fontWeight:300, color:"rgba(232,226,217,0.58)", lineHeight:1.8, fontStyle:"italic", marginBottom:28 }}>
-        "{r.text}"
-      </p>
-      <div style={{ display:"flex", alignItems:"center", gap:12, borderTop:"1px solid rgba(232,226,217,0.06)", paddingTop:20 }}>
-        <div style={{ width:36, height:36, background:"#1E1A13", border:"1px solid rgba(232,226,217,0.08)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
-          <span className="f-bar" style={{ fontSize:15, fontWeight:800, color:"rgba(232,226,217,0.4)" }}>{r.name[0]}</span>
-        </div>
-        <div>
-          <div className="f-mono" style={{ fontSize:11, letterSpacing:"0.1em", color:"rgba(232,226,217,0.5)" }}>{r.name}</div>
-          <div className="f-mono" style={{ fontSize:10, color:"rgba(232,226,217,0.2)", marginTop:2 }}>Verified · Google</div>
-        </div>
-      </div>
-    </div>
-  );
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <section id="reviews" className="section" style={{ background:"#111009", borderTop:"1px solid rgba(232,226,217,0.05)" }}>
-      <div className="container">
-        <motion.div ref={ref}
-          style={{ marginBottom:56, paddingBottom:32, borderBottom:"1px solid rgba(232,226,217,0.07)" }}
-          initial={{ opacity:0, y:24 }} animate={inView?{opacity:1,y:0}:{}} transition={{ duration:0.7 }}
-        >
-          <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase", color:"rgba(232,226,217,0.25)", marginBottom:16 }}>— Client Feedback</div>
-          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:24 }}>
-            <h2 className="f-bar" style={{ fontSize:"clamp(36px,5vw,64px)", fontWeight:900, letterSpacing:"-0.02em", lineHeight:1, color:"#E8E2D9" }}>
-              What People Say
-            </h2>
-            <div style={{ border:"1px solid rgba(232,226,217,0.08)", padding:"20px 28px", textAlign:"center", background:"#181510" }}>
-              <div className="f-bar" style={{ fontSize:44, fontWeight:900, color:"#E8E2D9", lineHeight:1, letterSpacing:"-0.02em" }}>5.0</div>
-              <div style={{ display:"flex", gap:3, justifyContent:"center", margin:"8px 0 6px" }}>
-                {[...Array(5)].map((_,i) => <Star key={i} size={12} fill="#f59e0b" style={{ color:"#f59e0b" }}/>)}
-              </div>
-              <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.16em", textTransform:"uppercase", color:"rgba(232,226,217,0.25)" }}>Google · 3 Reviews</div>
-            </div>
-          </div>
-        </motion.div>
+    <div className="antialiased">
+      <LoadingScreen />
+      <Navbar onBookClick={() => setIsBookingOpen(true)} />
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} />
 
-        {isMobile ? (
-          <div>
-            <div ref={scrollRef} className="carousel-wrap" onScroll={onScroll}>
-              {REVIEWS.map((r,i) => (
-                <div key={i} className="carousel-item" style={{ width:"85vw", maxWidth:340 }}>
-                  <ReviewCard r={r}/>
+      <section id="home" className="relative h-screen flex items-center justify-center bg-black overflow-hidden">
+        <div className="absolute inset-0 w-full h-full" style={{ transform: `translateY(${scrollY * 0.5}px)` }}>
+          <img src="https://res.cloudinary.com/dgstbaoic/image/upload/w_1920,f_auto,q_auto:good/v1765596674/freepik__35mm-film-photography-cinematic-highcontrast-black__58855_ntswml.png" className="w-full h-full object-cover opacity-40" alt="Hero" />
+        </div>
+        <div className="relative z-10 text-center text-white px-6 animate-fadeInUp">
+          <p className="text-[11px] uppercase tracking-[0.4em] mb-8 font-medium">Beauty Redefined</p>
+          <h1 className="text-5xl md:text-8xl font-serif mb-12 font-light tracking-tight">Experience the Art<br/>of Hair</h1>
+          <Button variant="outline" onClick={() => setIsBookingOpen(true)}>Book Appointment</Button>
+        </div>
+      </section>
+
+      <section id="services" className="py-32 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <SectionHeader title="Our Menu" subtitle="Curated Treatments" />
+          <div className="grid md:grid-cols-2 gap-6">
+            {SERVICES.map(s => (
+              <div key={s.id} onClick={() => setIsBookingOpen(true)} className="bg-zinc-50 p-10 border border-zinc-100 hover:shadow-xl transition-all cursor-pointer rounded-2xl group">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h4 className="text-2xl font-serif mb-2">{s.name}</h4>
+                    <p className="text-zinc-500 text-sm mb-4">{s.description}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">R{s.price} • {s.duration} MIN</p>
+                  </div>
+                  <ArrowRight className="group-hover:translate-x-2 transition-transform text-zinc-300" />
                 </div>
-              ))}
-            </div>
-            <div style={{ display:"flex", justifyContent:"center", gap:6, marginTop:20 }}>
-              {REVIEWS.map((_,i) => (
-                <div key={i} style={{ width:6, height:6, borderRadius:"50%", transition:"background 0.3s",
-                  background: i===active ? "#E8E2D9" : "rgba(232,226,217,0.2)" }}/>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:3 }}>
-            {REVIEWS.map((r,i) => (
-              <motion.div key={i}
-                initial={{ opacity:0, y:28 }} animate={inView?{opacity:1,y:0}:{}} transition={{ duration:0.6, delay:i*0.12 }}
-              >
-                <ReviewCard r={r}/>
-              </motion.div>
+              </div>
             ))}
           </div>
-        )}
-      </div>
-    </section>
-  );
-};
-
-
-// ─── CONTACT ──────────────────────────────────────────────────────────────────
-const Contact = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once:true });
-
-  const details = [
-    { icon:<MapPin size={16}/>, label:"Location", val:"19 Game Centre, Ladysmith" },
-    { icon:<Phone size={16}/>,  label:"Phone", val:PHONE, href:`tel:${PHONE_RAW}` },
-    { icon:<Clock size={16}/>,  label:"Hours", val:"Mon – Sun · 7 days a week" },
-  ];
-
-  return (
-    <section id="contact" className="section" style={{ background:"#0D0C07", borderTop:"1px solid rgba(232,226,217,0.05)" }}>
-      <div className="container">
-        <motion.div ref={ref}
-          style={{ marginBottom:64, paddingBottom:32, borderBottom:"1px solid rgba(232,226,217,0.07)" }}
-          initial={{ opacity:0, y:24 }} animate={inView?{opacity:1,y:0}:{}} transition={{ duration:0.7 }}
-        >
-          <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.24em", textTransform:"uppercase", color:"rgba(232,226,217,0.25)", marginBottom:16 }}>— Get in Touch</div>
-          <h2 className="f-bar" style={{ fontSize:"clamp(36px,5vw,64px)", fontWeight:900, letterSpacing:"-0.02em", lineHeight:1, color:"#E8E2D9" }}>
-            Ready to Get<br/>
-            <span className="f-bar" style={{ fontStyle:"italic", fontWeight:900, color:"rgba(232,226,217,0.25)" }}>It Done?</span>
-          </h2>
-        </motion.div>
-
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:3 }}>
-
-          {/* Left — contact details */}
-          <motion.div
-            style={{ background:"#181510", border:"1px solid rgba(232,226,217,0.07)", padding:"48px 40px", display:"flex", flexDirection:"column", gap:32 }}
-            initial={{ opacity:0, x:-24 }} animate={inView?{opacity:1,x:0}:{}} transition={{ duration:0.7, delay:0.1 }}
-          >
-            <p className="f-int" style={{ fontSize:16, fontWeight:300, color:"rgba(232,226,217,0.45)", lineHeight:1.8 }}>
-              Message us on WhatsApp for a fast, no-obligation quote. We respond quickly — usually within the hour.
-            </p>
-
-            <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
-              {details.map((d,i) => (
-                <div key={i} style={{ display:"flex", gap:16, alignItems:"flex-start" }}>
-                  <div style={{ marginTop:1, color:"rgba(232,226,217,0.3)", flexShrink:0 }}>{d.icon}</div>
-                  <div>
-                    <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.16em", textTransform:"uppercase", color:"rgba(232,226,217,0.25)", marginBottom:4 }}>{d.label}</div>
-                    {d.href
-                      ? <a href={d.href} className="f-int" style={{ fontSize:16, color:"rgba(232,226,217,0.75)", fontWeight:400 }}>{d.val}</a>
-                      : <span className="f-int" style={{ fontSize:16, color:"rgba(232,226,217,0.75)", fontWeight:400 }}>{d.val}</span>
-                    }
-                  </div>
-                </div>
-              ))}
-              <div style={{ display:"flex", gap:16, alignItems:"flex-start" }}>
-                <div style={{ marginTop:1, color:"rgba(232,226,217,0.3)", flexShrink:0 }}><CheckCircle size={16}/></div>
-                <div>
-                  <div className="f-mono" style={{ fontSize:10, letterSpacing:"0.16em", textTransform:"uppercase", color:"rgba(232,226,217,0.25)", marginBottom:4 }}>Email</div>
-                  <a href={`mailto:${EMAIL}`} className="f-int" style={{ fontSize:15, color:"rgba(232,226,217,0.75)", fontWeight:400 }}>{EMAIL}</a>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right — CTA block */}
-          <motion.div
-            style={{ background:"#181510", border:"1px solid rgba(232,226,217,0.07)", padding:"48px 40px", display:"flex", flexDirection:"column", justifyContent:"space-between", position:"relative", overflow:"hidden" }}
-            initial={{ opacity:0, x:24 }} animate={inView?{opacity:1,x:0}:{}} transition={{ duration:0.7, delay:0.2 }}
-          >
-            {/* Subtle green bloom */}
-            <div style={{ position:"absolute", bottom:"-30%", right:"-20%", width:400, height:400, borderRadius:"50%",
-              background:"radial-gradient(circle, rgba(37,211,102,0.06) 0%, transparent 65%)", pointerEvents:"none" }}/>
-
-            <div>
-              <div className="f-bar" style={{ fontSize:32, fontWeight:900, color:"#E8E2D9", letterSpacing:"-0.02em", lineHeight:1.2, marginBottom:16 }}>
-                Fastest way to reach us
-              </div>
-              <p className="f-int" style={{ fontSize:14, fontWeight:300, color:"rgba(232,226,217,0.4)", lineHeight:1.8 }}>
-                Tap below to open WhatsApp. Your message goes straight to us — no voicemail, no hold music.
-              </p>
-            </div>
-
-            <div style={{ display:"flex", flexDirection:"column", gap:12, marginTop:40, position:"relative" }}>
-              <a href={WA} target="_blank" className="btn-glint-dk" style={{ justifyContent:"center" }}>
-                <WASvg size={17}/> WhatsApp a Quote Now
-              </a>
-              <a href={`tel:${PHONE_RAW}`} className="btn-glint-dk" style={{ justifyContent:"center", fontSize:13 }}>
-                <Phone size={15}/> Call {PHONE}
-              </a>
-            </div>
-          </motion.div>
         </div>
-      </div>
-    </section>
-  );
-};
+      </section>
 
-// ─── FOOTER ───────────────────────────────────────────────────────────────────
-const Footer = () => (
-  <footer style={{ background:"#111009", borderTop:"1px solid rgba(232,226,217,0.06)", padding:"28px 32px" }}>
-    <div style={{ maxWidth:1200, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:14 }}>
-      <span className="f-bar" style={{ fontSize:16, fontWeight:800, letterSpacing:"0.04em", color:"rgba(232,226,217,0.3)" }}>
-        MG<span style={{ fontWeight:400, marginLeft:6 }}>INSTALLATION</span>
-      </span>
-      <div className="f-mono" style={{ fontSize:11, letterSpacing:"0.08em", color:"rgba(232,226,217,0.18)", textAlign:"center", lineHeight:2 }}>
-        19 Game Centre · mginstallation.com · Available 7 Days
-      </div>
-      <span className="f-mono" style={{ fontSize:11, letterSpacing:"0.08em", color:"rgba(232,226,217,0.2)" }}>
-        © {new Date().getFullYear()} MG Installation
-      </span>
-    </div>
-  </footer>
-);
+      <section id="stylists" className="py-32 px-6 bg-zinc-50">
+        <div className="container mx-auto max-w-6xl">
+          <SectionHeader title="Meet The Experts" subtitle="Our Team" />
+          <div className="grid md:grid-cols-3 gap-12">
+            {STYLISTS.map(s => (
+              <div key={s.id} className="text-center group">
+                <div className="relative overflow-hidden mb-8 aspect-[3/4] rounded-2xl">
+                  <img src={s.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={s.name} />
+                </div>
+                <h4 className="text-2xl font-serif font-light">{s.name}</h4>
+                <p className="text-xs uppercase tracking-widest text-zinc-400 mt-2">{s.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-// ─── ROOT ─────────────────────────────────────────────────────────────────────
-export default function App() {
-  return (
-    <div>
-      <Nav/>
-      <Hero/>
-      <BrandBar/>
-      <Services/>
-      <Work/>
-      <Reviews/>
-      <Contact/>
-      <Footer/>
-      <FloatWA/>
+      <Testimonials />
+      <FAQ />
+
+      <section id="gallery" className="grid grid-cols-2 md:grid-cols-4">
+        {["v1765596663/freepik__35mm-film-photography-luxury-modern-hair-salon-int__8283_vhnahv.png", "v1765596654/freepik__the-style-is-candid-image-photography-with-natural__8284_cbgbc6.png", "v1765596629/freepik__the-style-is-candid-image-photography-with-natural__8286_e0zz4v.png", "v1765596644/freepik__35mm-film-photography-minimalist-black-display-cab__8285_jwej9v.png"].map((img, i) => (
+          <div key={i} className="h-80 md:h-[28rem] overflow-hidden grayscale hover:grayscale-0 transition-all">
+            <img src={`https://res.cloudinary.com/dgstbaoic/image/upload/w_800,f_auto,q_auto/${img}`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-1000" />
+          </div>
+        ))}
+      </section>
+
+      <section id="contact" className="py-32 px-6 bg-white">
+        <div className="container mx-auto max-w-6xl grid md:grid-cols-2 gap-20">
+          <div>
+            <SectionHeader title="Visit Us" subtitle="Get In Touch" centered={false} />
+            <div className="space-y-8 text-zinc-600">
+              <div className="flex gap-4"><MapPin size={20} /><p>21 King Street, Ladysmith, 3370</p></div>
+              <div className="flex gap-4"><Phone size={20} /><p>061 922 9670</p></div>
+              <div className="flex gap-4"><Clock size={20} /><p>Tue - Sat: 9am - 6pm</p></div>
+            </div>
+          </div>
+          <form className="bg-zinc-50 p-10 rounded-3xl border space-y-4">
+            <input placeholder="Name" className="w-full p-4 rounded-xl border outline-none focus:ring-1 focus:ring-black" />
+            <input placeholder="Email" className="w-full p-4 rounded-xl border outline-none focus:ring-1 focus:ring-black" />
+            <textarea placeholder="Message" rows="4" className="w-full p-4 rounded-xl border outline-none focus:ring-1 focus:ring-black resize-none" />
+            <Button className="w-full">Send Message</Button>
+          </form>
+        </div>
+      </section>
+
+      <footer className="bg-black text-white py-20 text-center">
+        <h2 className="text-2xl font-serif tracking-[0.4em] mb-10">LUMIÈRE</h2>
+        <div className="flex justify-center space-x-8 opacity-40 mb-10">
+          <Instagram size={20} /><Facebook size={20} />
+        </div>
+        <p className="text-[10px] uppercase tracking-widest text-zinc-600">© 2026 Lumière Salon. Demo by Arcodic.</p>
+      </footer>
     </div>
   );
 }
